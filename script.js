@@ -95,8 +95,17 @@ let troops = [
 let currentUser = null;
 let userLikes = {};
 
+// GitHub repository base URL for images
+const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
+
+// Function to get the image URL for a hero or troop
+function getImageUrl(name, type) {
+    const formattedName = name.toUpperCase().replace(/\s/g, '_'); // Match the case of the filenames (e.g., AVERY.png)
+    return `${githubBaseUrl}${type}/${formattedName}.png`;
+}
+
 // Clear outdated localStorage data to prevent conflicts with new hero/troop names
-const version = "1.2"; // Increment this whenever hero/troop data changes
+const version = "1.3"; // Increment this whenever hero/troop data changes
 const storedVersion = localStorage.getItem('dataVersion');
 if (storedVersion !== version) {
     localStorage.clear(); // Clear all localStorage to start fresh
@@ -279,7 +288,7 @@ function displayHeroes() {
     heroes.forEach(hero => {
         const heroCard = document.createElement('div');
         heroCard.innerHTML = `
-            <img src="https://via.placeholder.com/250x150" alt="${hero.name}">
+            <img src="${getImageUrl(hero.name, 'heroes')}" alt="${hero.name}">
             <h3>${hero.name}</h3>
             <p>Public Decks: ${hero.decks.filter(d => d.isPublic).length}</p>
             <p>Total Likes: ${hero.totalLikes}</p>
@@ -366,16 +375,28 @@ function displayUserDecks() {
             showDeckModal('edit', deck);
         });
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', () => {
-            currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
             const hero = heroes.find(h => h.id === deck.heroId);
             if (hero) {
+                if (deck.isPublic) {
+                    // Subtract the likes from the hero's totalLikes
+                    hero.totalLikes -= deck.likes;
+                    // Remove likes associated with this deck from userLikes
+                    for (let key in userLikes) {
+                        if (key.endsWith(`:${deck.name}`)) {
+                            delete userLikes[key];
+                        }
+                    }
+                    localStorage.setItem('userLikes', JSON.stringify(userLikes));
+                }
                 hero.decks = hero.decks.filter(d => d.name !== deck.name);
             }
+            currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
             // Update localStorage
             const userIndex = users.findIndex(u => u.username === currentUser.username);
             users[userIndex].decks = currentUser.decks;
             localStorage.setItem('users', JSON.stringify(users));
             displayUserDecks();
+            displayHeroes(); // Update the Hero Showcase to reflect the new totalLikes
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', () => {
             deck.isPublic = !deck.isPublic;
@@ -402,6 +423,7 @@ function displayUserDecks() {
             users[userIndex].decks = currentUser.decks;
             localStorage.setItem('users', JSON.stringify(users));
             displayUserDecks();
+            displayHeroes(); // Update the Hero Showcase
         });
         userDecksList.appendChild(deckCard);
     });
@@ -414,14 +436,14 @@ function showDeckDetails(deck) {
     deckDetailsDescription.textContent = deck.description;
     const hero = heroes.find(h => h.id === deck.heroId);
     deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
-    deckDetailsHeroImage.innerHTML = `<img src="https://via.placeholder.com/200x200" alt="${hero ? hero.name : 'Unknown'}">`;
+    deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}">`;
     
     deckDetailsTroops.innerHTML = '';
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
         const troopCard = document.createElement('div');
         troopCard.innerHTML = `
-            <img src="https://via.placeholder.com/100x80" alt="${troop ? troop.name : 'Unknown'}">
+            <img src="${getImageUrl(troop ? troop.name : 'Unknown', 'troops')}" alt="${troop ? troop.name : 'Unknown'}">
             <p>${troop ? troop.name : 'Unknown'}</p>
         `;
         deckDetailsTroops.appendChild(troopCard);
