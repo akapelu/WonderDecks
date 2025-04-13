@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wonder Wars Decks</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Wonder Wars Decks</div>
+        <div class="nav-links">
+            <a href="#hero-showcase" id="hero-showcase-link">Hero Showcase</a>
+            <div id="user-section">
+                <a href="#login" id="login-link">Login</a>
+                <a href="#register" id="register-link">Register</a>
+                <span id="user-name" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <section id="welcome-section" class="section">
+        <h1>Welcome to Wonder Wars Decks</h1>
+        <p>Create, Share, and Discover the Best Decks for Your Heroes</p>
+        <div class="cta-buttons">
+            <button id="get-started-btn">Get Started</button>
+            <button id="explore-heroes-btn">Explore Heroes</button>
+        </div>
+    </section>
+
+    <!-- Hero Showcase Section -->
+    <section id="hero-showcase-section" class="section" style="display: none;">
+        <h2>Hero Showcase</h2>
+        <div id="hero-list" class="hero-grid"></div>
+    </section>
+
+    <!-- Hero Decks Section -->
+    <section id="hero-decks-section" class="section" style="display: none;">
+        <h2 id="hero-decks-title"></h2>
+        <div id="hero-decks-list" class="deck-grid"></div>
+    </section>
+
+    <!-- User Account Section -->
+    <section id="user-account-section" class="section" style="display: none;">
+        <h2 id="user-account-title"></h2>
+        <button id="add-deck-btn" class="add-deck-btn">+</button>
+        <div id="user-decks-list" class="deck-grid"></div>
+    </section>
+
+    <!-- Modal for Login/Register -->
+    <div id="auth-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="auth-modal-title"></h3>
+            <form id="auth-form">
+                <input type="text" id="username-input" placeholder="Username" required>
+                <input type="password" id="password-input" placeholder="Password" required>
+                <button type="submit" id="auth-submit-btn"></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Deck -->
+    <div id="add-deck-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Add New Deck</h3>
+            <form id="add-deck-form">
+                <input type="text" id="deck-name-input" placeholder="Deck Name" required>
+                <select id="hero-select" required>
+                    <option value="" disabled selected>Select Hero</option>
+                </select>
+                <div id="troop-selectors">
+                    <!-- Dynamically populated -->
+                </div>
+                <textarea id="deck-description-input" placeholder="Description" required></textarea>
+                <label><input type="checkbox" id="deck-public-input"> Make Public</label>
+                <button type="submit">Add Deck</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

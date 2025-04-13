@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1E3A8A, #0A0A0A);
+    color: #FFFFFF;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(30, 58, 138, 0.9);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px #FFD700;
+}
+
+.nav-links a, .nav-links span {
+    color: #FFFFFF;
+    text-decoration: none;
+    margin: 0 1rem;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #FFD700;
+}
+
+.section {
+    padding: 5rem 2rem;
+    text-align: center;
+}
+
+#welcome-section {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: url('https://via.placeholder.com/1920x1080') no-repeat center/cover;
+    position: relative;
+}
+
+#welcome-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+#welcome-section h1, #welcome-section p, .cta-buttons {
+    position: relative;
+    z-index: 2;
+}
+
+#welcome-section h1 {
+    font-size: 3rem;
+    text-shadow: 0 0 15px #FFD700;
+}
+
+#welcome-section p {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    color: #D1D5DB;
+}
+
+.cta-buttons button {
+    padding: 0.8rem 2rem;
+    margin: 0 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+}
+
+#get-started-btn {
+    background: #FFD700;
+    color: #0A0A0A;
+}
+
+#explore-heroes-btn {
+    background: #FFFFFF;
+    color: #0A0A0A;
+}
+
+.cta-buttons button:hover {
+    transform: scale(1.05);
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px #FFD700;
+}
+
+.hero-grid, .deck-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 0 2rem;
+}
+
+.hero-grid div, .deck-grid div {
+    background: #2D2D2D;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: left;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.hero-grid div:hover, .deck-grid div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px #FFD700;
+}
+
+.hero-grid img, .deck-grid img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.deck-grid .like-btn {
+    background: #B91C1C;
+    color: #FFFFFF;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.3s;
+}
+
+.deck-grid .like-btn:hover {
+    background: #EF4444;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #1E3A8A;
+    padding: 2rem;
+    border-radius: 10px;
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-content h3 {
+    margin-bottom: 1.5rem;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-content input, .modal-content select, .modal-content textarea {
+    padding: 0.8rem;
+    border: 2px solid #FFD700;
+    border-radius: 5px;
+    background: #2D2D2D;
+    color: #FFFFFF;
+}
+
+.modal-content button {
+    padding: 0.8rem;
+    background: #FFD700;
+    color: #0A0A0A;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.modal-content button:hover {
+    background: #F59E0B;
+}
+
+.add-deck-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #FFD700;
+    color: #0A0A0A;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.add-deck-btn:hover {
+    transform: scale(1.1);
+}
