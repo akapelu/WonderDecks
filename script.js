@@ -23,6 +23,13 @@ const addDeckModal = document.getElementById('add-deck-modal');
 const addDeckForm = document.getElementById('add-deck-form');
 const heroSelect = document.getElementById('hero-select');
 const troopSelectors = document.getElementById('troop-selectors');
+const deckDetailsModal = document.getElementById('deck-details-modal');
+const deckDetailsTitle = document.getElementById('deck-details-title');
+const deckDetailsCreator = document.getElementById('deck-details-creator');
+const deckDetailsDescription = document.getElementById('deck-details-description');
+const deckDetailsHero = document.getElementById('deck-details-hero');
+const deckDetailsHeroImage = document.getElementById('deck-details-hero-image');
+const deckDetailsTroops = document.getElementById('deck-details-troops');
 
 // Show/Hide Sections
 function showSection(section) {
@@ -56,6 +63,7 @@ document.querySelectorAll('.close-modal').forEach(btn => {
     btn.addEventListener('click', () => {
         authModal.style.display = 'none';
         addDeckModal.style.display = 'none';
+        deckDetailsModal.style.display = 'none';
     });
 });
 
@@ -134,6 +142,10 @@ function displayHeroDecks(hero) {
             <p>Likes: ${deck.likes}</p>
             <button class="like-btn">Like</button>
         `;
+        deckCard.addEventListener('click', (e) => {
+            if (e.target.classList.contains('like-btn')) return;
+            showDeckDetails(deck);
+        });
         deckCard.querySelector('.like-btn').addEventListener('click', () => {
             if (!currentUser) {
                 alert('Please log in to like a deck!');
@@ -162,6 +174,10 @@ function displayUserDecks() {
             <button class="delete-deck-btn">Delete</button>
             <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
+        deckCard.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn')) return;
+            showDeckDetails(deck);
+        });
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', () => {
             currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
             const hero = heroes.find(h => h.id === deck.heroId);
@@ -180,6 +196,29 @@ function displayUserDecks() {
         });
         userDecksList.appendChild(deckCard);
     });
+}
+
+// Show Deck Details
+function showDeckDetails(deck) {
+    deckDetailsTitle.textContent = deck.name;
+    deckDetailsCreator.textContent = deck.creator || currentUser.username;
+    deckDetailsDescription.textContent = deck.description;
+    const hero = heroes.find(h => h.id === deck.heroId);
+    deckDetailsHero.textContent = hero.name;
+    deckDetailsHeroImage.innerHTML = `<img src="https://via.placeholder.com/200x200" alt="${hero.name}">`;
+    
+    deckDetailsTroops.innerHTML = '';
+    deck.troops.forEach(troopId => {
+        const troop = troops.find(t => t.id === troopId);
+        const troopCard = document.createElement('div');
+        troopCard.innerHTML = `
+            <img src="https://via.placeholder.com/100x80" alt="${troop.name}">
+            <p>${troop.name}</p>
+        `;
+        deckDetailsTroops.appendChild(troopCard);
+    });
+
+    deckDetailsModal.style.display = 'flex';
 }
 
 // Add Deck Modal
