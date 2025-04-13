@@ -10,7 +10,13 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized successfully");
+} catch (error) {
+    console.error("Error initializing Firebase:", error);
+}
+
 const db = firebase.firestore();
 const auth = firebase.auth();
 
@@ -26,7 +32,7 @@ let heroes = [
     { id: 8, name: "JARKOS", decks: [], totalLikes: 0 },
     { id: 9, name: "JIN", decks: [], totalLikes: 0 },
     { id: 10, name: "KADRIA", decks: [], totalLikes: 0 },
-    { id: 11, name: "KROGNAR", decks: [], totalLikes: 0 },
+    { id: 11, name: "KROGNAAR", decks: [], totalLikes: 0 },
     { id: 12, name: "LUSBAAL", decks: [], totalLikes: 0 },
     { id: 13, name: "LYON", decks: [], totalLikes: 0 },
     { id: 14, name: "PIPER", decks: [], totalLikes: 0 },
@@ -123,19 +129,27 @@ function getImageUrl(name, type) {
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
+    alert("Error connecting to Firebase. Please check the console for details.");
 });
 
 // Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
-        // User is signed in anonymously
+        console.log("User signed in anonymously:", user.uid);
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser) {
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            if (userDoc.exists) {
-                currentUser = userDoc.data();
-                currentUser.uid = user.uid;
-                updateUIForCurrentUser();
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    currentUser = userDoc.data();
+                    currentUser.uid = user.uid;
+                    updateUIForCurrentUser();
+                } else {
+                    console.log("User document not found for UID:", user.uid);
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                alert("Error fetching user data. Please check the console for details.");
             }
         }
         // Load all users and userLikes from Firestore
@@ -145,7 +159,7 @@ auth.onAuthStateChanged(async user => {
         // Update UI
         displayHeroes();
     } else {
-        // User is signed out
+        console.log("User signed out");
         currentUser = null;
         updateUIForCurrentUser();
     }
@@ -153,22 +167,29 @@ auth.onAuthStateChanged(async user => {
 
 // Load all users and userLikes from Firestore
 async function loadUsersAndLikes() {
-    users = [];
-    userLikes = {};
+    try {
+        users = [];
+        userLikes = {};
 
-    // Load users
-    const usersSnapshot = await db.collection('users').get();
-    usersSnapshot.forEach(doc => {
-        const userData = doc.data();
-        userData.uid = doc.id;
-        users.push(userData);
-    });
+        // Load users
+        const usersSnapshot = await db.collection('users').get();
+        usersSnapshot.forEach(doc => {
+            const userData = doc.data();
+            userData.uid = doc.id;
+            users.push(userData);
+        });
+        console.log("Users loaded:", users);
 
-    // Load userLikes
-    const likesSnapshot = await db.collection('userLikes').get();
-    likesSnapshot.forEach(doc => {
-        userLikes[doc.id] = doc.data().value;
-    });
+        // Load userLikes
+        const likesSnapshot = await db.collection('userLikes').get();
+        likesSnapshot.forEach(doc => {
+            userLikes[doc.id] = doc.data().value;
+        });
+        console.log("UserLikes loaded:", userLikes);
+    } catch (error) {
+        console.error("Error loading users and likes:", error);
+        alert("Error loading data from Firebase. Please check the console for details.");
+    }
 }
 
 // Load heroes' decks from users' public decks
@@ -249,11 +270,13 @@ function showSection(section) {
 
 // Navbar Buttons
 document.getElementById('hero-showcase-btn').addEventListener('click', () => {
+    console.log("Hero Showcase button clicked");
     showSection(heroShowcaseSection);
     displayHeroes();
 });
 
 document.getElementById('get-started-btn').addEventListener('click', () => {
+    console.log("Get Started button clicked");
     if (currentUser) {
         showSection(userAccountSection);
         displayUserDecks();
@@ -263,6 +286,7 @@ document.getElementById('get-started-btn').addEventListener('click', () => {
 });
 
 document.getElementById('explore-heroes-btn').addEventListener('click', () => {
+    console.log("Explore Heroes button clicked");
     showSection(heroShowcaseSection);
     displayHeroes();
 });
@@ -274,14 +298,27 @@ function showAuthModal(type) {
     authModal.style.display = 'flex';
 }
 
-loginBtn.addEventListener('click', () => showAuthModal('login'));
-registerBtn.addEventListener('click', () => showAuthModal('register'));
+loginBtn.addEventListener('click', () => {
+    console.log("Login button clicked");
+    showAuthModal('login');
+});
+
+registerBtn.addEventListener('click', () => {
+    console.log("Register button clicked");
+    showAuthModal('register');
+});
 
 logoutBtn.addEventListener('click', async () => {
-    await auth.signOut();
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    showSection(welcomeSection);
+    console.log("Logout button clicked");
+    try {
+        await auth.signOut();
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        showSection(welcomeSection);
+    } catch (error) {
+        console.error("Error signing out:", error);
+        alert("Error signing out. Please check the console for details.");
+    }
 });
 
 document.querySelectorAll('.close-modal').forEach(btn => {
@@ -298,30 +335,44 @@ authForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password-input').value;
 
     if (authSubmitBtn.textContent === 'Register') {
-        // Check if username already exists
-        const userSnapshot = await db.collection('users').where('username', '==', username).get();
-        if (!userSnapshot.empty) {
-            alert('Username already exists!');
+        try {
+            // Check if username already exists
+            const userSnapshot = await db.collection('users').where('username', '==', username).get();
+            if (!userSnapshot.empty) {
+                alert('Username already exists!');
+                return;
+            }
+
+            // Create new user
+            const userId = auth.currentUser.uid;
+            const newUser = { username, password, decks: [] };
+            await db.collection('users').doc(userId).set(newUser);
+            currentUser = newUser;
+            currentUser.uid = userId;
+            users.push(currentUser);
+            console.log("User registered:", currentUser);
+        } catch (error) {
+            console.error("Error registering user:", error);
+            alert("Error registering user. Please check the console for details.");
             return;
         }
-
-        // Create new user
-        const userId = auth.currentUser.uid;
-        const newUser = { username, password, decks: [] };
-        await db.collection('users').doc(userId).set(newUser);
-        currentUser = newUser;
-        currentUser.uid = userId;
-        users.push(currentUser);
     } else {
         // Login
-        const userSnapshot = await db.collection('users').where('username', '==', username).where('password', '==', password).get();
-        if (userSnapshot.empty) {
-            alert('Invalid credentials!');
+        try {
+            const userSnapshot = await db.collection('users').where('username', '==', username).where('password', '==', password).get();
+            if (userSnapshot.empty) {
+                alert('Invalid credentials!');
+                return;
+            }
+            const userDoc = userSnapshot.docs[0];
+            currentUser = userDoc.data();
+            currentUser.uid = userDoc.id;
+            console.log("User logged in:", currentUser);
+        } catch (error) {
+            console.error("Error logging in:", error);
+            alert("Error logging in. Please check the console for details.");
             return;
         }
-        const userDoc = userSnapshot.docs[0];
-        currentUser = userDoc.data();
-        currentUser.uid = userDoc.id;
     }
 
     localStorage.setItem('currentUser', currentUser.username);
@@ -387,18 +438,23 @@ function displayHeroDecks(hero) {
                 alert('You have already liked this deck!');
                 return;
             }
-            deck.likes++;
-            hero.totalLikes++;
-            userLikes[likeKey] = true;
-            await db.collection('userLikes').doc(likeKey).set({ value: true });
-            const user = users.find(u => u.username === deck.creator);
-            const userDeck = user.decks.find(d => d.name === deck.name);
-            if (userDeck) {
-                userDeck.likes = deck.likes;
-                await db.collection('users').doc(user.uid).update({ decks: user.decks });
+            try {
+                deck.likes++;
+                hero.totalLikes++;
+                userLikes[likeKey] = true;
+                await db.collection('userLikes').doc(likeKey).set({ value: true });
+                const user = users.find(u => u.username === deck.creator);
+                const userDeck = user.decks.find(d => d.name === deck.name);
+                if (userDeck) {
+                    userDeck.likes = deck.likes;
+                    await db.collection('users').doc(user.uid).update({ decks: user.decks });
+                }
+                displayHeroDecks(hero);
+                displayHeroes();
+            } catch (error) {
+                console.error("Error liking deck:", error);
+                alert("Error liking deck. Please check the console for details.");
             }
-            displayHeroDecks(hero);
-            displayHeroes();
         });
         heroDecksList.appendChild(deckCard);
     });
@@ -428,45 +484,55 @@ function displayUserDecks() {
             showDeckModal('edit', deck);
         });
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', async () => {
-            const hero = heroes.find(h => h.id === deck.heroId);
-            if (hero) {
-                if (deck.isPublic) {
-                    hero.totalLikes -= deck.likes;
-                    for (let key in userLikes) {
-                        if (key.endsWith(`:${deck.name}`)) {
-                            await db.collection('userLikes').doc(key).delete();
-                            delete userLikes[key];
+            try {
+                const hero = heroes.find(h => h.id === deck.heroId);
+                if (hero) {
+                    if (deck.isPublic) {
+                        hero.totalLikes -= deck.likes;
+                        for (let key in userLikes) {
+                            if (key.endsWith(`:${deck.name}`)) {
+                                await db.collection('userLikes').doc(key).delete();
+                                delete userLikes[key];
+                            }
                         }
                     }
+                    hero.decks = hero.decks.filter(d => d.name !== deck.name);
                 }
-                hero.decks = hero.decks.filter(d => d.name !== deck.name);
+                currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
+                await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
+                displayUserDecks();
+                displayHeroes();
+            } catch (error) {
+                console.error("Error deleting deck:", error);
+                alert("Error deleting deck. Please check the console for details.");
             }
-            currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
-            await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
-            displayUserDecks();
-            displayHeroes();
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', async () => {
-            deck.isPublic = !deck.isPublic;
-            const hero = heroes.find(h => h.id === deck.heroId);
-            if (hero) {
-                if (deck.isPublic) {
-                    hero.decks.push(deck);
-                } else {
-                    hero.decks = hero.decks.filter(d => d.name !== deck.name);
-                    hero.totalLikes -= deck.likes;
-                    for (let key in userLikes) {
-                        if (key.endsWith(`:${deck.name}`)) {
-                            await db.collection('userLikes').doc(key).delete();
-                            delete userLikes[key];
+            try {
+                deck.isPublic = !deck.isPublic;
+                const hero = heroes.find(h => h.id === deck.heroId);
+                if (hero) {
+                    if (deck.isPublic) {
+                        hero.decks.push(deck);
+                    } else {
+                        hero.decks = hero.decks.filter(d => d.name !== deck.name);
+                        hero.totalLikes -= deck.likes;
+                        for (let key in userLikes) {
+                            if (key.endsWith(`:${deck.name}`)) {
+                                await db.collection('userLikes').doc(key).delete();
+                                delete userLikes[key];
+                            }
                         }
+                        deck.likes = 0;
                     }
-                    deck.likes = 0;
                 }
+                await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
+                displayUserDecks();
+                displayHeroes();
+            } catch (error) {
+                console.error("Error toggling deck visibility:", error);
+                alert("Error toggling deck visibility. Please check the console for details.");
             }
-            await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
-            displayUserDecks();
-            displayHeroes();
         });
         userDecksList.appendChild(deckCard);
     });
@@ -575,35 +641,41 @@ function showDeckModal(mode, deck = null) {
             likes: mode === 'edit' && deck ? deck.likes : 0
         };
 
-        if (mode === 'add') {
-            currentUser.decks.push(newDeck);
-            if (isPublic) {
-                const hero = heroes.find(h => h.id === heroId);
-                if (hero) {
-                    hero.decks.push(newDeck);
-                }
-            }
-        } else {
-            const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
-            newDeck.likes = deck.likes;
-            currentUser.decks[deckIndex] = newDeck;
-            const hero = heroes.find(h => h.id === deck.heroId);
-            if (hero) {
-                hero.decks = hero.decks.filter(d => d.name !== deck.name);
+        try {
+            if (mode === 'add') {
+                currentUser.decks.push(newDeck);
                 if (isPublic) {
-                    hero.decks.push(newDeck);
+                    const hero = heroes.find(h => h.id === heroId);
+                    if (hero) {
+                        hero.decks.push(newDeck);
+                    }
+                }
+            } else {
+                const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
+                newDeck.likes = deck.likes;
+                currentUser.decks[deckIndex] = newDeck;
+                const hero = heroes.find(h => h.id === deck.heroId);
+                if (hero) {
+                    hero.decks = hero.decks.filter(d => d.name !== deck.name);
+                    if (isPublic) {
+                        hero.decks.push(newDeck);
+                    }
                 }
             }
-        }
 
-        await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
-        deckModal.style.display = 'none';
-        displayUserDecks();
+            await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
+            deckModal.style.display = 'none';
+            displayUserDecks();
+        } catch (error) {
+            console.error("Error saving deck:", error);
+            alert("Error saving deck. Please check the console for details.");
+        }
     };
 }
 
 // Add Deck Button
 document.getElementById('add-deck-btn').addEventListener('click', () => {
+    console.log("Add Deck button clicked");
     if (!currentUser) {
         alert('Please log in to add a deck!');
         return;
@@ -613,32 +685,38 @@ document.getElementById('add-deck-btn').addEventListener('click', () => {
 
 // Delete Account Button
 document.getElementById('delete-account-btn').addEventListener('click', async () => {
+    console.log("Delete Account button clicked");
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
-    await db.collection('users').doc(currentUser.uid).delete();
-    for (let key in userLikes) {
-        if (key.startsWith(currentUser.username)) {
-            await db.collection('userLikes').doc(key).delete();
-            delete userLikes[key];
-        }
-    }
-    users = users.filter(u => u.username !== currentUser.username);
-    heroes.forEach(hero => {
-        hero.decks = [];
-        hero.totalLikes = 0;
-    });
-    users.forEach(user => {
-        user.decks.forEach(deck => {
-            if (deck.isPublic) {
-                const hero = heroes.find(h => h.id === deck.heroId);
-                if (hero) {
-                    hero.decks.push(deck);
-                    hero.totalLikes += deck.likes || 0;
-                }
+    try {
+        await db.collection('users').doc(currentUser.uid).delete();
+        for (let key in userLikes) {
+            if (key.startsWith(currentUser.username)) {
+                await db.collection('userLikes').doc(key).delete();
+                delete userLikes[key];
             }
+        }
+        users = users.filter(u => u.username !== currentUser.username);
+        heroes.forEach(hero => {
+            hero.decks = [];
+            hero.totalLikes = 0;
         });
-    });
-    await auth.signOut();
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    showSection(welcomeSection);
+        users.forEach(user => {
+            user.decks.forEach(deck => {
+                if (deck.isPublic) {
+                    const hero = heroes.find(h => h.id === deck.heroId);
+                    if (hero) {
+                        hero.decks.push(deck);
+                        hero.totalLikes += deck.likes || 0;
+                    }
+                }
+            });
+        });
+        await auth.signOut();
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        showSection(welcomeSection);
+    } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("Error deleting account. Please check the console for details.");
+    }
 });
