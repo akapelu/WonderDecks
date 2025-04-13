@@ -1,5 +1,5 @@
 // Simulated backend data
-let users = JSON.parse(localStorage.getItem('users')) || [];
+let users = [];
 let heroes = [
     { id: 1, name: "BLUE", decks: [], totalLikes: 0 },
     { id: 2, name: "BLURP", decks: [], totalLikes: 0 },
@@ -93,15 +93,13 @@ let troops = [
     { id: 70, name: "YURKI" }
 ];
 let currentUser = null;
-let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; // { username: { deckName: true } }
+let userLikes = {};
 
 // Clear outdated localStorage data to prevent conflicts with new hero/troop names
-const version = "1.1"; // Increment this whenever hero/troop data changes
+const version = "1.2"; // Increment this whenever hero/troop data changes
 const storedVersion = localStorage.getItem('dataVersion');
 if (storedVersion !== version) {
-    localStorage.removeItem('users');
-    localStorage.removeItem('userLikes');
-    localStorage.removeItem('currentUser');
+    localStorage.clear(); // Clear all localStorage to start fresh
     localStorage.setItem('dataVersion', version);
     users = [];
     userLikes = {};
@@ -117,7 +115,17 @@ if (savedUser) {
     }
 }
 
+// Load userLikes from localStorage
+userLikes = JSON.parse(localStorage.getItem('userLikes')) || {};
+
+// Load users from localStorage
+users = JSON.parse(localStorage.getItem('users')) || [];
+
 // Load heroes' decks from users' public decks
+heroes.forEach(hero => {
+    hero.decks = [];
+    hero.totalLikes = 0;
+});
 users.forEach(user => {
     user.decks.forEach(deck => {
         if (deck.isPublic) {
@@ -293,12 +301,12 @@ function displayHeroDecks(hero) {
     heroDecksList.innerHTML = '';
     publicDecks.forEach(deck => {
         const deckCard = document.createElement('div');
-        const hero = heroes.find(h => h.id === deck.heroId);
+        const deckHero = heroes.find(h => h.id === deck.heroId);
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
             <p>${deck.description}</p>
-            <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
+            <p>Hero: ${deckHero ? deckHero.name : 'Unknown'}</p>
             <p>Likes: ${deck.likes}</p>
             <button class="like-btn">Like</button>
         `;
@@ -323,8 +331,10 @@ function displayHeroDecks(hero) {
             // Update the user's deck in localStorage
             const user = users.find(u => u.username === deck.creator);
             const userDeck = user.decks.find(d => d.name === deck.name);
-            userDeck.likes = deck.likes;
-            localStorage.setItem('users', JSON.stringify(users));
+            if (userDeck) {
+                userDeck.likes = deck.likes;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
             displayHeroDecks(hero);
             displayHeroes();
         });
@@ -432,6 +442,9 @@ function showDeckModal(mode, deck = null) {
         const option = document.createElement('option');
         option.value = hero.id;
         option.textContent = hero.name;
+        if (deck && deck.heroId === hero.id) {
+            option.selected = true;
+        }
         heroSelect.appendChild(option);
     });
 
@@ -441,7 +454,7 @@ function showDeckModal(mode, deck = null) {
     for (let i = 1; i <= 6; i++) {
         const select = document.createElement('select');
         select.required = true;
-        select.innerHTML = `<option value="" disabled selected>Troop ${i}</option>`;
+        select.innerHTML = `<option value="" disabled selected>Select Troop ${i}</option>`;
         troops.forEach(troop => {
             const option = document.createElement('option');
             option.value = troop.id;
@@ -452,7 +465,7 @@ function showDeckModal(mode, deck = null) {
             const selectedTroops = troopSelects.map(s => s.value).filter(v => v !== '');
             troopSelects.forEach(s => {
                 const currentValue = s.value;
-                s.innerHTML = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Troop ${troopSelects.indexOf(s) + 1}</option>`;
+                s.innerHTML = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Select Troop ${troopSelects.indexOf(s) + 1}</option>`;
                 troops.forEach(troop => {
                     if (!selectedTroops.includes(String(troop.id)) || String(troop.id) === currentValue) {
                         const option = document.createElement('option');
@@ -468,16 +481,17 @@ function showDeckModal(mode, deck = null) {
         troopSelects.push(select);
     }
 
-    if (mode === 'edit') {
+    if (mode === 'edit' && deck) {
         document.getElementById('deck-name-input').value = deck.name;
         heroSelect.value = deck.heroId;
         troopSelects.forEach((select, index) => {
-            if (deck.troops[index]) select.value = deck.troops[index];
+            if (deck.troops[index]) {
+                select.value = deck.troops[index];
+                select.dispatchEvent(new Event('change')); // Trigger change to update options
+            }
         });
         document.getElementById('deck-description-input').value = deck.description;
         document.getElementById('deck-public-input').checked = deck.isPublic;
-        // Trigger change event to update troop selectors
-        troopSelects.forEach(select => select.dispatchEvent(new Event('change')));
     }
 
     deckForm.onsubmit = (e) => {
@@ -495,7 +509,7 @@ function showDeckModal(mode, deck = null) {
             description,
             isPublic,
             creator: currentUser.username,
-            likes: mode === 'edit' ? deck.likes : 0
+            likes: mode === 'edit' && deck ? deck.likes : 0
         };
 
         if (mode === 'add') {
