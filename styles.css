@@ -233,6 +233,11 @@ h2 {
     cursor: pointer;
     transition: transform 0.3s;
 }
+
+.add-deck-btn:hover {
+    transform: scale(1.1);
+}
+
 .troops-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -260,8 +265,4 @@ h2 {
     height: auto;
     border-radius: 5px;
     margin: 1rem 0;
-}
-
-.add-deck-btn:hover {
-    transform: scale(1.1);
 }
