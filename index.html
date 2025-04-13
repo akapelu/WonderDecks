@@ -3,80 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wonder Wars Decks</title>
+    <title>Hero Deck Builder</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">Wonder Wars Decks</div>
-        <div class="nav-links">
-            <button id="hero-showcase-btn" class="nav-btn">Hero Showcase</button>
-            <div id="user-section" class="user-section">
-                <button id="login-btn" class="nav-btn">Login</button>
-                <button id="register-btn" class="nav-btn">Register</button>
-                <button id="user-name" class="nav-btn" style="display: none;"></button>
-                <button id="logout-btn" class="nav-btn" style="display: none;">Logout</button>
-            </div>
+    <nav>
+        <div class="nav-left">
+            <h1>Wonder Decks</h1>
+        </div>
+        <div class="nav-right">
+            <button id="hero-showcase-btn">Hero Showcase</button>
+            <button id="login-btn">Login</button>
+            <button id="register-btn">Register</button>
+            <span id="user-name" style="display: none;"></span>
+            <button id="logout-btn" style="display: none;">Logout</button>
         </div>
     </nav>
 
-    <!-- Welcome Section -->
-    <section id="welcome-section" class="section">
-        <h1>Welcome to Wonder Wars Decks</h1>
-        <p>Create, Share, and Discover the Best Decks for Your Heroes</p>
-        <div class="cta-buttons">
-            <button id="get-started-btn">Get Started</button>
-            <button id="explore-heroes-btn">Explore Heroes</button>
-        </div>
+    <section id="welcome-section">
+        <h2>Welcome to Wonder Decks!</h2>
+        <p>Create and share your hero decks with the community.</p>
+        <button id="get-started-btn">Get Started</button>
+        <button id="explore-heroes-btn">Explore Heroes</button>
     </section>
 
-    <!-- Hero Showcase Section -->
-    <section id="hero-showcase-section" class="section" style="display: none;">
+    <section id="hero-showcase-section" style="display: none;">
         <h2>Hero Showcase</h2>
-        <div id="hero-list" class="hero-grid"></div>
+        <div id="hero-list" class="card-list"></div>
     </section>
 
-    <!-- Hero Decks Section -->
-    <section id="hero-decks-section" class="section" style="display: none;">
+    <section id="hero-decks-section" style="display: none;">
         <h2 id="hero-decks-title"></h2>
-        <div id="hero-decks-list" class="deck-grid"></div>
+        <div id="hero-decks-list" class="card-list"></div>
     </section>
 
-    <!-- User Account Section -->
-    <section id="user-account-section" class="section" style="display: none;">
+    <section id="user-account-section" style="display: none;">
         <h2 id="user-account-title"></h2>
-        <button id="add-deck-btn" class="add-deck-btn">+</button>
-        <button id="delete-account-btn" class="delete-account-btn">Delete Account</button>
-        <div id="user-decks-list" class="deck-grid"></div>
+        <button id="add-deck-btn">Add Deck</button>
+        <button id="delete-account-btn">Delete Account</button>
+        <div id="user-decks-list" class="card-list"></div>
     </section>
 
-    <!-- Modal for Login/Register -->
     <div id="auth-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal">×</span>
-            <h3 id="auth-modal-title"></h3>
+            <h2 id="auth-modal-title">Login</h2>
             <form id="auth-form">
                 <input type="text" id="username-input" placeholder="Username" required>
                 <input type="password" id="password-input" placeholder="Password" required>
-                <button type="submit" id="auth-submit-btn"></button>
+                <button type="submit" id="auth-submit-btn">Login</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal for Adding/Editing Deck -->
     <div id="deck-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal">×</span>
-            <h3 id="deck-modal-title">Add New Deck</h3>
+            <h2 id="deck-modal-title">Add New Deck</h2>
             <form id="deck-form">
                 <input type="text" id="deck-name-input" placeholder="Deck Name" required>
-                <select id="hero-select" required>
-                    <option value="" disabled selected>Select Hero</option>
-                </select>
-                <div id="troop-selectors">
-                    <!-- Dynamically populated -->
-                </div>
+                <select id="hero-select" required></select>
+                <div id="troop-selectors" class="troop-selectors"></div>
                 <textarea id="deck-description-input" placeholder="Description" required></textarea>
                 <label><input type="checkbox" id="deck-public-input"> Make Public</label>
                 <button type="submit" id="deck-submit-btn">Add Deck</button>
@@ -84,20 +71,23 @@
         </div>
     </div>
 
-    <!-- Modal for Deck Details -->
     <div id="deck-details-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal">×</span>
-            <h3 id="deck-details-title"></h3>
+            <h2 id="deck-details-title"></h2>
             <p><strong>Created by:</strong> <span id="deck-details-creator"></span></p>
             <p><strong>Description:</strong> <span id="deck-details-description"></span></p>
             <p><strong>Hero:</strong> <span id="deck-details-hero"></span></p>
             <div id="deck-details-hero-image"></div>
-            <p><strong>Troops:</strong></p>
-            <div id="deck-details-troops" class="troops-grid"></div>
+            <h3>Troops</h3>
+            <div id="deck-details-troops" class="card-list"></div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
