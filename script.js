@@ -3,6 +3,7 @@ let users = JSON.parse(localStorage.getItem('users')) || [];
 let heroes = Array.from({ length: 18 }, (_, i) => ({ id: i + 1, name: `Hero ${i + 1}`, decks: [], totalLikes: 0 }));
 let troops = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, name: `Troop ${i + 1}` }));
 let currentUser = null;
+let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; // { username: { deckName: true } }
 
 // Load heroes' decks from users' public decks
 users.forEach(user => {
@@ -33,8 +34,10 @@ const authModal = document.getElementById('auth-modal');
 const authModalTitle = document.getElementById('auth-modal-title');
 const authSubmitBtn = document.getElementById('auth-submit-btn');
 const authForm = document.getElementById('auth-form');
-const addDeckModal = document.getElementById('add-deck-modal');
-const addDeckForm = document.getElementById('add-deck-form');
+const deckModal = document.getElementById('deck-modal');
+const deckModalTitle = document.getElementById('deck-modal-title');
+const deckForm = document.getElementById('deck-form');
+const deckSubmitBtn = document.getElementById('deck-submit-btn');
 const heroSelect = document.getElementById('hero-select');
 const troopSelectors = document.getElementById('troop-selectors');
 const deckDetailsModal = document.getElementById('deck-details-modal');
@@ -85,7 +88,7 @@ logoutBtn.addEventListener('click', () => {
 document.querySelectorAll('.close-modal').forEach(btn => {
     btn.addEventListener('click', () => {
         authModal.style.display = 'none';
-        addDeckModal.style.display = 'none';
+        deckModal.style.display = 'none';
         deckDetailsModal.style.display = 'none';
     });
 });
@@ -177,8 +180,15 @@ function displayHeroDecks(hero) {
                 alert('Please log in to like a deck!');
                 return;
             }
+            const likeKey = `${currentUser.username}:${deck.name}`;
+            if (userLikes[likeKey]) {
+                alert('You have already liked this deck!');
+                return;
+            }
             deck.likes++;
             hero.totalLikes++;
+            userLikes[likeKey] = true;
+            localStorage.setItem('userLikes', JSON.stringify(userLikes));
             // Update the user's deck in localStorage
             const user = users.find(u => u.username === deck.creator);
             const userDeck = user.decks.find(d => d.name === deck.name);
@@ -202,12 +212,16 @@ function displayUserDecks() {
             <p>Hero: ${heroes.find(h => h.id === deck.heroId).name}</p>
             <p>${deck.description}</p>
             <p>Public: ${deck.isPublic ? 'Yes' : 'No'}</p>
+            <button class="edit-deck-btn">Edit</button>
             <button class="delete-deck-btn">Delete</button>
             <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
         deckCard.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn')) return;
+            if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
             showDeckDetails(deck);
+        });
+        deckCard.querySelector('.edit-deck-btn').addEventListener('click', () => {
+            showDeckModal('edit', deck);
         });
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', () => {
             currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
@@ -260,13 +274,11 @@ function showDeckDetails(deck) {
     deckDetailsModal.style.display = 'flex';
 }
 
-// Add Deck Modal
-document.getElementById('add-deck-btn').addEventListener('click', () => {
-    if (!currentUser) {
-        alert('Please log in to add a deck!');
-        return;
-    }
-    addDeckModal.style.display = 'flex';
+// Show Deck Modal (Add or Edit)
+function showDeckModal(mode, deck = null) {
+    deckModalTitle.textContent = mode === 'add' ? 'Add New Deck' : 'Edit Deck';
+    deckSubmitBtn.textContent = mode === 'add' ? 'Add Deck' : 'Save Changes';
+    deckModal.style.display = 'flex';
 
     // Populate hero dropdown
     heroSelect.innerHTML = '<option value="" disabled selected>Select Hero</option>';
@@ -279,6 +291,7 @@ document.getElementById('add-deck-btn').addEventListener('click', () => {
 
     // Populate troop selectors
     troopSelectors.innerHTML = '';
+    const troopSelects = [];
     for (let i = 1; i <= 6; i++) {
         const select = document.createElement('select');
         select.required = true;
@@ -289,39 +302,122 @@ document.getElementById('add-deck-btn').addEventListener('click', () => {
             option.textContent = troop.name;
             select.appendChild(option);
         });
+        select.addEventListener('change', () => {
+            const selectedTroops = troopSelects.map(s => s.value).filter(v => v !== '');
+            troopSelects.forEach(s => {
+                const currentValue = s.value;
+                s.innerHTML = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Troop ${troopSelects.indexOf(s) + 1}</option>`;
+                troops.forEach(troop => {
+                    if (!selectedTroops.includes(String(troop.id)) || String(troop.id) === currentValue) {
+                        const option = document.createElement('option');
+                        option.value = troop.id;
+                        option.textContent = troop.name;
+                        if (String(troop.id) === currentValue) option.selected = true;
+                        s.appendChild(option);
+                    }
+                });
+            });
+        });
         troopSelectors.appendChild(select);
+        troopSelects.push(select);
     }
+
+    if (mode === 'edit') {
+        document.getElementById('deck-name-input').value = deck.name;
+        heroSelect.value = deck.heroId;
+        troopSelects.forEach((select, index) => {
+            if (deck.troops[index]) select.value = deck.troops[index];
+        });
+        document.getElementById('deck-description-input').value = deck.description;
+        document.getElementById('deck-public-input').checked = deck.isPublic;
+        // Trigger change event to update troop selectors
+        troopSelects.forEach(select => select.dispatchEvent(new Event('change')));
+    }
+
+    deckForm.onsubmit = (e) => {
+        e.preventDefault();
+        const deckName = document.getElementById('deck-name-input').value;
+        const heroId = parseInt(heroSelect.value);
+        const troops = troopSelects.map(s => parseInt(s.value));
+        const description = document.getElementById('deck-description-input').value;
+        const isPublic = document.getElementById('deck-public-input').checked;
+
+        const newDeck = {
+            name: deckName,
+            heroId,
+            troops,
+            description,
+            isPublic,
+            creator: currentUser.username,
+            likes: mode === 'edit' ? deck.likes : 0
+        };
+
+        if (mode === 'add') {
+            currentUser.decks.push(newDeck);
+            if (isPublic) {
+                const hero = heroes.find(h => h.id === heroId);
+                hero.decks.push(newDeck);
+            }
+        } else {
+            const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
+            newDeck.likes = deck.likes; // Preserve likes
+            currentUser.decks[deckIndex] = newDeck;
+            const hero = heroes.find(h => h.id === deck.heroId);
+            hero.decks = hero.decks.filter(d => d.name !== deck.name);
+            if (isPublic) {
+                hero.decks.push(newDeck);
+            }
+        }
+
+        // Update localStorage
+        const userIndex = users.findIndex(u => u.username === currentUser.username);
+        users[userIndex].decks = currentUser.decks;
+        localStorage.setItem('users', JSON.stringify(users));
+
+        deckModal.style.display = 'none';
+        displayUserDecks();
+    };
+}
+
+// Add Deck Button
+document.getElementById('add-deck-btn').addEventListener('click', () => {
+    if (!currentUser) {
+        alert('Please log in to add a deck!');
+        return;
+    }
+    showDeckModal('add');
 });
 
-addDeckForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const deckName = document.getElementById('deck-name-input').value;
-    const heroId = parseInt(document.getElementById('hero-select').value);
-    const troops = Array.from(troopSelectors.querySelectorAll('select')).map(s => parseInt(s.value));
-    const description = document.getElementById('deck-description-input').value;
-    const isPublic = document.getElementById('deck-public-input').checked;
-
-    const deck = {
-        name: deckName,
-        heroId,
-        troops,
-        description,
-        isPublic,
-        creator: currentUser.username,
-        likes: 0
-    };
-
-    currentUser.decks.push(deck);
-    if (isPublic) {
-        const hero = heroes.find(h => h.id === heroId);
-        hero.decks.push(deck);
-    }
-
-    // Update localStorage
-    const userIndex = users.findIndex(u => u.username === currentUser.username);
-    users[userIndex].decks = currentUser.decks;
+// Delete Account Button
+document.getElementById('delete-account-btn').addEventListener('click', () => {
+    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
+    users = users.filter(u => u.username !== currentUser.username);
     localStorage.setItem('users', JSON.stringify(users));
-
-    addDeckModal.style.display = 'none';
-    displayUserDecks();
+    // Remove likes associated with this user
+    for (let key in userLikes) {
+        if (key.startsWith(currentUser.username)) {
+            delete userLikes[key];
+        }
+    }
+    localStorage.setItem('userLikes', JSON.stringify(userLikes));
+    // Reset heroes' decks
+    heroes.forEach(hero => {
+        hero.decks = [];
+        hero.totalLikes = 0;
+    });
+    users.forEach(user => {
+        user.decks.forEach(deck => {
+            if (deck.isPublic) {
+                const hero = heroes.find(h => h.id === deck.heroId);
+                hero.decks.push(deck);
+                hero.totalLikes += deck.likes || 0;
+            }
+        });
+    });
+    currentUser = null;
+    loginBtn.style.display = 'inline-block';
+    registerBtn.style.display = 'inline-block';
+    userNameDisplay.style.display = 'none';
+    logoutBtn.style.display = 'none';
+    showSection(welcomeSection);
 });
