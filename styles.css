@@ -2,11 +2,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Orbitron', sans-serif; /* Fuente futurista */
+    font-family: 'Orbitron', sans-serif;
 }
 
 body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%);
+    background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c 100%); /* Degradado de azules */
     color: #e6e6e6;
     min-height: 100vh;
     overflow-x: hidden;
@@ -22,18 +22,18 @@ body::before {
     width: 100%;
     height: 100%;
     background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.2;
+    opacity: 0.1; /* Brillo más suave */
     z-index: -1;
     animation: sparkle 10s infinite;
 }
 
 @keyframes sparkle {
-    0%, 100% { opacity: 0.2; }
-    50% { opacity: 0.4; }
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.2; }
 }
 
 nav {
-    background: linear-gradient(90deg, rgba(22, 33, 62, 0.9) 0%, rgba(15, 15, 35, 0.9) 100%);
+    background: linear-gradient(90deg, rgba(10, 28, 61, 0.9) 0%, rgba(26, 42, 108, 0.9) 100%);
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -45,40 +45,40 @@ nav {
 
 .nav-left h1 {
     font-size: 36px;
-    color: #ffd700;
-    text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Brillo blanco suave */
     letter-spacing: 2px;
     animation: glow 2s infinite;
 }
 
 @keyframes glow {
-    0%, 100% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
-    50% { text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700; }
+    0%, 100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+    50% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); }
 }
 
 .nav-right {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px; /* Reducido para mejor ajuste */
 }
 
 .nav-right button, .nav-right span {
-    margin-left: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
+    margin-left: 5px;
+    padding: 8px 16px; /* Tamaño más pequeño para mejor ajuste en móviles */
+    font-size: 14px;
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: linear-gradient(145deg, #ffd700, #e6c200);
-    color: #1a1a2e;
-    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+    background: linear-gradient(145deg, #ffffff, #e6e6e6); /* Botones blancos */
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3); /* Brillo blanco suave */
 }
 
 .nav-right button:hover {
-    background: linear-gradient(145deg, #e6c200, #ffd700);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.8);
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
 }
 
@@ -89,10 +89,35 @@ section {
 
 h2 {
     font-size: 48px;
-    color: #ffd700;
-    text-shadow: 0 0 15px #ffd700;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Brillo blanco suave */
     margin-bottom: 30px;
     letter-spacing: 1px;
+}
+
+#welcome-section p {
+    font-size: 20px;
+    color: #e6e6e6;
+    margin-bottom: 40px; /* Más espacio entre el texto y los botones */
+}
+
+#welcome-section button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+    margin: 0 10px;
+}
+
+#welcome-section button:hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .card-list {
@@ -103,7 +128,7 @@ h2 {
 }
 
 .card-list > div {
-    background: linear-gradient(145deg, #16213e, #0f0f23);
+    background: linear-gradient(145deg, #0a1c3d, #1a2a6c);
     border-radius: 15px;
     padding: 20px;
     width: 280px;
@@ -111,13 +136,13 @@ h2 {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .card-list > div:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.5);
-    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 .card-list img {
@@ -128,8 +153,8 @@ h2 {
 
 .card-list h3 {
     margin: 15px 0;
-    color: #ffd700;
-    text-shadow: 0 0 5px #ffd700;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .troop-selectors {
@@ -153,14 +178,14 @@ h2 {
 }
 
 .modal-content {
-    background: linear-gradient(145deg, #16213e, #0f0f23);
+    background: linear-gradient(145deg, #0a1c3d, #1a2a6c);
     padding: 30px;
     border-radius: 15px;
     width: 90%;
     max-width: 600px;
     position: relative;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border: 2px solid #ffd700;
+    border: 2px solid #ffffff;
     animation: modalFadeIn 0.3s ease;
 }
 
@@ -175,17 +200,17 @@ h2 {
     right: 15px;
     font-size: 30px;
     cursor: pointer;
-    color: #ffd700;
-    text-shadow: 0 0 5px #ffd700;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .close-modal:hover {
-    color: #e6c200;
+    color: #e6e6e6;
 }
 
 .modal-content h2 {
-    color: #ffd700;
-    text-shadow: 0 0 10px #ffd700;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     margin-bottom: 25px;
 }
 
@@ -200,9 +225,9 @@ h2 {
 .modal-content textarea {
     padding: 12px;
     font-size: 16px;
-    border: 1px solid rgba(255, 215, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    background: #1a1a2e;
+    background: #1a2a6c;
     color: #e6e6e6;
     transition: border-color 0.3s;
 }
@@ -210,9 +235,9 @@ h2 {
 .modal-content input:focus,
 .modal-content select:focus,
 .modal-content textarea:focus {
-    border-color: #ffd700;
+    border-color: #ffffff;
     outline: none;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .modal-content textarea {
@@ -223,18 +248,18 @@ h2 {
 .modal-content button {
     padding: 12px;
     font-size: 16px;
-    background: linear-gradient(145deg, #ffd700, #e6c200);
-    color: #1a1a2e;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
 }
 
 .modal-content button:hover {
-    background: linear-gradient(145deg, #e6c200, #ffd700);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.8);
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
 }
 
@@ -253,7 +278,7 @@ h2 {
 
     .nav-left h1 {
         font-size: 28px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
 
     .nav-right {
@@ -261,15 +286,16 @@ h2 {
         flex-wrap: wrap;
         justify-content: flex-start;
         width: 100%;
+        gap: 8px;
     }
 
     .nav-right button, .nav-right span {
         margin: 5px 0;
-        padding: 8px 15px;
-        font-size: 14px;
+        padding: 6px 12px;
+        font-size: 12px;
         flex: 1 1 auto;
-        min-width: 100px;
-        max-width: 150px;
+        min-width: 90px;
+        max-width: 120px;
         text-align: center;
     }
 
@@ -279,6 +305,17 @@ h2 {
 
     h2 {
         font-size: 36px;
+    }
+
+    #welcome-section p {
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    #welcome-section button {
+        padding: 10px 20px;
+        font-size: 14px;
+        margin: 5px;
     }
 
     .card-list > div {
@@ -320,13 +357,24 @@ h2 {
 
     .nav-right button, .nav-right span {
         min-width: 80px;
-        max-width: 120px;
-        font-size: 12px;
-        padding: 6px 10px;
+        max-width: 100px;
+        font-size: 11px;
+        padding: 5px 8px;
     }
 
     h2 {
         font-size: 28px;
+    }
+
+    #welcome-section p {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    #welcome-section button {
+        padding: 8px 16px;
+        font-size: 12px;
+        margin: 5px;
     }
 
     .card-list > div {
