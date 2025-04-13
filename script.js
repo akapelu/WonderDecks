@@ -1,8 +1,21 @@
 // Simulated backend data
-let users = [];
+let users = JSON.parse(localStorage.getItem('users')) || [];
 let heroes = Array.from({ length: 18 }, (_, i) => ({ id: i + 1, name: `Hero ${i + 1}`, decks: [], totalLikes: 0 }));
 let troops = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, name: `Troop ${i + 1}` }));
 let currentUser = null;
+
+// Load heroes' decks from users' public decks
+users.forEach(user => {
+    user.decks.forEach(deck => {
+        if (deck.isPublic) {
+            const hero = heroes.find(h => h.id === deck.heroId);
+            if (hero) {
+                hero.decks.push(deck);
+                hero.totalLikes += deck.likes || 0;
+            }
+        }
+    });
+});
 
 // DOM Elements
 const welcomeSection = document.getElementById('welcome-section');
@@ -13,8 +26,9 @@ const heroList = document.getElementById('hero-list');
 const heroDecksList = document.getElementById('hero-decks-list');
 const userDecksList = document.getElementById('user-decks-list');
 const userNameDisplay = document.getElementById('user-name');
-const loginLink = document.getElementById('login-link');
-const registerLink = document.getElementById('register-link');
+const loginBtn = document.getElementById('login-btn');
+const registerBtn = document.getElementById('register-btn');
+const logoutBtn = document.getElementById('logout-btn');
 const authModal = document.getElementById('auth-modal');
 const authModalTitle = document.getElementById('auth-modal-title');
 const authSubmitBtn = document.getElementById('auth-submit-btn');
@@ -37,8 +51,8 @@ function showSection(section) {
     section.style.display = 'block';
 }
 
-// Navbar Links
-document.getElementById('hero-showcase-link').addEventListener('click', () => {
+// Navbar Buttons
+document.getElementById('hero-showcase-btn').addEventListener('click', () => {
     showSection(heroShowcaseSection);
     displayHeroes();
 });
@@ -56,8 +70,17 @@ function showAuthModal(type) {
     authModal.style.display = 'flex';
 }
 
-loginLink.addEventListener('click', () => showAuthModal('login'));
-registerLink.addEventListener('click', () => showAuthModal('register'));
+loginBtn.addEventListener('click', () => showAuthModal('login'));
+registerBtn.addEventListener('click', () => showAuthModal('register'));
+
+logoutBtn.addEventListener('click', () => {
+    currentUser = null;
+    loginBtn.style.display = 'inline-block';
+    registerBtn.style.display = 'inline-block';
+    userNameDisplay.style.display = 'none';
+    logoutBtn.style.display = 'none';
+    showSection(welcomeSection);
+});
 
 document.querySelectorAll('.close-modal').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -77,8 +100,10 @@ authForm.addEventListener('submit', (e) => {
             alert('Username already exists!');
             return;
         }
-        users.push({ username, password, decks: [] });
-        currentUser = { username, password, decks: [] };
+        const newUser = { username, password, decks: [] };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        currentUser = newUser;
     } else {
         const user = users.find(u => u.username === username && u.password === password);
         if (!user) {
@@ -89,10 +114,11 @@ authForm.addEventListener('submit', (e) => {
     }
 
     authModal.style.display = 'none';
-    loginLink.style.display = 'none';
-    registerLink.style.display = 'none';
+    loginBtn.style.display = 'none';
+    registerBtn.style.display = 'none';
     userNameDisplay.textContent = currentUser.username;
-    userNameDisplay.style.display = 'inline';
+    userNameDisplay.style.display = 'inline-block';
+    logoutBtn.style.display = 'inline-block';
     userNameDisplay.addEventListener('click', () => {
         showSection(userAccountSection);
         displayUserDecks();
@@ -153,6 +179,11 @@ function displayHeroDecks(hero) {
             }
             deck.likes++;
             hero.totalLikes++;
+            // Update the user's deck in localStorage
+            const user = users.find(u => u.username === deck.creator);
+            const userDeck = user.decks.find(d => d.name === deck.name);
+            userDeck.likes = deck.likes;
+            localStorage.setItem('users', JSON.stringify(users));
             displayHeroDecks(hero);
             displayHeroes();
         });
@@ -182,6 +213,10 @@ function displayUserDecks() {
             currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
             const hero = heroes.find(h => h.id === deck.heroId);
             hero.decks = hero.decks.filter(d => d.name !== deck.name);
+            // Update localStorage
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            users[userIndex].decks = currentUser.decks;
+            localStorage.setItem('users', JSON.stringify(users));
             displayUserDecks();
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', () => {
@@ -192,6 +227,10 @@ function displayUserDecks() {
             } else {
                 hero.decks = hero.decks.filter(d => d.name !== deck.name);
             }
+            // Update localStorage
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            users[userIndex].decks = currentUser.decks;
+            localStorage.setItem('users', JSON.stringify(users));
             displayUserDecks();
         });
         userDecksList.appendChild(deckCard);
@@ -277,6 +316,11 @@ addDeckForm.addEventListener('submit', (e) => {
         const hero = heroes.find(h => h.id === heroId);
         hero.decks.push(deck);
     }
+
+    // Update localStorage
+    const userIndex = users.findIndex(u => u.username === currentUser.username);
+    users[userIndex].decks = currentUser.decks;
+    localStorage.setItem('users', JSON.stringify(users));
 
     addDeckModal.style.display = 'none';
     displayUserDecks();
