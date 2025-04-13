@@ -35,12 +35,17 @@ body {
     align-items: center;
 }
 
+.user-section {
+    display: flex;
+    align-items: center;
+}
+
 .nav-btn {
     background: #FFB107; /* Amarillo anaranjado */
     color: #0A0A0A;
     border: none;
     padding: 0.5rem 1rem;
-    margin: 0 1rem; /* Espacio uniforme entre botones */
+    margin: 0 0.5rem; /* Espacio uniforme entre botones */
     border-radius: 5px;
     font-size: 1.1rem;
     cursor: pointer;
@@ -152,7 +157,7 @@ h2 {
     border-radius: 5px;
 }
 
-.deck-grid .like-btn {
+.deck-grid .like-btn, .deck-grid .delete-deck-btn, .deck-grid .toggle-public-btn, .deck-grid .edit-deck-btn {
     background: #B91C1C;
     color: #FFFFFF;
     border: none;
@@ -160,10 +165,11 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 0.5rem;
+    margin-right: 0.5rem;
     transition: background 0.3s;
 }
 
-.deck-grid .like-btn:hover {
+.deck-grid .like-btn:hover, .deck-grid .delete-deck-btn:hover, .deck-grid .toggle-public-btn:hover, .deck-grid .edit-deck-btn:hover {
     background: #EF4444;
 }
 
@@ -229,10 +235,9 @@ h2 {
     background: #FFCA28;
 }
 
-.add-deck-btn {
+.add-deck-btn, .delete-account-btn {
     position: fixed;
     bottom: 2rem;
-    right: 2rem;
     background: #FFB107;
     color: #0A0A0A;
     border: none;
@@ -244,7 +249,24 @@ h2 {
     transition: transform 0.3s;
 }
 
-.add-deck-btn:hover {
+.add-deck-btn {
+    right: 2rem;
+}
+
+.delete-account-btn {
+    left: 2rem;
+    background: #B91C1C;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-account-btn:hover {
+    background: #EF4444;
+}
+
+.add-deck-btn:hover, .delete-account-btn:hover {
     transform: scale(1.1);
 }
 
