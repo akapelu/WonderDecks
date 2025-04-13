@@ -238,28 +238,32 @@ h2 {
 .add-deck-btn, .delete-account-btn {
     position: fixed;
     bottom: 2rem;
-    background: #FFB107;
-    color: #0A0A0A;
     border: none;
-    width: 50px;
-    height: 50px;
+    width: 60px; /* Aumentado para que quepa el texto */
+    height: 60px;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2; /* Ajustar el interlineado para que el texto quepa */
 }
 
 .add-deck-btn {
     right: 2rem;
+    background: #FFB107;
+    color: #0A0A0A;
 }
 
 .delete-account-btn {
     left: 2rem;
     background: #B91C1C;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #FFFFFF;
+    font-size: 0.8rem; /* Reducir el tamaño de la fuente para que quepa */
+    padding: 0.5rem; /* Añadir padding para mejor ajuste */
 }
 
 .delete-account-btn:hover {
