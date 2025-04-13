@@ -52,7 +52,7 @@
     <!-- Modal for Login/Register -->
     <div id="auth-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal">×</span>
             <h3 id="auth-modal-title"></h3>
             <form id="auth-form">
                 <input type="text" id="username-input" placeholder="Username" required>
@@ -65,7 +65,7 @@
     <!-- Modal for Adding Deck -->
     <div id="add-deck-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
+            <span class="close-modal">×</span>
             <h3>Add New Deck</h3>
             <form id="add-deck-form">
                 <input type="text" id="deck-name-input" placeholder="Deck Name" required>
@@ -81,19 +81,20 @@
             </form>
         </div>
     </div>
-    <!-- Modal para Detalles del Deck -->
-  <div id="deck-details-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close-modal">×</span>
-        <h3 id="deck-details-title"></h3>
-        <p><strong>Created by:</strong> <span id="deck-details-creator"></span></p>
-        <p><strong>Description:</strong> <span id="deck-details-description"></span></p>
-        <p><strong>Hero:</strong> <span id="deck-details-hero"></span></p>
-        <div id="deck-details-hero-image"></div>
-        <p><strong>Troops:</strong></p>
-        <div id="deck-details-troops" class="troops-grid"></div>
+
+    <!-- Modal for Deck Details -->
+    <div id="deck-details-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">×</span>
+            <h3 id="deck-details-title"></h3>
+            <p><strong>Created by:</strong> <span id="deck-details-creator"></span></p>
+            <p><strong>Description:</strong> <span id="deck-details-description"></span></p>
+            <p><strong>Hero:</strong> <span id="deck-details-hero"></span></p>
+            <div id="deck-details-hero-image"></div>
+            <p><strong>Troops:</strong></p>
+            <div id="deck-details-troops" class="troops-grid"></div>
+        </div>
     </div>
-</div>
 
     <script src="script.js"></script>
 </body>
