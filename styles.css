@@ -2,304 +2,287 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 body {
-    background: linear-gradient(135deg, #1E3A8A, #0A0A0A);
-    color: #FFFFFF;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background-color: #1a1a2e;
+    color: #e6e6e6;
 }
 
-.navbar {
+nav {
+    background-color: #16213e;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
-    background: rgba(30, 58, 138, 0.9);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
+    flex-wrap: wrap; /* Allow navbar items to wrap on small screens */
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-shadow: 0 0 10px #FFD700;
+.nav-left h1 {
+    font-size: 24px;
+    color: #ffd700;
 }
 
-.nav-links {
+.nav-right {
     display: flex;
     align-items: center;
+    flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+    gap: 10px; /* Add spacing between buttons */
 }
 
-.user-section {
-    display: flex;
-    align-items: center;
-}
-
-.nav-btn {
-    background: #FFB107; /* Amarillo anaranjado */
-    color: #0A0A0A;
+.nav-right button, .nav-right span {
+    margin-left: 10px;
+    padding: 8px 16px;
+    font-size: 16px;
     border: none;
-    padding: 0.5rem 1rem;
-    margin: 0 0.5rem; /* Espacio uniforme entre botones */
     border-radius: 5px;
-    font-size: 1.1rem;
     cursor: pointer;
-    transition: transform 0.3s, background 0.3s;
+    transition: background-color 0.3s;
 }
 
-.nav-btn:hover {
-    background: #FFCA28;
-    transform: scale(1.05);
+.nav-right button {
+    background-color: #ffd700;
+    color: #1a1a2e;
 }
 
-.section {
-    padding: 5rem 2rem;
+.nav-right button:hover {
+    background-color: #e6c200;
+}
+
+section {
+    padding: 20px;
     text-align: center;
 }
 
-#welcome-section {
-    height: 100vh;
+h2 {
+    font-size: 32px;
+    color: #ffd700;
+    margin-bottom: 20px;
+}
+
+.card-list {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    background: url('https://via.placeholder.com/1920x1080') no-repeat center/cover;
-    position: relative;
+    gap: 20px;
 }
 
-#welcome-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-}
-
-#welcome-section h1, #welcome-section p, .cta-buttons {
-    position: relative;
-    z-index: 2;
-}
-
-#welcome-section h1 {
-    font-size: 3rem;
-    text-shadow: 0 0 15px #FFD700;
-}
-
-#welcome-section p {
-    font-size: 1.2rem;
-    margin: 1rem 0;
-    color: #D1D5DB;
-}
-
-.cta-buttons button {
-    padding: 0.8rem 2rem;
-    margin: 0 1rem;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
+.card-list > div {
+    background-color: #16213e;
+    border-radius: 10px;
+    padding: 15px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transition: transform 0.3s, background 0.3s;
+    transition: transform 0.2s;
 }
 
-#get-started-btn {
-    background: #FFB107;
-    color: #0A0A0A;
-}
-
-#explore-heroes-btn {
-    background: #FFFFFF;
-    color: #0A0A0A;
-}
-
-.cta-buttons button:hover {
+.card-list > div:hover {
     transform: scale(1.05);
 }
 
-h2 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    text-shadow: 0 0 10px #FFD700;
-}
-
-.hero-grid, .deck-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    padding: 0 2rem;
-}
-
-.hero-grid div, .deck-grid div {
-    background: #2D2D2D;
-    border-radius: 10px;
-    padding: 1rem;
-    text-align: left;
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-}
-
-.hero-grid div:hover, .deck-grid div:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 15px #FFD700;
-}
-
-.hero-grid img, .deck-grid img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
+.card-list img {
+    max-width: 100%;
     border-radius: 5px;
 }
 
-.deck-grid .like-btn, .deck-grid .delete-deck-btn, .deck-grid .toggle-public-btn, .deck-grid .edit-deck-btn {
-    background: #B91C1C;
-    color: #FFFFFF;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
-    transition: background 0.3s;
+.card-list h3 {
+    margin: 10px 0;
+    color: #ffd700;
 }
 
-.deck-grid .like-btn:hover, .deck-grid .delete-deck-btn:hover, .deck-grid .toggle-public-btn:hover, .deck-grid .edit-deck-btn:hover {
-    background: #EF4444;
+.troop-selectors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
 }
 
 .modal {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
-    z-index: 2000;
 }
 
 .modal-content {
-    background: #1E3A8A;
-    padding: 2rem;
+    background-color: #16213e;
+    padding: 20px;
     border-radius: 10px;
-    position: relative;
     width: 90%;
-    max-width: 400px;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 .close-modal {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
     cursor: pointer;
+    color: #e6e6e6;
 }
 
-.modal-content h3 {
-    margin-bottom: 1.5rem;
+.modal-content h2 {
+    color: #ffd700;
+    margin-bottom: 20px;
 }
 
 .modal-content form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 15px;
 }
 
-.modal-content input, .modal-content select, .modal-content textarea {
-    padding: 0.8rem;
-    border: 2px solid #FFB107;
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
     border-radius: 5px;
-    background: #2D2D2D;
-    color: #FFFFFF;
+    background-color: #1a1a2e;
+    color: #e6e6e6;
+}
+
+.modal-content textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
 .modal-content button {
-    padding: 0.8rem;
-    background: #FFB107;
-    color: #0A0A0A;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #ffd700;
+    color: #1a1a2e;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background-color 0.3s;
 }
 
 .modal-content button:hover {
-    background: #FFCA28;
+    background-color: #e6c200;
 }
 
-.add-deck-btn, .delete-account-btn {
-    position: fixed;
-    bottom: 2rem;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+.modal-content label {
+    color: #e6e6e6;
 }
 
-.add-deck-btn {
-    right: 2rem;
-    background: #FFB107;
-    color: #0A0A0A;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    font-size: 1rem;
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .nav-left h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .nav-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .nav-right button, .nav-right span {
+        margin: 5px 0;
+        padding: 8px 12px;
+        font-size: 14px;
+        flex: 1 1 auto; /* Allow buttons to grow but wrap */
+        min-width: 100px; /* Ensure buttons have a minimum width */
+        max-width: 150px; /* Prevent buttons from growing too large */
+        text-align: center;
+    }
+
+    section {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .card-list > div {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .modal-content h2 {
+        font-size: 24px;
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .modal-content button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .troop-selectors select {
+        width: 100%;
+        max-width: 150px;
+    }
 }
 
-.delete-account-btn {
-    left: 2rem;
-    background: #B91C1C;
-    color: #FFFFFF;
-    padding: 0.5rem 1rem; /* Ajustado para que el texto quepa */
-    border-radius: 5px; /* Rectangular con esquinas redondeadas */
-    font-size: 0.9rem; /* Tamaño de fuente ajustado */
-    height: 40px; /* Altura más pequeña para que coincida con el diseño */
-}
+@media (max-width: 480px) {
+    .nav-right button, .nav-right span {
+        min-width: 80px;
+        max-width: 120px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
 
-.delete-account-btn:hover {
-    background: #EF4444;
-}
+    h2 {
+        font-size: 20px;
+    }
 
-.add-deck-btn:hover, .delete-account-btn:hover {
-    transform: scale(1.1);
-}
+    .card-list > div {
+        width: 100%;
+        max-width: 250px;
+    }
 
-.troops-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
+    .modal-content {
+        width: 98%;
+        padding: 10px;
+    }
 
-.troops-grid div {
-    background: #2D2D2D;
-    border-radius: 5px;
-    padding: 0.5rem;
-    text-align: center;
-}
+    .modal-content h2 {
+        font-size: 20px;
+    }
 
-.troops-grid img {
-    width: 100%;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 5px;
-}
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+        font-size: 12px;
+        padding: 6px;
+    }
 
-#deck-details-hero-image img {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-    border-radius: 5px;
-    margin: 1rem 0;
+    .modal-content button {
+        font-size: 12px;
+        padding: 6px;
+    }
 }
