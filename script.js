@@ -250,7 +250,14 @@ document.getElementById('hero-showcase-btn').addEventListener('click', () => {
     displayHeroes();
 });
 
-document.getElementById('get-started-btn').addEventListener('click', () => showAuthModal('register'));
+document.getElementById('get-started-btn').addEventListener('click', () => {
+    if (currentUser) {
+        showSection(userAccountSection);
+        displayUserDecks();
+    } else {
+        showAuthModal('register');
+    }
+});
 document.getElementById('explore-heroes-btn').addEventListener('click', () => {
     showSection(heroShowcaseSection);
     displayHeroes();
