@@ -12,7 +12,7 @@
         <div class="logo">Wonder Wars Decks</div>
         <div class="nav-links">
             <button id="hero-showcase-btn" class="nav-btn">Hero Showcase</button>
-            <div id="user-section">
+            <div id="user-section" class="user-section">
                 <button id="login-btn" class="nav-btn">Login</button>
                 <button id="register-btn" class="nav-btn">Register</button>
                 <button id="user-name" class="nav-btn" style="display: none;"></button>
@@ -47,6 +47,7 @@
     <section id="user-account-section" class="section" style="display: none;">
         <h2 id="user-account-title"></h2>
         <button id="add-deck-btn" class="add-deck-btn">+</button>
+        <button id="delete-account-btn" class="delete-account-btn">Delete Account</button>
         <div id="user-decks-list" class="deck-grid"></div>
     </section>
 
@@ -63,12 +64,12 @@
         </div>
     </div>
 
-    <!-- Modal for Adding Deck -->
-    <div id="add-deck-modal" class="modal" style="display: none;">
+    <!-- Modal for Adding/Editing Deck -->
+    <div id="deck-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal">×</span>
-            <h3>Add New Deck</h3>
-            <form id="add-deck-form">
+            <h3 id="deck-modal-title">Add New Deck</h3>
+            <form id="deck-form">
                 <input type="text" id="deck-name-input" placeholder="Deck Name" required>
                 <select id="hero-select" required>
                     <option value="" disabled selected>Select Hero</option>
@@ -78,7 +79,7 @@
                 </div>
                 <textarea id="deck-description-input" placeholder="Description" required></textarea>
                 <label><input type="checkbox" id="deck-public-input"> Make Public</label>
-                <button type="submit">Add Deck</button>
+                <button type="submit" id="deck-submit-btn">Add Deck</button>
             </form>
         </div>
     </div>
