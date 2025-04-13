@@ -265,7 +265,17 @@ function displayUserDecks() {
             if (deck.isPublic) {
                 hero.decks.push(deck);
             } else {
+                // Remove likes when making private
                 hero.decks = hero.decks.filter(d => d.name !== deck.name);
+                hero.totalLikes -= deck.likes;
+                // Remove likes from userLikes
+                for (let key in userLikes) {
+                    if (key.endsWith(`:${deck.name}`)) {
+                        delete userLikes[key];
+                    }
+                }
+                localStorage.setItem('userLikes', JSON.stringify(userLikes));
+                deck.likes = 0; // Reset likes for the deck
             }
             // Update localStorage
             const userIndex = users.findIndex(u => u.username === currentUser.username);
