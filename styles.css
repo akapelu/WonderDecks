@@ -30,16 +30,26 @@ body {
     text-shadow: 0 0 10px #FFD700;
 }
 
-.nav-links a, .nav-links span {
-    color: #FFFFFF;
-    text-decoration: none;
-    margin: 0 1rem;
-    font-size: 1.1rem;
-    transition: color 0.3s;
+.nav-links {
+    display: flex;
+    align-items: center;
 }
 
-.nav-links a:hover {
-    color: #FFD700;
+.nav-btn {
+    background: #FFB107; /* Amarillo anaranjado */
+    color: #0A0A0A;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 0 1rem; /* Espacio uniforme entre botones */
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.nav-btn:hover {
+    background: #FFCA28;
+    transform: scale(1.05);
 }
 
 .section {
@@ -95,7 +105,7 @@ body {
 }
 
 #get-started-btn {
-    background: #FFD700;
+    background: #FFB107;
     color: #0A0A0A;
 }
 
@@ -199,7 +209,7 @@ h2 {
 
 .modal-content input, .modal-content select, .modal-content textarea {
     padding: 0.8rem;
-    border: 2px solid #FFD700;
+    border: 2px solid #FFB107;
     border-radius: 5px;
     background: #2D2D2D;
     color: #FFFFFF;
@@ -207,7 +217,7 @@ h2 {
 
 .modal-content button {
     padding: 0.8rem;
-    background: #FFD700;
+    background: #FFB107;
     color: #0A0A0A;
     border: none;
     border-radius: 5px;
@@ -216,14 +226,14 @@ h2 {
 }
 
 .modal-content button:hover {
-    background: #F59E0B;
+    background: #FFCA28;
 }
 
 .add-deck-btn {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    background: #FFD700;
+    background: #FFB107;
     color: #0A0A0A;
     border: none;
     width: 50px;
