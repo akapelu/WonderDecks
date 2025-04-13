@@ -95,6 +95,19 @@ let troops = [
 let currentUser = null;
 let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; // { username: { deckName: true } }
 
+// Clear outdated localStorage data to prevent conflicts with new hero/troop names
+const version = "1.1"; // Increment this whenever hero/troop data changes
+const storedVersion = localStorage.getItem('dataVersion');
+if (storedVersion !== version) {
+    localStorage.removeItem('users');
+    localStorage.removeItem('userLikes');
+    localStorage.removeItem('currentUser');
+    localStorage.setItem('dataVersion', version);
+    users = [];
+    userLikes = {};
+    currentUser = null;
+}
+
 // Load current user from localStorage
 const savedUser = localStorage.getItem('currentUser');
 if (savedUser) {
@@ -280,10 +293,12 @@ function displayHeroDecks(hero) {
     heroDecksList.innerHTML = '';
     publicDecks.forEach(deck => {
         const deckCard = document.createElement('div');
+        const hero = heroes.find(h => h.id === deck.heroId);
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
             <p>${deck.description}</p>
+            <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
             <p>Likes: ${deck.likes}</p>
             <button class="like-btn">Like</button>
         `;
@@ -322,10 +337,11 @@ function displayUserDecks() {
     document.getElementById('user-account-title').textContent = `${currentUser.username}'s Decks`;
     userDecksList.innerHTML = '';
     currentUser.decks.forEach(deck => {
+        const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p>Hero: ${heroes.find(h => h.id === deck.heroId).name}</p>
+            <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
             <p>${deck.description}</p>
             <p>Public: ${deck.isPublic ? 'Yes' : 'No'}</p>
             <button class="edit-deck-btn">Edit</button>
@@ -342,7 +358,9 @@ function displayUserDecks() {
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', () => {
             currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
             const hero = heroes.find(h => h.id === deck.heroId);
-            hero.decks = hero.decks.filter(d => d.name !== deck.name);
+            if (hero) {
+                hero.decks = hero.decks.filter(d => d.name !== deck.name);
+            }
             // Update localStorage
             const userIndex = users.findIndex(u => u.username === currentUser.username);
             users[userIndex].decks = currentUser.decks;
@@ -352,20 +370,22 @@ function displayUserDecks() {
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', () => {
             deck.isPublic = !deck.isPublic;
             const hero = heroes.find(h => h.id === deck.heroId);
-            if (deck.isPublic) {
-                hero.decks.push(deck);
-            } else {
-                // Remove likes when making private
-                hero.decks = hero.decks.filter(d => d.name !== deck.name);
-                hero.totalLikes -= deck.likes;
-                // Remove likes from userLikes
-                for (let key in userLikes) {
-                    if (key.endsWith(`:${deck.name}`)) {
-                        delete userLikes[key];
+            if (hero) {
+                if (deck.isPublic) {
+                    hero.decks.push(deck);
+                } else {
+                    // Remove likes when making private
+                    hero.decks = hero.decks.filter(d => d.name !== deck.name);
+                    hero.totalLikes -= deck.likes;
+                    // Remove likes from userLikes
+                    for (let key in userLikes) {
+                        if (key.endsWith(`:${deck.name}`)) {
+                            delete userLikes[key];
+                        }
                     }
+                    localStorage.setItem('userLikes', JSON.stringify(userLikes));
+                    deck.likes = 0; // Reset likes for the deck
                 }
-                localStorage.setItem('userLikes', JSON.stringify(userLikes));
-                deck.likes = 0; // Reset likes for the deck
             }
             // Update localStorage
             const userIndex = users.findIndex(u => u.username === currentUser.username);
@@ -383,16 +403,16 @@ function showDeckDetails(deck) {
     deckDetailsCreator.textContent = deck.creator || currentUser.username;
     deckDetailsDescription.textContent = deck.description;
     const hero = heroes.find(h => h.id === deck.heroId);
-    deckDetailsHero.textContent = hero.name;
-    deckDetailsHeroImage.innerHTML = `<img src="https://via.placeholder.com/200x200" alt="${hero.name}">`;
+    deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
+    deckDetailsHeroImage.innerHTML = `<img src="https://via.placeholder.com/200x200" alt="${hero ? hero.name : 'Unknown'}">`;
     
     deckDetailsTroops.innerHTML = '';
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
         const troopCard = document.createElement('div');
         troopCard.innerHTML = `
-            <img src="https://via.placeholder.com/100x80" alt="${troop.name}">
-            <p>${troop.name}</p>
+            <img src="https://via.placeholder.com/100x80" alt="${troop ? troop.name : 'Unknown'}">
+            <p>${troop ? troop.name : 'Unknown'}</p>
         `;
         deckDetailsTroops.appendChild(troopCard);
     });
@@ -482,16 +502,20 @@ function showDeckModal(mode, deck = null) {
             currentUser.decks.push(newDeck);
             if (isPublic) {
                 const hero = heroes.find(h => h.id === heroId);
-                hero.decks.push(newDeck);
+                if (hero) {
+                    hero.decks.push(newDeck);
+                }
             }
         } else {
             const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
             newDeck.likes = deck.likes; // Preserve likes
             currentUser.decks[deckIndex] = newDeck;
             const hero = heroes.find(h => h.id === deck.heroId);
-            hero.decks = hero.decks.filter(d => d.name !== deck.name);
-            if (isPublic) {
-                hero.decks.push(newDeck);
+            if (hero) {
+                hero.decks = hero.decks.filter(d => d.name !== deck.name);
+                if (isPublic) {
+                    hero.decks.push(newDeck);
+                }
             }
         }
 
@@ -535,8 +559,10 @@ document.getElementById('delete-account-btn').addEventListener('click', () => {
         user.decks.forEach(deck => {
             if (deck.isPublic) {
                 const hero = heroes.find(h => h.id === deck.heroId);
-                hero.decks.push(deck);
-                hero.totalLikes += deck.likes || 0;
+                if (hero) {
+                    hero.decks.push(deck);
+                    hero.totalLikes += deck.likes || 0;
+                }
             }
         });
     });
