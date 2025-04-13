@@ -5,6 +5,15 @@ let troops = Array.from({ length: 70 }, (_, i) => ({ id: i + 1, name: `Troop ${i
 let currentUser = null;
 let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; // { username: { deckName: true } }
 
+// Load current user from localStorage
+const savedUser = localStorage.getItem('currentUser');
+if (savedUser) {
+    const user = users.find(u => u.username === savedUser);
+    if (user) {
+        currentUser = user;
+    }
+}
+
 // Load heroes' decks from users' public decks
 users.forEach(user => {
     user.decks.forEach(deck => {
@@ -48,6 +57,19 @@ const deckDetailsHero = document.getElementById('deck-details-hero');
 const deckDetailsHeroImage = document.getElementById('deck-details-hero-image');
 const deckDetailsTroops = document.getElementById('deck-details-troops');
 
+// Update UI based on current user
+if (currentUser) {
+    loginBtn.style.display = 'none';
+    registerBtn.style.display = 'none';
+    userNameDisplay.textContent = currentUser.username;
+    userNameDisplay.style.display = 'inline-block';
+    logoutBtn.style.display = 'inline-block';
+    userNameDisplay.addEventListener('click', () => {
+        showSection(userAccountSection);
+        displayUserDecks();
+    });
+}
+
 // Show/Hide Sections
 function showSection(section) {
     [welcomeSection, heroShowcaseSection, heroDecksSection, userAccountSection].forEach(s => s.style.display = 'none');
@@ -78,6 +100,7 @@ registerBtn.addEventListener('click', () => showAuthModal('register'));
 
 logoutBtn.addEventListener('click', () => {
     currentUser = null;
+    localStorage.removeItem('currentUser'); // Remove current user from localStorage
     loginBtn.style.display = 'inline-block';
     registerBtn.style.display = 'inline-block';
     userNameDisplay.style.display = 'none';
@@ -115,6 +138,9 @@ authForm.addEventListener('submit', (e) => {
         }
         currentUser = user;
     }
+
+    // Save current user to localStorage
+    localStorage.setItem('currentUser', currentUser.username);
 
     authModal.style.display = 'none';
     loginBtn.style.display = 'none';
@@ -415,6 +441,7 @@ document.getElementById('delete-account-btn').addEventListener('click', () => {
         });
     });
     currentUser = null;
+    localStorage.removeItem('currentUser'); // Remove current user from localStorage
     loginBtn.style.display = 'inline-block';
     registerBtn.style.display = 'inline-block';
     userNameDisplay.style.display = 'none';
