@@ -1,5 +1,4 @@
 // Simulated backend data
-let users = [];
 let heroes = [
     { id: 1, name: "BLUE", decks: [], totalLikes: 0 },
     { id: 2, name: "BLURP", decks: [], totalLikes: 0 },
@@ -93,6 +92,7 @@ let troops = [
     { id: 70, name: "YURKI" }
 ];
 let currentUser = null;
+let users = [];
 let userLikes = {};
 
 // GitHub repository base URL for images
@@ -104,16 +104,70 @@ function getImageUrl(name, type) {
     return `${githubBaseUrl}${type}/${formattedName}.png`;
 }
 
-// Clear outdated localStorage data to prevent conflicts with new hero/troop names
-const version = "1.3"; // Increment this whenever hero/troop data changes
-const storedVersion = localStorage.getItem('dataVersion');
-if (storedVersion !== version) {
-    localStorage.clear(); // Clear all localStorage to start fresh
-    localStorage.setItem('dataVersion', version);
-    users = [];
-    userLikes = {};
-    currentUser = null;
+// Data version for migration
+const currentDataVersion = "1.3";
+
+// Migration function to handle changes in data structure
+function migrateData() {
+    const storedVersion = localStorage.getItem('dataVersion') || "1.0";
+    users = JSON.parse(localStorage.getItem('users')) || [];
+    userLikes = JSON.parse(localStorage.getItem('userLikes')) || {};
+
+    if (storedVersion === currentDataVersion) {
+        return; // No migration needed
+    }
+
+    // Migration from 1.0 to 1.3
+    if (storedVersion === "1.0") {
+        // In version 1.0, the heroes might have had different names (e.g., "Hero 1", "Hero 2", etc.)
+        // We need to update the decks to use the new hero names based on their IDs
+        const oldHeroes = [
+            { id: 1, name: "Hero 1" },
+            { id: 2, name: "Hero 2" },
+            { id: 3, name: "Hero 3" },
+            { id: 4, name: "Hero 4" },
+            { id: 5, name: "Hero 5" },
+            { id: 6, name: "Hero 6" },
+            { id: 7, name: "Hero 7" },
+            { id: 8, name: "Hero 8" },
+            { id: 9, name: "Hero 9" },
+            { id: 10, name: "Hero 10" },
+            { id: 11, name: "Hero 11" },
+            { id: 12, name: "Hero 12" },
+            { id: 13, name: "Hero 13" },
+            { id: 14, name: "Hero 14" },
+            { id: 15, name: "Hero 15" },
+            { id: 16, name: "Hero 16" },
+            { id: 17, name: "Hero 17" },
+            { id: 18, name: "Hero 18" }
+        ];
+
+        users.forEach(user => {
+            user.decks.forEach(deck => {
+                const oldHero = oldHeroes.find(h => h.id === deck.heroId);
+                const newHero = heroes.find(h => h.id === deck.heroId);
+                if (oldHero && newHero) {
+                    // Update the deck to reflect the new hero name (if needed)
+                    deck.heroName = newHero.name; // Optional: store hero name for display purposes
+                }
+            });
+        });
+
+        // Update userLikes to use the new format if needed
+        const newUserLikes = {};
+        for (let key in userLikes) {
+            newUserLikes[key] = true; // Structure remains the same, but we ensure compatibility
+        }
+        userLikes = newUserLikes;
+
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('userLikes', JSON.stringify(userLikes));
+        localStorage.setItem('dataVersion', currentDataVersion);
+    }
 }
+
+// Run migration on load
+migrateData();
 
 // Load current user from localStorage
 const savedUser = localStorage.getItem('currentUser');
@@ -123,12 +177,6 @@ if (savedUser) {
         currentUser = user;
     }
 }
-
-// Load userLikes from localStorage
-userLikes = JSON.parse(localStorage.getItem('userLikes')) || {};
-
-// Load users from localStorage
-users = JSON.parse(localStorage.getItem('users')) || [];
 
 // Load heroes' decks from users' public decks
 heroes.forEach(hero => {
