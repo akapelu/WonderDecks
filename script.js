@@ -136,7 +136,13 @@ auth.signInAnonymously().catch(error => {
 auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
-        const savedUser = localStorage.getItem('currentUser');
+        let savedUser;
+        try {
+            savedUser = localStorage.getItem('currentUser');
+        } catch (error) {
+            console.error("Error accessing localStorage:", error);
+            savedUser = null;
+        }
         if (savedUser) {
             try {
                 const userDoc = await db.collection('users').doc(user.uid).get();
@@ -313,7 +319,11 @@ logoutBtn.addEventListener('click', async () => {
     try {
         await auth.signOut();
         currentUser = null;
-        localStorage.removeItem('currentUser');
+        try {
+            localStorage.removeItem('currentUser');
+        } catch (error) {
+            console.error("Error removing from localStorage:", error);
+        }
         showSection(welcomeSection);
     } catch (error) {
         console.error("Error signing out:", error);
@@ -375,7 +385,11 @@ authForm.addEventListener('submit', async (e) => {
         }
     }
 
-    localStorage.setItem('currentUser', currentUser.username);
+    try {
+        localStorage.setItem('currentUser', currentUser.username);
+    } catch (error) {
+        console.error("Error setting localStorage:", error);
+    }
     authModal.style.display = 'none';
     updateUIForCurrentUser();
 });
@@ -713,7 +727,11 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         });
         await auth.signOut();
         currentUser = null;
-        localStorage.removeItem('currentUser');
+        try {
+            localStorage.removeItem('currentUser');
+        } catch (error) {
+            console.error("Error removing from localStorage:", error);
+        }
         showSection(welcomeSection);
     } catch (error) {
         console.error("Error deleting account:", error);
