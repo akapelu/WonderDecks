@@ -16,16 +16,6 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-
-    // Set auth persistence to LOCAL
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => {
-            console.log("Auth persistence set to LOCAL");
-        })
-        .catch(error => {
-            console.error("Error setting auth persistence:", error);
-            alert("Error setting authentication persistence. Please check the console for details.");
-        });
 } catch (error) {
     console.error("Error initializing Firebase:", error);
     alert("Error initializing Firebase. Please check your Firebase configuration (e.g., API key) and ensure you have a stable internet connection.");
@@ -139,20 +129,49 @@ function getImageUrl(name, type) {
 }
 
 // Retry mechanism for Firestore operations
-async function firestoreOperationWithRetry(operation, maxRetries = 5, delay = 2000) {
+async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const result = await operation();
             console.log(`Firestore operation succeeded on attempt ${attempt}`);
             return result;
         } catch (error) {
+            console.warn(`Firestore operation failed, retrying (${attempt}/${maxRetries})...`, error);
             if (attempt === maxRetries) {
                 console.error(`Firestore operation failed after ${maxRetries} retries:`, error);
                 throw error;
             }
-            console.warn(`Firestore operation failed, retrying (${attempt}/${maxRetries})...`, error);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
+    }
+}
+
+// Load users and userLikes from Firestore
+async function loadUsersAndLikes() {
+    try {
+        // Load users
+        const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
+        users = [];
+        userSnapshot.forEach(doc => {
+            const userData = doc.data();
+            userData.uid = doc.id;
+            users.push(userData);
+        });
+        console.log("Users loaded:", users);
+
+        // Load userLikes
+        const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
+        userLikes = {};
+        likesSnapshot.forEach(doc => {
+            userLikes[doc.id] = doc.data().value;
+        });
+        console.log("UserLikes loaded:", userLikes);
+
+        // Update heroes' decks
+        loadHeroesDecks();
+    } catch (error) {
+        console.error("Error loading users and likes:", error);
+        alert("Error loading data from Firestore. Some features may not work correctly.");
     }
 }
 
@@ -179,8 +198,8 @@ auth.onAuthStateChanged(async user => {
             console.error("Error fetching user data:", error);
             alert("Error fetching user data. Check your internet connection and try again.");
         }
-        // Set up real-time listeners
-        setupRealtimeListeners();
+        // Load users and likes
+        await loadUsersAndLikes();
     } else {
         console.log("User signed out");
         currentUser = null;
@@ -192,65 +211,6 @@ auth.onAuthStateChanged(async user => {
         });
     }
 });
-
-// Set up real-time listeners for users and userLikes
-function setupRealtimeListeners() {
-    // Listen for changes in the users collection
-    db.collection('users').onSnapshot(snapshot => {
-        users = [];
-        snapshot.forEach(doc => {
-            const userData = doc.data();
-            userData.uid = doc.id;
-            users.push(userData);
-            if (currentUser && currentUser.uid === doc.id) {
-                currentUser = userData;
-                currentUser.uid = doc.id;
-                updateUIForCurrentUser();
-                if (userAccountSection.style.display === 'block') {
-                    displayUserDecks();
-                }
-            }
-        });
-        console.log("Users updated in real-time:", users);
-        // Update heroes' decks and UI
-        loadHeroesDecks();
-        if (heroShowcaseSection.style.display === 'block') {
-            displayHeroes();
-        }
-        if (heroDecksSection.style.display === 'block') {
-            const currentHero = heroes.find(h => h.name === document.getElementById('hero-decks-title').textContent.split(' ')[0]);
-            if (currentHero) {
-                displayHeroDecks(currentHero);
-            }
-        }
-    }, error => {
-        console.error("Error listening to users collection:", error);
-        alert("Error syncing users in real-time. Check your internet connection.");
-    });
-
-    // Listen for changes in the userLikes collection
-    db.collection('userLikes').onSnapshot(snapshot => {
-        userLikes = {};
-        snapshot.forEach(doc => {
-            userLikes[doc.id] = doc.data().value;
-        });
-        console.log("UserLikes updated in real-time:", userLikes);
-        // Update heroes' decks and UI
-        loadHeroesDecks();
-        if (heroShowcaseSection.style.display === 'block') {
-            displayHeroes();
-        }
-        if (heroDecksSection.style.display === 'block') {
-            const currentHero = heroes.find(h => h.name === document.getElementById('hero-decks-title').textContent.split(' ')[0]);
-            if (currentHero) {
-                displayHeroDecks(currentHero);
-            }
-        }
-    }, error => {
-        console.error("Error listening to userLikes collection:", error);
-        alert("Error syncing user likes in real-time. Check your internet connection.");
-    });
-}
 
 // Load heroes' decks from users' public decks
 function loadHeroesDecks() {
@@ -375,6 +335,7 @@ logoutBtn.addEventListener('click', async () => {
         currentUser = null;
         showSection(welcomeSection);
         updateUIForCurrentUser();
+        await loadUsersAndLikes();
     } catch (error) {
         console.error("Error signing out:", error);
         alert("Error signing out. Check your internet connection and try again.");
@@ -420,9 +381,19 @@ authForm.addEventListener('submit', async (e) => {
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
+
+            // Reload users and likes
+            await loadUsersAndLikes();
         } catch (error) {
             console.error("Error registering user:", error);
             alert("Error registering user. Check your internet connection and Firebase configuration.");
+            // Fallback: Proceed with local data if Firestore fails
+            currentUser = { username, password, decks: [], uid: auth.currentUser.uid };
+            users.push(currentUser);
+            authModal.style.display = 'none';
+            updateUIForCurrentUser();
+            showSection(userAccountSection);
+            displayUserDecks();
         }
     } else {
         // Login
@@ -442,9 +413,21 @@ authForm.addEventListener('submit', async (e) => {
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
+
+            // Reload users and likes
+            await loadUsersAndLikes();
         } catch (error) {
             console.error("Error logging in:", error);
             alert("Error logging in. Check your internet connection and try again.");
+            // Fallback: Check local users if Firestore fails
+            const localUser = users.find(u => u.username === username && u.password === password);
+            if (localUser) {
+                currentUser = localUser;
+                authModal.style.display = 'none';
+                updateUIForCurrentUser();
+                showSection(userAccountSection);
+                displayUserDecks();
+            }
         }
     }
 });
@@ -518,9 +501,15 @@ function displayHeroDecks(hero) {
                     userDeck.likes = deck.likes;
                     await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).update({ decks: user.decks }));
                 }
+                // Reload users and likes
+                await loadUsersAndLikes();
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Check your internet connection and try again.");
+                // Fallback: Update local data
+                deck.likes--;
+                hero.totalLikes--;
+                delete userLikes[likeKey];
             }
         });
         heroDecksList.appendChild(deckCard);
@@ -555,9 +544,14 @@ function displayUserDecks() {
             try {
                 currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
+                await loadUsersAndLikes();
+                displayUserDecks();
             } catch (error) {
                 console.error("Error deleting deck:", error);
                 alert("Error deleting deck. Check your internet connection and try again.");
+                // Fallback: Update local data
+                currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
+                displayUserDecks();
             }
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', async () => {
@@ -565,16 +559,20 @@ function displayUserDecks() {
                 deck.isPublic = !deck.isPublic;
                 if (!deck.isPublic) {
                     deck.likes = 0;
-                    for (let key in userLikes) {
-                        if (key.endsWith(`:${deck.name}`)) {
-                            await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-                        }
+                    const likeKeys = Object.keys(userLikes).filter(key => key.endsWith(`:${deck.name}`));
+                    for (const key of likeKeys) {
+                        await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
                     }
                 }
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
+                await loadUsersAndLikes();
+                displayUserDecks();
             } catch (error) {
                 console.error("Error toggling deck visibility:", error);
                 alert("Error toggling deck visibility. Check your internet connection and try again.");
+                // Fallback: Revert change
+                deck.isPublic = !deck.isPublic;
+                displayUserDecks();
             }
         });
         userDecksList.appendChild(deckCard);
@@ -719,10 +717,15 @@ function showDeckModal(mode, deck = null) {
             // Close modal and update UI
             deckModal.style.display = 'none';
             displayUserDecks();
+
+            // Reload users and likes
+            await loadUsersAndLikes();
         } catch (error) {
             console.error("Error saving deck:", error);
             alert("Error saving deck. Check your internet connection and Firebase configuration.");
+            // Fallback: Update local data
             deckModal.style.display = 'none';
+            displayUserDecks();
         }
     };
 }
@@ -756,10 +759,11 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         currentUser = null;
         showSection(welcomeSection);
         updateUIForCurrentUser();
+        await loadUsersAndLikes();
     } catch (error) {
         console.error("Error deleting account:", error);
         alert("Error deleting account. Check your internet connection and try again.");
-        // Force logout on error
+        // Fallback: Force logout
         await auth.signOut();
         currentUser = null;
         showSection(welcomeSection);
