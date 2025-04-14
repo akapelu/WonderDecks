@@ -16,10 +16,18 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-    // Configurar persistencia de autenticación en localStorage
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(error => {
-        console.error("Error setting auth persistence:", error);
-    });
+    // Configurar persistencia de autenticación
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .catch(error => {
+            console.warn("Error setting auth persistence to LOCAL, falling back to SESSION:", error);
+            // Si LOCAL falla, intentar con SESSION
+            return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+                .catch(sessionError => {
+                    console.error("Error setting auth persistence to SESSION:", sessionError);
+                    // Si SESSION también falla, continuar sin persistencia
+                    console.warn("Proceeding without auth persistence.");
+                });
+        });
 } catch (error) {
     console.error("Error initializing Firebase:", error);
     alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
@@ -279,7 +287,7 @@ const userNameDisplay = document.getElementById('user-name');
 const loginBtn = document.getElementById('login-btn');
 const registerBtn = document.getElementById('register-btn');
 const logoutBtn = document.getElementById('logout-btn');
-const authModal = document.getElementwonderdecks-6cadfElement('auth-modal');
+const authModal = document.getElementById('auth-modal');
 const authModalTitle = document.getElementById('auth-modal-title');
 const authSubmitBtn = document.getElementById('auth-submit-btn');
 const authForm = document.getElementById('auth-form');
@@ -855,21 +863,4 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         }
         await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
         const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
-        for (const key of likeKeys) {
-            await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-        }
-        await auth.signOut();
-        currentUser = null;
-        showSection(welcomeSection);
-        updateUIForCurrentUser();
-        await loadUsersAndLikes();
-    } catch (error) {
-        console.error("Error deleting account:", error);
-        alert("Error deleting account. Proceeding with logout.");
-
-        await auth.signOut();
-        currentUser = null;
-        showSection(welcomeSection);
-        updateUIForCurrentUser();
-    }
-});
+        for
