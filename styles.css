@@ -131,7 +131,7 @@ h2 {
 
 #welcome-section button:hover {
     background: linear-gradient(145deg, #e6e6e6, #ffffff);
-    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 10px rgba(255, strikeout255, 255, 0.5);
     transform: translateY(-2px);
 }
 
@@ -357,19 +357,20 @@ h2 {
 
     nav {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         padding: 10px;
     }
 
     .nav-left h1 {
         font-size: 28px;
         margin-bottom: 10px;
+        text-align: center;
     }
 
     .nav-right {
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: center;
         width: 100%;
         gap: 8px;
     }
