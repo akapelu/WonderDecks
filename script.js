@@ -220,11 +220,11 @@ auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
         try {
-            // Intentar cargar el documento del usuario desde Firestore
+            // Check if a user document exists for this UID
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
-                currentUser.uid = user.uid; // Aseguramos que currentUser.uid sea el correcto
+                currentUser.uid = user.uid;
                 console.log("Current user data loaded:", currentUser);
                 // Normalizar los decks de currentUser
                 currentUser.decks = currentUser.decks.map(deck => ({
@@ -237,19 +237,22 @@ auth.onAuthStateChanged(async user => {
                 }));
                 updateUIForCurrentUser();
             } else {
-                console.log("User document not found for UID:", user.uid);
-                currentUser = null; // Aseguramos que currentUser sea null si no hay documento
+                console.log("No user document found for UID:", user.uid);
+                currentUser = null;
             }
+            // Load users and likes only once here
+            await loadUsersAndLikes();
         } catch (error) {
             console.error("Error fetching user data:", error);
             alert("Error fetching user data. Proceeding with local data.");
-            currentUser = null; // En caso de error, reseteamos currentUser
+            currentUser = null;
+            await loadUsersAndLikes();
         }
-        await loadUsersAndLikes();
     } else {
         console.log("User signed out");
         currentUser = null;
         updateUIForCurrentUser();
+        // Sign in anonymously again
         auth.signInAnonymously().catch(error => {
             console.error("Error signing in anonymously after logout:", error);
             alert("Error signing in anonymously after logout. Please try again.");
@@ -456,34 +459,44 @@ authForm.addEventListener('submit', async (e) => {
                 alert('Invalid credentials!');
                 return;
             }
-
+    
             const userDoc = userSnapshot.docs[0];
             const userData = userDoc.data();
-            const userId = userDoc.id;
-
-            // Verificar si el UID coincide con el UID anónimo actual
-            if (userId !== auth.currentUser.uid) {
-                console.log("UID mismatch during login, updating user document...");
+            const storedUid = userDoc.id;
+            const currentUid = auth.currentUser.uid;
+    
+            if (storedUid !== currentUid) {
+                console.log("UID mismatch during login, merging user data...");
                 try {
-                    // 1. Verificar si ya existe un documento con el UID actual
+                    // Check if a document already exists for the current UID
                     const existingDoc = await firestoreOperationWithRetry(() => 
-                        db.collection('users').doc(auth.currentUser.uid).get()
+                        db.collection('users').doc(currentUid).get()
                     );
                     if (existingDoc.exists) {
-                        // Si ya existe un documento con el UID actual, no creamos uno nuevo
-                        console.warn("Document with current UID already exists, skipping migration.");
-                        currentUser = existingDoc.data();
-                        currentUser.uid = auth.currentUser.uid;
-                    } else {
-                        // 2. Copiar los datos del usuario al nuevo UID anónimo
+                        // If a document exists, merge the decks and update the existing document
+                        const existingData = existingDoc.data();
+                        // Merge decks, avoiding duplicates by name
+                        const mergedDecks = [...existingData.decks];
+                        userData.decks.forEach(deck => {
+                            if (!mergedDecks.some(d => d.name === deck.name)) {
+                                mergedDecks.push(deck);
+                            }
+                        });
                         await firestoreOperationWithRetry(() => 
-                            db.collection('users').doc(auth.currentUser.uid).set(userData)
+                            db.collection('users').doc(currentUid).update({ decks: mergedDecks })
                         );
-
-                        // 3. Actualizar los likes para reflejar el nuevo UID
-                        const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
-                        for (const key of likeKeys) {
-                            const newKey = `${username}:${key.split(':')[1]}`;
+                    } else {
+                        // If no document exists, create a new one with the current UID
+                        await firestoreOperationWithRetry(() => 
+                            db.collection('users').doc(currentUid).set(userData)
+                        );
+                    }
+    
+                    // Update likes to use the new UID
+                    const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
+                    for (const key of likeKeys) {
+                        const newKey = `${username}:${key.split(':')[1]}`;
+                        if (key !== newKey) {
                             await firestoreOperationWithRetry(() => 
                                 db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
                             );
@@ -491,40 +504,37 @@ authForm.addEventListener('submit', async (e) => {
                                 db.collection('userLikes').doc(key).delete()
                             );
                         }
-
-                        // 4. Eliminar el documento antiguo
-                        await firestoreOperationWithRetry(() => 
-                            db.collection('users').doc(userId).delete()
-                        );
-
-                        currentUser = userData;
-                        currentUser.uid = auth.currentUser.uid;
-                        console.log("User document migrated successfully to UID:", currentUser.uid);
                     }
+    
+                    // Delete the old document
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('users').doc(storedUid).delete()
+                    );
+    
+                    console.log("User document migrated successfully to UID:", currentUid);
                 } catch (error) {
                     console.error("Error during UID migration:", error);
                     alert("Error syncing user data with Firestore. Proceeding with local data.");
-                    currentUser = userData;
-                    currentUser.uid = auth.currentUser.uid;
                 }
-            } else {
-                currentUser = userData;
-                currentUser.uid = auth.currentUser.uid;
-                console.log("User logged in:", currentUser);
             }
-
+    
+            // Set the current user
+            currentUser = userData;
+            currentUser.uid = currentUid;
+            console.log("User logged in:", currentUser);
+    
             // Close modal and update UI
             authModal.style.display = 'none';
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
-
+    
             // Reload users and likes
             await loadUsersAndLikes();
         } catch (error) {
             console.error("Error logging in:", error);
             alert("Error logging in. Checking local data.");
-
+    
             // Fallback: Check local users if Firestore fails
             const localUser = users.find(u => u.username === username && u.password === password);
             if (localUser) {
