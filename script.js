@@ -16,16 +16,17 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-    // Configurar persistencia de autenticación
+    // Configurar persistencia de autenticación con manejo de errores
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .catch(error => {
-            console.warn("Error setting auth persistence to LOCAL, falling back to SESSION:", error);
+            console.warn("Error setting auth persistence to LOCAL:", error);
             // Si LOCAL falla, intentar con SESSION
             return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
                 .catch(sessionError => {
                     console.error("Error setting auth persistence to SESSION:", sessionError);
-                    // Si SESSION también falla, continuar sin persistencia
+                    // Si ambas fallan, continuar sin persistencia
                     console.warn("Proceeding without auth persistence.");
+                    return Promise.resolve();
                 });
         });
 } catch (error) {
