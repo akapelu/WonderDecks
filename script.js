@@ -16,9 +16,13 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
+    // Enable offline persistence (optional, for better offline support)
+    db.enablePersistence().catch(error => {
+        console.warn("Failed to enable Firestore offline persistence:", error);
+    });
 } catch (error) {
     console.error("Error initializing Firebase:", error);
-    alert("Error initializing Firebase. Please check your Firebase configuration (e.g., API key) and ensure you have a stable internet connection.");
+    alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
 }
 
 // Simulated backend data
@@ -178,7 +182,7 @@ async function loadUsersAndLikes() {
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
-    alert("Error signing in anonymously. Ensure Firebase anonymous authentication is enabled and check your internet connection.");
+    alert("Error signing in anonymously. Please try again.");
 });
 
 // Listen for auth state changes
@@ -198,16 +202,14 @@ auth.onAuthStateChanged(async user => {
             console.error("Error fetching user data:", error);
             alert("Error fetching user data. Check your internet connection and try again.");
         }
-        // Load users and likes
         await loadUsersAndLikes();
     } else {
         console.log("User signed out");
         currentUser = null;
         updateUIForCurrentUser();
-        // Re-authenticate anonymously after signing out
         auth.signInAnonymously().catch(error => {
             console.error("Error signing in anonymously after logout:", error);
-            alert("Error signing in anonymously after logout. Check your internet connection.");
+            alert("Error signing in anonymously after logout. Please try again.");
         });
     }
 });
@@ -239,7 +241,7 @@ const heroDecksSection = document.getElementById('hero-decks-section');
 const userAccountSection = document.getElementById('user-account-section');
 const heroList = document.getElementById('hero-list');
 const heroDecksList = document.getElementById('hero-decks-list');
-const userDecksList = document.getElementById('user-decks-list');
+const userDecksList = document.getElementById('user-decs-list');
 const userNameDisplay = document.getElementById('user-name');
 const loginBtn = document.getElementById('login-btn');
 const registerBtn = document.getElementById('register-btn');
@@ -338,7 +340,7 @@ logoutBtn.addEventListener('click', async () => {
         await loadUsersAndLikes();
     } catch (error) {
         console.error("Error signing out:", error);
-        alert("Error signing out. Check your internet connection and try again.");
+        alert("Error signing out. Please try again.");
     }
 });
 
@@ -357,44 +359,50 @@ authForm.addEventListener('submit', async (e) => {
 
     if (authSubmitBtn.textContent === 'Register') {
         if (!auth.currentUser) {
-            alert("Authentication failed. Ensure Firebase is properly configured and try again.");
+            alert("Authentication failed. Please try again.");
             return;
         }
+
+        // Check if username already exists
         try {
-            // Check if username already exists
             const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).get());
             if (!userSnapshot.empty) {
                 alert('Username already exists!');
                 return;
             }
-
-            // Create new user
-            const userId = auth.currentUser.uid;
-            const newUser = { username, password, decks: [] };
-            await firestoreOperationWithRetry(() => db.collection('users').doc(userId).set(newUser));
-            currentUser = { ...newUser, uid: userId };
-            users.push(currentUser);
-            console.log("User registered:", currentUser);
-
-            // Close modal and update UI
-            authModal.style.display = 'none';
-            updateUIForCurrentUser();
-            showSection(userAccountSection);
-            displayUserDecks();
-
-            // Reload users and likes
-            await loadUsersAndLikes();
         } catch (error) {
-            console.error("Error registering user:", error);
-            alert("Error registering user. Check your internet connection and Firebase configuration.");
-            // Fallback: Proceed with local data if Firestore fails
-            currentUser = { username, password, decks: [], uid: auth.currentUser.uid };
-            users.push(currentUser);
-            authModal.style.display = 'none';
-            updateUIForCurrentUser();
-            showSection(userAccountSection);
-            displayUserDecks();
+            console.error("Error checking username:", error);
+            // Proceed with local check if Firestore fails
+            if (users.some(user => user.username === username)) {
+                alert('Username already exists!');
+                return;
+            }
         }
+
+        // Create new user
+        const userId = auth.currentUser.uid;
+        const newUser = { username, password, decks: [] };
+        try {
+            await firestoreOperationWithRetry(() => db.collection('users').doc(userId).set(newUser));
+            console.log("User registered in Firestore:", newUser);
+        } catch (error) {
+            console.error("Error registering user in Firestore:", error);
+            alert("Error saving user to Firestore. Proceeding with local data.");
+        }
+
+        // Update local state regardless of Firestore success
+        currentUser = { ...newUser, uid: userId };
+        users.push(currentUser);
+        console.log("User registered locally:", currentUser);
+
+        // Close modal and update UI
+        authModal.style.display = 'none';
+        updateUIForCurrentUser();
+        showSection(userAccountSection);
+        displayUserDecks();
+
+        // Reload users and likes
+        await loadUsersAndLikes();
     } else {
         // Login
         try {
@@ -418,7 +426,8 @@ authForm.addEventListener('submit', async (e) => {
             await loadUsersAndLikes();
         } catch (error) {
             console.error("Error logging in:", error);
-            alert("Error logging in. Check your internet connection and try again.");
+            alert("Error logging in. Checking local data.");
+
             // Fallback: Check local users if Firestore fails
             const localUser = users.find(u => u.username === username && u.password === password);
             if (localUser) {
@@ -427,6 +436,8 @@ authForm.addEventListener('submit', async (e) => {
                 updateUIForCurrentUser();
                 showSection(userAccountSection);
                 displayUserDecks();
+            } else {
+                alert("Invalid credentials and unable to verify with Firestore.");
             }
         }
     }
@@ -501,12 +512,10 @@ function displayHeroDecks(hero) {
                     userDeck.likes = deck.likes;
                     await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).update({ decks: user.decks }));
                 }
-                // Reload users and likes
                 await loadUsersAndLikes();
             } catch (error) {
                 console.error("Error liking deck:", error);
-                alert("Error liking deck. Check your internet connection and try again.");
-                // Fallback: Update local data
+                alert("Error liking deck. Reverting changes.");
                 deck.likes--;
                 hero.totalLikes--;
                 delete userLikes[likeKey];
@@ -548,8 +557,7 @@ function displayUserDecks() {
                 displayUserDecks();
             } catch (error) {
                 console.error("Error deleting deck:", error);
-                alert("Error deleting deck. Check your internet connection and try again.");
-                // Fallback: Update local data
+                alert("Error deleting deck. Reverting changes.");
                 currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
                 displayUserDecks();
             }
@@ -569,8 +577,7 @@ function displayUserDecks() {
                 displayUserDecks();
             } catch (error) {
                 console.error("Error toggling deck visibility:", error);
-                alert("Error toggling deck visibility. Check your internet connection and try again.");
-                // Fallback: Revert change
+                alert("Error toggling deck visibility. Reverting changes.");
                 deck.isPublic = !deck.isPublic;
                 displayUserDecks();
             }
@@ -686,7 +693,6 @@ function showDeckModal(mode, deck = null) {
         const description = deckDescriptionInput.value;
         const isPublic = deckPublicInput.checked;
 
-        // Check for duplicate deck name
         if (mode === 'add' && currentUser.decks.some(d => d.name === deckName)) {
             alert('A deck with this name already exists!');
             return;
@@ -714,16 +720,13 @@ function showDeckModal(mode, deck = null) {
             await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             console.log("Deck saved successfully:", newDeck);
 
-            // Close modal and update UI
             deckModal.style.display = 'none';
             displayUserDecks();
-
-            // Reload users and likes
             await loadUsersAndLikes();
         } catch (error) {
             console.error("Error saving deck:", error);
-            alert("Error saving deck. Check your internet connection and Firebase configuration.");
-            // Fallback: Update local data
+            alert("Error saving deck. Proceeding with local data.");
+
             deckModal.style.display = 'none';
             displayUserDecks();
         }
@@ -745,16 +748,11 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
     console.log("Delete Account button clicked");
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
-        // Delete user document
         await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
-
-        // Delete associated likes
         const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
         for (const key of likeKeys) {
             await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
         }
-
-        // Sign out and reset state
         await auth.signOut();
         currentUser = null;
         showSection(welcomeSection);
@@ -762,8 +760,8 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         await loadUsersAndLikes();
     } catch (error) {
         console.error("Error deleting account:", error);
-        alert("Error deleting account. Check your internet connection and try again.");
-        // Fallback: Force logout
+        alert("Error deleting account. Proceeding with logout.");
+
         await auth.signOut();
         currentUser = null;
         showSection(welcomeSection);
