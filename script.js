@@ -172,8 +172,6 @@ auth.onAuthStateChanged(async user => {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
                 updateUIForCurrentUser();
-                showSection(userAccountSection);
-                displayUserDecks();
             } else {
                 console.log("User document not found for UID:", user.uid);
             }
@@ -691,80 +689,4 @@ function showDeckModal(mode, deck = null) {
         const isPublic = deckPublicInput.checked;
 
         // Check for duplicate deck name
-        if (mode === 'add' && currentUser.decks.some(d => d.name === deckName)) {
-            alert('A deck with this name already exists!');
-            return;
-        }
-
-        const newDeck = {
-            name: deckName,
-            heroId,
-            troops,
-            description,
-            isPublic,
-            creator: currentUser.username,
-            likes: mode === 'edit' && deck ? deck.likes : 0
-        };
-
-        try {
-            if (mode === 'add') {
-                currentUser.decks.push(newDeck);
-            } else {
-                const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
-                newDeck.likes = deck.likes;
-                currentUser.decks[deckIndex] = newDeck;
-            }
-
-            await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
-            console.log("Deck saved successfully:", newDeck);
-
-            // Close modal and update UI
-            deckModal.style.display = 'none';
-            displayUserDecks();
-        } catch (error) {
-            console.error("Error saving deck:", error);
-            alert("Error saving deck. Check your internet connection and Firebase configuration.");
-            deckModal.style.display = 'none';
-        }
-    };
-}
-
-// Add Deck Button
-document.getElementById('add-deck-btn').addEventListener('click', () => {
-    console.log("Add Deck button clicked");
-    if (!currentUser) {
-        alert('Please log in to add a deck!');
-        return;
-    }
-    showDeckModal('add');
-});
-
-// Delete Account Button
-document.getElementById('delete-account-btn').addEventListener('click', async () => {
-    console.log("Delete Account button clicked");
-    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
-    try {
-        // Delete user document
-        await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
-
-        // Delete associated likes
-        const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
-        for (const key of likeKeys) {
-            await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-        }
-
-        // Sign out and reset state
-        await auth.signOut();
-        currentUser = null;
-        showSection(welcomeSection);
-        updateUIForCurrentUser();
-    } catch (error) {
-        console.error("Error deleting account:", error);
-        alert("Error deleting account. Check your internet connection and try again.");
-        // Force logout on error
-        await auth.signOut();
-        currentUser = null;
-        showSection(welcomeSection);
-        updateUIForCurrentUser();
-    }
-});
+        if (mode === 'add' && currentUser.decks.some(d => d.name ===
