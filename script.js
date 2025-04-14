@@ -133,7 +133,8 @@ let userLikes = {};
 // GitHub repository base URL for images
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
 
-// Function to get the image URL for a hero or troop
+// Function to get the image URL for a hero or troopítani
+
 function getImageUrl(name, type) {
     if (!name) return ''; // Avoid errors if name is undefined
     const formattedName = name.toUpperCase().replace(/\s/g, '_');
@@ -863,4 +864,21 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         }
         await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
         const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
-        for
+        for (const key of likeKeys) {
+            await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
+        }
+        await auth.signOut();
+        currentUser = null;
+        showSection(welcomeSection);
+        updateUIForCurrentUser();
+        await loadUsersAndLikes();
+    } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("Error deleting account. Proceeding with logout.");
+
+        await auth.signOut();
+        currentUser = null;
+        showSection(welcomeSection);
+        updateUIForCurrentUser();
+    }
+});
