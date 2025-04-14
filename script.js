@@ -8,42 +8,30 @@ const firebaseConfig = {
     appId: "1:715734231945:web:d74cd383ec031e980ecf58",
     measurementId: "G-Q9DJVZCY6"
 };
+
 // Initialize Firebase
 let db, auth;
 try {
     firebase.initializeApp(firebaseConfig);
-    console.log("Firebase inicializado correctamente");
+    console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
 
-    // Habilitar persistencia offline
-    db.enablePersistence()
-        .then(() => {
-            console.log("Persistencia offline de Firestore habilitada");
-        })
-        .catch(error => {
-            if (error.code === 'failed-precondition') {
-                console.warn("La persistencia offline solo puede habilitarse en una pestaña a la vez.");
-            } else if (error.code === 'unimplemented') {
-                console.warn("La persistencia offline no es compatible con este navegador.");
-            }
-        });
-
-    // Configurar persistencia de autenticación en LOCAL
+    // Set auth persistence to LOCAL
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .then(() => {
-            console.log("Persistencia de autenticación configurada en LOCAL");
+            console.log("Auth persistence set to LOCAL");
         })
         .catch(error => {
-            console.error("Error al configurar la persistencia de autenticación:", error);
-            alert("Error al configurar la persistencia de autenticación. Revisa la consola para más detalles.");
+            console.error("Error setting auth persistence:", error);
+            alert("Error setting authentication persistence. Please check the console for details.");
         });
 } catch (error) {
-    console.error("Error al inicializar Firebase:", error);
-    alert("Error al inicializar Firebase. Verifica tu configuración de Firebase (por ejemplo, la API key) y asegúrate de tener una conexión a internet estable.");
+    console.error("Error initializing Firebase:", error);
+    alert("Error initializing Firebase. Please check your Firebase configuration (e.g., API key) and ensure you have a stable internet connection.");
 }
 
-// Datos simulados del backend
+// Simulated backend data
 let heroes = [
     { id: 1, name: "BLUE", decks: [], totalLikes: 0 },
     { id: 2, name: "BLURP", decks: [], totalLikes: 0 },
@@ -140,74 +128,76 @@ let currentUser = null;
 let users = [];
 let userLikes = {};
 
-// URL base del repositorio de GitHub para las imágenes
+// GitHub repository base URL for images
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
 
-// Función para obtener la URL de la imagen de un héroe o tropa
+// Function to get the image URL for a hero or troop
 function getImageUrl(name, type) {
-    if (!name) return ''; // Evitar errores si name es undefined
+    if (!name) return ''; // Avoid errors if name is undefined
     const formattedName = name.toUpperCase().replace(/\s/g, '_');
     return `${githubBaseUrl}${type}/${formattedName}.png`;
 }
 
-// Mecanismo de reintento para operaciones de Firestore con más intentos y retrasos
-async function firestoreOperationWithRetry(operation, maxRetries = 10, delay = 3000) {
+// Retry mechanism for Firestore operations
+async function firestoreOperationWithRetry(operation, maxRetries = 5, delay = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const result = await operation();
-            console.log(`Operación de Firestore exitosa en el intento ${attempt}`);
+            console.log(`Firestore operation succeeded on attempt ${attempt}`);
             return result;
         } catch (error) {
             if (attempt === maxRetries) {
-                console.error(`Operación de Firestore falló después de ${maxRetries} intentos:`, error);
+                console.error(`Firestore operation failed after ${maxRetries} retries:`, error);
                 throw error;
             }
-            console.warn(`Operación de Firestore falló, reintentando (${attempt}/${maxRetries})...`, error);
+            console.warn(`Firestore operation failed, retrying (${attempt}/${maxRetries})...`, error);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 }
 
-// Autenticar usuario anónimamente al cargar la página
+// Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
-    console.error("Error al iniciar sesión anónima:", error);
-    alert("Error al iniciar sesión anónima. Asegúrate de que la autenticación anónima de Firebase esté habilitada y revisa tu conexión a internet.");
+    console.error("Error signing in anonymously:", error);
+    alert("Error signing in anonymously. Ensure Firebase anonymous authentication is enabled and check your internet connection.");
 });
 
-// Escuchar cambios en el estado de autenticación
+// Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
-        console.log("Usuario conectado anónimamente:", user.uid);
+        console.log("User signed in anonymously:", user.uid);
         try {
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
                 updateUIForCurrentUser();
+                showSection(userAccountSection);
+                displayUserDecks();
             } else {
-                console.log("No se encontró documento de usuario para UID:", user.uid);
+                console.log("User document not found for UID:", user.uid);
             }
         } catch (error) {
-            console.error("Error al obtener datos del usuario:", error);
-            alert("Error al obtener datos del usuario. Revisa tu conexión a internet e intenta de nuevo.");
+            console.error("Error fetching user data:", error);
+            alert("Error fetching user data. Check your internet connection and try again.");
         }
-        // Configurar listeners en tiempo real
+        // Set up real-time listeners
         setupRealtimeListeners();
     } else {
-        console.log("Usuario desconectado");
+        console.log("User signed out");
         currentUser = null;
         updateUIForCurrentUser();
-        // Re-autenticar anónimamente después de cerrar sesión
+        // Re-authenticate anonymously after signing out
         auth.signInAnonymously().catch(error => {
-            console.error("Error al iniciar sesión anónima después de cerrar sesión:", error);
-            alert("Error al iniciar sesión anónima después de cerrar sesión. Revisa tu conexión a internet.");
+            console.error("Error signing in anonymously after logout:", error);
+            alert("Error signing in anonymously after logout. Check your internet connection.");
         });
     }
 });
 
-// Configurar listeners en tiempo real para users y userLikes
+// Set up real-time listeners for users and userLikes
 function setupRealtimeListeners() {
-    // Escuchar cambios en la colección users
+    // Listen for changes in the users collection
     db.collection('users').onSnapshot(snapshot => {
         users = [];
         snapshot.forEach(doc => {
@@ -223,8 +213,8 @@ function setupRealtimeListeners() {
                 }
             }
         });
-        console.log("Usuarios actualizados en tiempo real:", users);
-        // Actualizar los decks de los héroes y la UI
+        console.log("Users updated in real-time:", users);
+        // Update heroes' decks and UI
         loadHeroesDecks();
         if (heroShowcaseSection.style.display === 'block') {
             displayHeroes();
@@ -236,18 +226,18 @@ function setupRealtimeListeners() {
             }
         }
     }, error => {
-        console.error("Error al escuchar la colección users:", error);
-        alert("Error al sincronizar usuarios en tiempo real. Revisa tu conexión a internet.");
+        console.error("Error listening to users collection:", error);
+        alert("Error syncing users in real-time. Check your internet connection.");
     });
 
-    // Escuchar cambios en la colección userLikes
+    // Listen for changes in the userLikes collection
     db.collection('userLikes').onSnapshot(snapshot => {
         userLikes = {};
         snapshot.forEach(doc => {
             userLikes[doc.id] = doc.data().value;
         });
-        console.log("UserLikes actualizados en tiempo real:", userLikes);
-        // Actualizar los decks de los héroes y la UI
+        console.log("UserLikes updated in real-time:", userLikes);
+        // Update heroes' decks and UI
         loadHeroesDecks();
         if (heroShowcaseSection.style.display === 'block') {
             displayHeroes();
@@ -259,12 +249,12 @@ function setupRealtimeListeners() {
             }
         }
     }, error => {
-        console.error("Error al escuchar la colección userLikes:", error);
-        alert("Error al sincronizar likes de usuarios en tiempo real. Revisa tu conexión a internet.");
+        console.error("Error listening to userLikes collection:", error);
+        alert("Error syncing user likes in real-time. Check your internet connection.");
     });
 }
 
-// Cargar los decks de los héroes desde los decks públicos de los usuarios
+// Load heroes' decks from users' public decks
 function loadHeroesDecks() {
     heroes.forEach(hero => {
         hero.decks = [];
@@ -284,7 +274,7 @@ function loadHeroesDecks() {
     });
 }
 
-// Elementos del DOM
+// DOM Elements
 const welcomeSection = document.getElementById('welcome-section');
 const heroShowcaseSection = document.getElementById('hero-showcase-section');
 const heroDecksSection = document.getElementById('hero-decks-section');
@@ -314,7 +304,7 @@ const deckDetailsHero = document.getElementById('deck-details-hero');
 const deckDetailsHeroImage = document.getElementById('deck-details-hero-image');
 const deckDetailsTroops = document.getElementById('deck-details-troops');
 
-// Actualizar la UI según el usuario actual
+// Update UI based on current user
 function updateUIForCurrentUser() {
     if (currentUser) {
         loginBtn.style.display = 'none';
@@ -334,21 +324,21 @@ function updateUIForCurrentUser() {
     }
 }
 
-// Mostrar/Ocultar secciones
+// Show/Hide Sections
 function showSection(section) {
     [welcomeSection, heroShowcaseSection, heroDecksSection, userAccountSection].forEach(s => s.style.display = 'none');
     section.style.display = 'block';
 }
 
-// Botones de la barra de navegación
+// Navbar Buttons
 document.getElementById('hero-showcase-btn').addEventListener('click', () => {
-    console.log("Botón Hero Showcase clickeado");
+    console.log("Hero Showcase button clicked");
     showSection(heroShowcaseSection);
     displayHeroes();
 });
 
 document.getElementById('get-started-btn').addEventListener('click', () => {
-    console.log("Botón Get Started clickeado");
+    console.log("Get Started button clicked");
     if (currentUser) {
         showSection(userAccountSection);
         displayUserDecks();
@@ -358,38 +348,38 @@ document.getElementById('get-started-btn').addEventListener('click', () => {
 });
 
 document.getElementById('explore-heroes-btn').addEventListener('click', () => {
-    console.log("Botón Explore Heroes clickeado");
+    console.log("Explore Heroes button clicked");
     showSection(heroShowcaseSection);
     displayHeroes();
 });
 
-// Modal de autenticación
+// Auth Modal
 function showAuthModal(type) {
-    authModalTitle.textContent = type === 'register' ? 'Registrarse' : 'Iniciar Sesión';
-    authSubmitBtn.textContent = type === 'register' ? 'Registrarse' : 'Iniciar Sesión';
+    authModalTitle.textContent = type === 'register' ? 'Register' : 'Login';
+    authSubmitBtn.textContent = type === 'register' ? 'Register' : 'Login';
     authModal.style.display = 'flex';
 }
 
 loginBtn.addEventListener('click', () => {
-    console.log("Botón Login clickeado");
+    console.log("Login button clicked");
     showAuthModal('login');
 });
 
 registerBtn.addEventListener('click', () => {
-    console.log("Botón Register clickeado");
+    console.log("Register button clicked");
     showAuthModal('register');
 });
 
 logoutBtn.addEventListener('click', async () => {
-    console.log("Botón Logout clickeado");
+    console.log("Logout button clicked");
     try {
         await auth.signOut();
         currentUser = null;
         showSection(welcomeSection);
         updateUIForCurrentUser();
     } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-        alert("Error al cerrar sesión. Revisa tu conexión a internet e intenta de nuevo.");
+        console.error("Error signing out:", error);
+        alert("Error signing out. Check your internet connection and try again.");
     }
 });
 
@@ -406,62 +396,62 @@ authForm.addEventListener('submit', async (e) => {
     const username = document.getElementById('username-input').value;
     const password = document.getElementById('password-input').value;
 
-    if (authSubmitBtn.textContent === 'Registrarse') {
+    if (authSubmitBtn.textContent === 'Register') {
         if (!auth.currentUser) {
-            alert("Autenticación fallida. Asegúrate de que Firebase esté configurado correctamente e intenta de nuevo.");
+            alert("Authentication failed. Ensure Firebase is properly configured and try again.");
             return;
         }
         try {
-            // Verificar si el nombre de usuario ya existe
+            // Check if username already exists
             const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).get());
             if (!userSnapshot.empty) {
-                alert('¡El nombre de usuario ya existe!');
+                alert('Username already exists!');
                 return;
             }
 
-            // Crear nuevo usuario
+            // Create new user
             const userId = auth.currentUser.uid;
             const newUser = { username, password, decks: [] };
             await firestoreOperationWithRetry(() => db.collection('users').doc(userId).set(newUser));
             currentUser = { ...newUser, uid: userId };
             users.push(currentUser);
-            console.log("Usuario registrado:", currentUser);
+            console.log("User registered:", currentUser);
 
-            // Cerrar modal y actualizar UI
+            // Close modal and update UI
             authModal.style.display = 'none';
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
         } catch (error) {
-            console.error("Error al registrar usuario:", error);
-            alert("Error al registrar usuario. Revisa tu conexión a internet y la configuración de Firebase.");
+            console.error("Error registering user:", error);
+            alert("Error registering user. Check your internet connection and Firebase configuration.");
         }
     } else {
-        // Iniciar sesión
+        // Login
         try {
             const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).where('password', '==', password).get());
             if (userSnapshot.empty) {
-                alert('¡Credenciales inválidas!');
+                alert('Invalid credentials!');
                 return;
             }
             const userDoc = userSnapshot.docs[0];
             currentUser = userDoc.data();
             currentUser.uid = userDoc.id;
-            console.log("Usuario conectado:", currentUser);
+            console.log("User logged in:", currentUser);
 
-            // Cerrar modal y actualizar UI
+            // Close modal and update UI
             authModal.style.display = 'none';
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
         } catch (error) {
-            console.error("Error al iniciar sesión:", error);
-            alert("Error al iniciar sesión. Revisa tu conexión a internet e intenta de nuevo.");
+            console.error("Error logging in:", error);
+            alert("Error logging in. Check your internet connection and try again.");
         }
     }
 });
 
-// Mostrar héroes en el Showcase
+// Display Heroes in Showcase
 function displayHeroes() {
     heroes.sort((a, b) => {
         const aPublicDecks = a.decks.filter(d => d.isPublic).length;
@@ -476,8 +466,8 @@ function displayHeroes() {
         heroCard.innerHTML = `
             <img src="${getImageUrl(hero.name, 'heroes')}" alt="${hero.name}">
             <h3>${hero.name}</h3>
-            <p>Decks Públicos: ${hero.decks.filter(d => d.isPublic).length}</p>
-            <p>Likes Totales: ${hero.totalLikes}</p>
+            <p>Public Decks: ${hero.decks.filter(d => d.isPublic).length}</p>
+            <p>Total Likes: ${hero.totalLikes}</p>
         `;
         heroCard.addEventListener('click', () => {
             showSection(heroDecksSection);
@@ -487,7 +477,7 @@ function displayHeroes() {
     });
 }
 
-// Mostrar decks de un héroe específico
+// Display Decks for a Specific Hero
 function displayHeroDecks(hero) {
     document.getElementById('hero-decks-title').textContent = `${hero.name} Decks`;
     const publicDecks = hero.decks.filter(d => d.isPublic);
@@ -499,9 +489,9 @@ function displayHeroDecks(hero) {
         const deckHero = heroes.find(h => h.id === deck.heroId);
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p>Creado por: ${deck.creator}</p>
+            <p>Created by: ${deck.creator}</p>
             <p>${deck.description}</p>
-            <p>Héroe: ${deckHero ? deckHero.name : 'Desconocido'}</p>
+            <p>Hero: ${deckHero ? deckHero.name : 'Unknown'}</p>
             <p>Likes: ${deck.likes}</p>
             <button class="like-btn">Like</button>
         `;
@@ -511,12 +501,12 @@ function displayHeroDecks(hero) {
         });
         deckCard.querySelector('.like-btn').addEventListener('click', async () => {
             if (!currentUser) {
-                alert('¡Por favor inicia sesión para dar like a un deck!');
+                alert('Please log in to like a deck!');
                 return;
             }
             const likeKey = `${currentUser.username}:${deck.name}`;
             if (userLikes[likeKey]) {
-                alert('¡Ya has dado like a este deck!');
+                alert('You have already liked this deck!');
                 return;
             }
             try {
@@ -531,30 +521,30 @@ function displayHeroDecks(hero) {
                     await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).update({ decks: user.decks }));
                 }
             } catch (error) {
-                console.error("Error al dar like al deck:", error);
-                alert("Error al dar like al deck. Revisa tu conexión a internet e intenta de nuevo.");
+                console.error("Error liking deck:", error);
+                alert("Error liking deck. Check your internet connection and try again.");
             }
         });
         heroDecksList.appendChild(deckCard);
     });
 }
 
-// Mostrar los decks del usuario
+// Display User's Decks
 function displayUserDecks() {
     if (!currentUser) return;
-    document.getElementById('user-account-title').textContent = `Decks de ${currentUser.username}`;
+    document.getElementById('user-account-title').textContent = `${currentUser.username}'s Decks`;
     userDecksList.innerHTML = '';
     currentUser.decks.forEach(deck => {
         const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p>Héroe: ${hero ? hero.name : 'Desconocido'}</p>
+            <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
             <p>${deck.description}</p>
-            <p>Público: ${deck.isPublic ? 'Sí' : 'No'}</p>
-            <button class="edit-deck-btn">Editar</button>
-            <button class="delete-deck-btn">Eliminar</button>
-            <button class="toggle-public-btn">${deck.isPublic ? 'Hacer Privado' : 'Hacer Público'}</button>
+            <p>Public: ${deck.isPublic ? 'Yes' : 'No'}</p>
+            <button class="edit-deck-btn">Edit</button>
+            <button class="delete-deck-btn">Delete</button>
+            <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
@@ -568,8 +558,8 @@ function displayUserDecks() {
                 currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             } catch (error) {
-                console.error("Error al eliminar el deck:", error);
-                alert("Error al eliminar el deck. Revisa tu conexión a internet e intenta de nuevo.");
+                console.error("Error deleting deck:", error);
+                alert("Error deleting deck. Check your internet connection and try again.");
             }
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', async () => {
@@ -585,30 +575,30 @@ function displayUserDecks() {
                 }
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             } catch (error) {
-                console.error("Error al cambiar la visibilidad del deck:", error);
-                alert("Error al cambiar la visibilidad del deck. Revisa tu conexión a internet e intenta de nuevo.");
+                console.error("Error toggling deck visibility:", error);
+                alert("Error toggling deck visibility. Check your internet connection and try again.");
             }
         });
         userDecksList.appendChild(deckCard);
     });
 }
 
-// Mostrar detalles del deck
+// Show Deck Details
 function showDeckDetails(deck) {
     deckDetailsTitle.textContent = deck.name;
     deckDetailsCreator.textContent = deck.creator || currentUser.username;
     deckDetailsDescription.textContent = deck.description;
     const hero = heroes.find(h => h.id === deck.heroId);
-    deckDetailsHero.textContent = hero ? hero.name : 'Desconocido';
-    deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Desconocido', 'heroes')}" alt="${hero ? hero.name : 'Desconocido'}">`;
+    deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
+    deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}">`;
 
     deckDetailsTroops.innerHTML = '';
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
         const troopCard = document.createElement('div');
         troopCard.innerHTML = `
-            <img src="${getImageUrl(troop ? troop.name : 'Desconocido', 'troops')}" alt="${troop ? troop.name : 'Desconocido'}">
-            <p>${troop ? troop.name : 'Desconocido'}</p>
+            <img src="${getImageUrl(troop ? troop.name : 'Unknown', 'troops')}" alt="${troop ? troop.name : 'Unknown'}">
+            <p>${troop ? troop.name : 'Unknown'}</p>
         `;
         deckDetailsTroops.appendChild(troopCard);
     });
@@ -616,26 +606,26 @@ function showDeckDetails(deck) {
     deckDetailsModal.style.display = 'flex';
 }
 
-// Mostrar modal de deck (Agregar o Editar)
+// Show Deck Modal (Add or Edit)
 function showDeckModal(mode, deck = null) {
-    deckModalTitle.textContent = mode === 'add' ? 'Agregar Nuevo Deck' : 'Editar Deck';
-    deckSubmitBtn.textContent = mode === 'add' ? 'Agregar Deck' : 'Guardar Cambios';
+    deckModalTitle.textContent = mode === 'add' ? 'Add New Deck' : 'Edit Deck';
+    deckSubmitBtn.textContent = mode === 'add' ? 'Add Deck' : 'Save Changes';
     deckModal.style.display = 'flex';
 
-    // Limpiar envíos anteriores del formulario
+    // Clear previous form submissions
     deckForm.onsubmit = null;
 
-    // Resetear campos del formulario
+    // Reset form fields
     const deckNameInput = document.getElementById('deck-name-input');
     const deckDescriptionInput = document.getElementById('deck-description-input');
     const deckPublicInput = document.getElementById('deck-public-input');
     deckNameInput.value = '';
-    heroSelect.innerHTML = '<option value="" disabled selected>Seleccionar Héroe</option>';
+    heroSelect.innerHTML = '<option value="" disabled selected>Select Hero</option>';
     troopSelectors.innerHTML = '';
     deckDescriptionInput.value = '';
     deckPublicInput.checked = false;
 
-    // Poblar el selector de héroes
+    // Populate hero select
     heroes.forEach(hero => {
         const option = document.createElement('option');
         option.value = hero.id;
@@ -646,12 +636,12 @@ function showDeckModal(mode, deck = null) {
         heroSelect.appendChild(option);
     });
 
-    // Poblar los selectores de tropas
+    // Populate troop selectors
     const troopSelects = [];
     for (let i = 1; i <= 6; i++) {
         const select = document.createElement('select');
         select.required = true;
-        select.innerHTML = `<option value="" disabled selected>Seleccionar Tropa ${i}</option>`;
+        select.innerHTML = `<option value="" disabled selected>Select Troop ${i}</option>`;
         troops.forEach(troop => {
             const option = document.createElement('option');
             option.value = troop.id;
@@ -662,7 +652,7 @@ function showDeckModal(mode, deck = null) {
             const selectedTroops = troopSelects.map(s => s.value).filter(v => v !== '');
             troopSelects.forEach(s => {
                 const currentValue = s.value;
-                s.innerHTML = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Seleccionar Tropa ${troopSelects.indexOf(s) + 1}</option>`;
+                s.innerHTML = `<option value="" disabled ${!currentValue ? 'selected' : ''}>Select Troop ${troopSelects.indexOf(s) + 1}</option>`;
                 troops.forEach(troop => {
                     if (!selectedTroops.includes(String(troop.id)) || String(troop.id) === currentValue) {
                         const option = document.createElement('option');
@@ -678,7 +668,7 @@ function showDeckModal(mode, deck = null) {
         troopSelects.push(select);
     }
 
-    // Poblar campos si se está editando
+    // Populate fields if editing
     if (mode === 'edit' && deck) {
         deckNameInput.value = deck.name;
         heroSelect.value = deck.heroId;
@@ -700,9 +690,9 @@ function showDeckModal(mode, deck = null) {
         const description = deckDescriptionInput.value;
         const isPublic = deckPublicInput.checked;
 
-        // Verificar nombres de deck duplicados
+        // Check for duplicate deck name
         if (mode === 'add' && currentUser.decks.some(d => d.name === deckName)) {
-            alert('¡Ya existe un deck con este nombre!');
+            alert('A deck with this name already exists!');
             return;
         }
 
@@ -726,58 +716,55 @@ function showDeckModal(mode, deck = null) {
             }
 
             await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
-            console.log("Deck guardado exitosamente:", newDeck);
+            console.log("Deck saved successfully:", newDeck);
 
-            // Cerrar modal y actualizar UI
+            // Close modal and update UI
             deckModal.style.display = 'none';
             displayUserDecks();
         } catch (error) {
-            console.error("Error al guardar el deck:", error);
-            alert("Error al guardar el deck. Revisa tu conexión a internet y la configuración de Firebase.");
+            console.error("Error saving deck:", error);
+            alert("Error saving deck. Check your internet connection and Firebase configuration.");
             deckModal.style.display = 'none';
         }
     };
 }
 
-// Botón de agregar deck
+// Add Deck Button
 document.getElementById('add-deck-btn').addEventListener('click', () => {
-    console.log("Botón Add Deck clickeado");
+    console.log("Add Deck button clicked");
     if (!currentUser) {
-        alert('¡Por favor inicia sesión para agregar un deck!');
+        alert('Please log in to add a deck!');
         return;
     }
     showDeckModal('add');
 });
 
-// Botón de eliminar cuenta
+// Delete Account Button
 document.getElementById('delete-account-btn').addEventListener('click', async () => {
-    console.log("Botón Delete Account clickeado");
-    if (!confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) return;
+    console.log("Delete Account button clicked");
+    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
-        // Eliminar documento del usuario
+        // Delete user document
         await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
 
-        // Eliminar likes asociados
+        // Delete associated likes
         const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
         for (const key of likeKeys) {
             await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
         }
 
-        // Cerrar sesión y resetear estado
+        // Sign out and reset state
         await auth.signOut();
-        setTimeout(() => {
-            currentUser = null;
-            showSection(welcomeSection);
-            updateUIForCurrentUser();
-        }, 500);
+        currentUser = null;
+        showSection(welcomeSection);
+        updateUIForCurrentUser();
     } catch (error) {
-        console.error("Error al eliminar la cuenta:", error);
-        alert("Error al eliminar la cuenta. Revisa tu conexión a internet e intenta de nuevo.");
+        console.error("Error deleting account:", error);
+        alert("Error deleting account. Check your internet connection and try again.");
+        // Force logout on error
         await auth.signOut();
-        setTimeout(() => {
-            currentUser = null;
-            showSection(welcomeSection);
-            updateUIForCurrentUser();
-        }, 500);
+        currentUser = null;
+        showSection(welcomeSection);
+        updateUIForCurrentUser();
     }
 });
