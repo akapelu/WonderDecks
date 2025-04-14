@@ -163,7 +163,7 @@ async function loadUsersAndLikes() {
                 description: deck.description,
                 isPublic: deck.isPublic,
                 creator: deck.creator,
-                likes: deck.likes != null ? deck.likes : 0 // Asegurar que likes siempre esté presente
+                // No seteamos likes aquí, lo calcularemos dinámicamente
             }));
             users.push(userData);
         });
@@ -177,20 +177,13 @@ async function loadUsersAndLikes() {
         });
         console.log("UserLikes loaded:", userLikes);
 
-        // Recalcular los likes para cada deck
+        // Calcular los likes para cada deck dinámicamente
         users.forEach(user => {
             user.decks.forEach(deck => {
-                // Contar cuántos usuarios han dado like a este deck
                 const deckLikes = Object.keys(userLikes).filter(key => 
                     key.endsWith(`:${deck.name}`) && userLikes[key] === true
                 ).length;
-                deck.likes = deckLikes;
-            });
-            // Actualizar el documento del usuario en Firestore con el conteo correcto de likes
-            firestoreOperationWithRetry(() => 
-                db.collection('users').doc(user.uid).update({ decks: user.decks })
-            ).catch(error => {
-                console.error("Error updating deck likes for user", user.uid, ":", error);
+                deck.likes = deckLikes; // Asignamos los likes dinámicamente
             });
         });
 
@@ -225,7 +218,6 @@ auth.onAuthStateChanged(async user => {
                     description: deck.description,
                     isPublic: deck.isPublic,
                     creator: deck.creator,
-                    likes: deck.likes != null ? deck.likes : 0
                 }));
                 updateUIForCurrentUser();
             } else {
@@ -546,18 +538,6 @@ function displayHeroDecks(hero) {
                     db.collection('userLikes').doc(likeKey).set({ value: true })
                 );
 
-                // Actualizar el documento del creador en Firestore
-                const user = users.find(u => u.username === deck.creator);
-                if (user) {
-                    const userDeck = user.decks.find(d => d.name === deck.name);
-                    if (userDeck) {
-                        userDeck.likes = deck.likes;
-                        await firestoreOperationWithRetry(() => 
-                            db.collection('users').doc(user.uid).update({ decks: user.decks })
-                        );
-                    }
-                }
-
                 // Recargar los datos para sincronizar
                 await loadUsersAndLikes();
 
@@ -621,7 +601,6 @@ function displayUserDecks() {
             try {
                 deck.isPublic = !deck.isPublic;
                 if (!deck.isPublic) {
-                    deck.likes = 0;
                     const likeKeys = Object.keys(userLikes).filter(key => key.endsWith(`:${deck.name}`));
                     for (const key of likeKeys) {
                         await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
@@ -760,26 +739,13 @@ function showDeckModal(mode, deck = null) {
             description,
             isPublic,
             creator: currentUser.username,
-            likes: mode === 'edit' && deck ? deck.likes : 0
         };
 
         try {
-            // Normalizar los decks existentes en currentUser.decks
-            currentUser.decks = currentUser.decks.map(deck => ({
-                name: deck.name,
-                heroId: deck.heroId,
-                troops: deck.troops,
-                description: deck.description,
-                isPublic: deck.isPublic,
-                creator: deck.creator,
-                likes: deck.likes != null ? deck.likes : 0
-            }));
-
             if (mode === 'add') {
                 currentUser.decks.push(newDeck);
             } else {
                 const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
-                newDeck.likes = deck.likes || 0;
                 currentUser.decks[deckIndex] = newDeck;
             }
 
