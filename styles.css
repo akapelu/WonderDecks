@@ -125,7 +125,7 @@ h2 {
     transition: all 0.3s ease;
     background: linear-gradient(145deg, #ffffff, #e6e6e6);
     color: #1a2a6c;
-    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 5px rgba(255, 2525, 255, 0.3);
     margin: 0 10px;
 }
 
@@ -214,8 +214,8 @@ h2 {
     margin: 5px 0;
 }
 
-/* Estilo para los botones dentro de las cartas */
-.card-list button {
+/* Estilo para los botones dentro de las cartas (excepto el ícono de corazón) */
+.card-list button:not(.like-heart) {
     padding: 8px 12px;
     font-size: 14px;
     border: none;
@@ -229,10 +229,28 @@ h2 {
     width: 80px;
 }
 
-.card-list button:hover {
+.card-list button:not(.like-heart):hover {
     background: linear-gradient(145deg, #e6e6e6, #ffffff);
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
+}
+
+/* Estilo para el ícono de corazón */
+.like-heart {
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #000;
+    margin: 5px;
+    display: inline-block;
+}
+
+.like-heart.liked {
+    color: #ff69b4;
+}
+
+.like-heart:hover {
+    transform: scale(1.2);
 }
 
 .troop-selectors {
@@ -490,10 +508,14 @@ h2 {
         min-height: 18px;
     }
 
-    .card-list button {
+    .card-list button:not(.like-heart) {
         font-size: 12px;
         padding: 6px 10px;
         width: 70px;
+    }
+
+    .like-heart {
+        font-size: 18px;
     }
 
     .account-buttons {
@@ -606,10 +628,14 @@ h2 {
         min-height: 16px;
     }
 
-    .card-list button {
+    .card-list button:not(.like-heart) {
         font-size: 11px;
         padding: 5px 8px;
         width: 60px;
+    }
+
+    .like-heart {
+        font-size: 16px;
     }
 
     .account-buttons button {
