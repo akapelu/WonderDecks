@@ -182,48 +182,78 @@ auth.onAuthStateChanged(async user => {
                 console.error("Error fetching user data:", error);
             }
         }
-        // Load all users and userLikes from Firestore
-        await loadUsersAndLikes();
-        // Load heroes' decks
-        await loadHeroesDecks();
-        // Update UI
-        displayHeroes();
+        // Set up real-time listeners
+        setupRealtimeListeners();
     } else {
         console.log("User signed out");
         currentUser = null;
         updateUIForCurrentUser();
+        // Re-authenticate anonymously after signing out
+        auth.signInAnonymously().catch(error => {
+            console.error("Error signing in anonymously after logout:", error);
+        });
     }
 });
 
-// Load all users and userLikes from Firestore
-async function loadUsersAndLikes() {
-    try {
+// Set up real-time listeners for users and userLikes
+function setupRealtimeListeners() {
+    // Listen for changes in the users collection
+    db.collection('users').onSnapshot(snapshot => {
         users = [];
-        userLikes = {};
-
-        // Load users
-        const usersSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
-        usersSnapshot.forEach(doc => {
+        snapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
             users.push(userData);
+            if (currentUser && currentUser.uid === doc.id) {
+                currentUser = userData;
+                currentUser.uid = doc.id;
+                updateUIForCurrentUser();
+                if (userAccountSection.style.display === 'block') {
+                    displayUserDecks();
+                }
+            }
         });
-        console.log("Users loaded:", users);
+        console.log("Users updated in real-time:", users);
+        // Update heroes' decks and UI
+        loadHeroesDecks();
+        if (heroShowcaseSection.style.display === 'block') {
+            displayHeroes();
+        }
+        if (heroDecksSection.style.display === 'block') {
+            const currentHero = heroes.find(h => h.name === document.getElementById('hero-decks-title').textContent.split(' ')[0]);
+            if (currentHero) {
+                displayHeroDecks(currentHero);
+            }
+        }
+    }, error => {
+        console.error("Error listening to users collection:", error);
+    });
 
-        // Load userLikes
-        const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
-        likesSnapshot.forEach(doc => {
+    // Listen for changes in the userLikes collection
+    db.collection('userLikes').onSnapshot(snapshot => {
+        userLikes = {};
+        snapshot.forEach(doc => {
             userLikes[doc.id] = doc.data().value;
         });
-        console.log("UserLikes loaded:", userLikes);
-    } catch (error) {
-        console.error("Error loading users and likes:", error);
-        alert("Error loading data from Firebase. Please check the console for details.");
-    }
+        console.log("UserLikes updated in real-time:", userLikes);
+        // Update heroes' decks and UI
+        loadHeroesDecks();
+        if (heroShowcaseSection.style.display === 'block') {
+            displayHeroes();
+        }
+        if (heroDecksSection.style.display === 'block') {
+            const currentHero = heroes.find(h => h.name === document.getElementById('hero-decks-title').textContent.split(' ')[0]);
+            if (currentHero) {
+                displayHeroDecks(currentHero);
+            }
+        }
+    }, error => {
+        console.error("Error listening to userLikes collection:", error);
+    });
 }
 
 // Load heroes' decks from users' public decks
-async function loadHeroesDecks() {
+function loadHeroesDecks() {
     heroes.forEach(hero => {
         hero.decks = [];
         hero.totalLikes = 0;
@@ -386,10 +416,20 @@ authForm.addEventListener('submit', async (e) => {
             const userId = auth.currentUser.uid;
             const newUser = { username, password, decks: [] };
             await firestoreOperationWithRetry(() => db.collection('users').doc(userId).set(newUser));
-            currentUser = newUser;
-            currentUser.uid = userId;
+            currentUser = { ...newUser, uid: userId };
             users.push(currentUser);
             console.log("User registered:", currentUser);
+
+            // Update localStorage and UI
+            try {
+                localStorage.setItem('currentUser', currentUser.username);
+                savedUserName = currentUser.username;
+            } catch (error) {
+                console.error("Error setting localStorage:", error);
+                savedUserName = currentUser.username;
+            }
+            authModal.style.display = 'none';
+            updateUIForCurrentUser();
         } catch (error) {
             console.error("Error registering user:", error);
             alert("Error registering user. Please check the console for details.");
@@ -407,22 +447,23 @@ authForm.addEventListener('submit', async (e) => {
             currentUser = userDoc.data();
             currentUser.uid = userDoc.id;
             console.log("User logged in:", currentUser);
+
+            // Update localStorage and UI
+            try {
+                localStorage.setItem('currentUser', currentUser.username);
+                savedUserName = currentUser.username;
+            } catch (error) {
+                console.error("Error setting localStorage:", error);
+                savedUserName = currentUser.username;
+            }
+            authModal.style.display = 'none';
+            updateUIForCurrentUser();
         } catch (error) {
             console.error("Error logging in:", error);
             alert("Error logging in. Please check the console for details.");
             return;
         }
     }
-
-    try {
-        localStorage.setItem('currentUser', currentUser.username);
-        savedUserName = currentUser.username;
-    } catch (error) {
-        console.error("Error setting localStorage:", error);
-        savedUserName = currentUser.username;
-    }
-    authModal.style.display = 'none';
-    updateUIForCurrentUser();
 });
 
 // Display Heroes in Showcase
@@ -494,8 +535,6 @@ function displayHeroDecks(hero) {
                     userDeck.likes = deck.likes;
                     await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).update({ decks: user.decks }));
                 }
-                displayHeroDecks(hero);
-                displayHeroes();
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Please check the console for details.");
@@ -531,23 +570,8 @@ function displayUserDecks() {
         });
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', async () => {
             try {
-                const hero = heroes.find(h => h.id === deck.heroId);
-                if (hero) {
-                    if (deck.isPublic) {
-                        hero.totalLikes -= deck.likes;
-                        for (let key in userLikes) {
-                            if (key.endsWith(`:${deck.name}`)) {
-                                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-                                delete userLikes[key];
-                            }
-                        }
-                    }
-                    hero.decks = hero.decks.filter(d => d.name !== deck.name);
-                }
                 currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
-                displayUserDecks();
-                displayHeroes();
             } catch (error) {
                 console.error("Error deleting deck:", error);
                 alert("Error deleting deck. Please check the console for details.");
@@ -556,25 +580,15 @@ function displayUserDecks() {
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', async () => {
             try {
                 deck.isPublic = !deck.isPublic;
-                const hero = heroes.find(h => h.id === deck.heroId);
-                if (hero) {
-                    if (deck.isPublic) {
-                        hero.decks.push(deck);
-                    } else {
-                        hero.decks = hero.decks.filter(d => d.name !== deck.name);
-                        hero.totalLikes -= deck.likes;
-                        for (let key in userLikes) {
-                            if (key.endsWith(`:${deck.name}`)) {
-                                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-                                delete userLikes[key];
-                            }
+                if (!deck.isPublic) {
+                    deck.likes = 0;
+                    for (let key in userLikes) {
+                        if (key.endsWith(`:${deck.name}`)) {
+                            await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
                         }
-                        deck.likes = 0;
                     }
                 }
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
-                displayUserDecks();
-                displayHeroes();
             } catch (error) {
                 console.error("Error toggling deck visibility:", error);
                 alert("Error toggling deck visibility. Please check the console for details.");
@@ -613,12 +627,20 @@ function showDeckModal(mode, deck = null) {
     deckSubmitBtn.textContent = mode === 'add' ? 'Add Deck' : 'Save Changes';
     deckModal.style.display = 'flex';
 
-    // Clear previous form event listeners to prevent duplication
-    const newDeckForm = deckForm.cloneNode(true);
-    deckForm.parentNode.replaceChild(newDeckForm, deckForm);
-    deckForm = newDeckForm;
+    // Clear previous form submissions
+    deckForm.onsubmit = null;
 
+    // Reset form fields
+    const deckNameInput = document.getElementById('deck-name-input');
+    const deckDescriptionInput = document.getElementById('deck-description-input');
+    const deckPublicInput = document.getElementById('deck-public-input');
+    deckNameInput.value = '';
     heroSelect.innerHTML = '<option value="" disabled selected>Select Hero</option>';
+    troopSelectors.innerHTML = '';
+    deckDescriptionInput.value = '';
+    deckPublicInput.checked = false;
+
+    // Populate hero select
     heroes.forEach(hero => {
         const option = document.createElement('option');
         option.value = hero.id;
@@ -629,7 +651,7 @@ function showDeckModal(mode, deck = null) {
         heroSelect.appendChild(option);
     });
 
-    troopSelectors.innerHTML = '';
+    // Populate troop selectors
     const troopSelects = [];
     for (let i = 1; i <= 6; i++) {
         const select = document.createElement('select');
@@ -661,8 +683,9 @@ function showDeckModal(mode, deck = null) {
         troopSelects.push(select);
     }
 
+    // Populate fields if editing
     if (mode === 'edit' && deck) {
-        document.getElementById('deck-name-input').value = deck.name;
+        deckNameInput.value = deck.name;
         heroSelect.value = deck.heroId;
         troopSelects.forEach((select, index) => {
             if (deck.troops[index]) {
@@ -670,26 +693,17 @@ function showDeckModal(mode, deck = null) {
                 select.dispatchEvent(new Event('change'));
             }
         });
-        document.getElementById('deck-description-input').value = deck.description;
-        document.getElementById('deck-public-input').checked = deck.isPublic;
-    } else {
-        // Clear form for adding a new deck
-        document.getElementById('deck-name-input').value = '';
-        document.getElementById('deck-description-input').value = '';
-        document.getElementById('deck-public-input').checked = false;
-        troopSelects.forEach(select => {
-            select.value = '';
-            select.dispatchEvent(new Event('change'));
-        });
+        deckDescriptionInput.value = deck.description;
+        deckPublicInput.checked = deck.isPublic;
     }
 
     deckForm.onsubmit = async (e) => {
         e.preventDefault();
-        const deckName = document.getElementById('deck-name-input').value;
+        const deckName = deckNameInput.value;
         const heroId = parseInt(heroSelect.value);
         const troops = troopSelects.map(s => parseInt(s.value));
-        const description = document.getElementById('deck-description-input').value;
-        const isPublic = document.getElementById('deck-public-input').checked;
+        const description = deckDescriptionInput.value;
+        const isPublic = deckPublicInput.checked;
 
         // Check for duplicate deck name
         if (mode === 'add' && currentUser.decks.some(d => d.name === deckName)) {
@@ -710,29 +724,14 @@ function showDeckModal(mode, deck = null) {
         try {
             if (mode === 'add') {
                 currentUser.decks.push(newDeck);
-                if (isPublic) {
-                    const hero = heroes.find(h => h.id === heroId);
-                    if (hero) {
-                        hero.decks.push(newDeck);
-                    }
-                }
             } else {
                 const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
                 newDeck.likes = deck.likes;
                 currentUser.decks[deckIndex] = newDeck;
-                const hero = heroes.find(h => h.id === deck.heroId);
-                if (hero) {
-                    hero.decks = hero.decks.filter(d => d.name !== deck.name);
-                    if (isPublic) {
-                        hero.decks.push(newDeck);
-                    }
-                }
             }
 
             await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             deckModal.style.display = 'none';
-            displayUserDecks();
-            displayHeroes();
         } catch (error) {
             console.error("Error saving deck:", error);
             alert("Error saving deck. Please check the console for details.");
@@ -755,29 +754,16 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
     console.log("Delete Account button clicked");
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
+        // Delete user document
         await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
-        for (let key in userLikes) {
-            if (key.startsWith(currentUser.username)) {
-                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-                delete userLikes[key];
-            }
+
+        // Delete associated likes
+        const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
+        for (const key of likeKeys) {
+            await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
         }
-        users = users.filter(u => u.username !== currentUser.username);
-        heroes.forEach(hero => {
-            hero.decks = [];
-            hero.totalLikes = 0;
-        });
-        users.forEach(user => {
-            user.decks.forEach(deck => {
-                if (deck.isPublic) {
-                    const hero = heroes.find(h => h.id === deck.heroId);
-                    if (hero) {
-                        hero.decks.push(deck);
-                        hero.totalLikes += deck.likes || 0;
-                    }
-                }
-            });
-        });
+
+        // Sign out and reset state
         await auth.signOut();
         currentUser = null;
         try {
