@@ -75,7 +75,7 @@ let troops = [
     { id: 18, name: "FLITUS VC" },
     { id: 19, name: "FLITUS VG" },
     { id: 20, name: "FREDDY" },
-    { id: 21, name: "frida" },
+    { id: 21, name: "FRIDA" },
     { id: 22, name: "GLOB" },
     { id: 23, name: "GRANTMOR" },
     { id: 24, name: "GRETA" },
