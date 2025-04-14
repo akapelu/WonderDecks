@@ -1,6 +1,6 @@
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "TU_API_KEY_AQUÍ", // Reemplaza con la clave correcta de Firebase
+    apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I", 
     authDomain: "wonderdecks-6ca4f.firebaseapp.com",
     projectId: "wonderdecks-6ca4f",
     storageBucket: "wonderdecks-6ca4f.appspot.com",
