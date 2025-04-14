@@ -209,7 +209,8 @@ auth.onAuthStateChanged(async user => {
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
-                currentUser.uid = user.uid;
+                currentUser.uid = user.uid; // Aseguramos que currentUser.uid sea el correcto
+                console.log("Current user data loaded:", currentUser);
                 // Normalizar los decks de currentUser
                 currentUser.decks = currentUser.decks.map(deck => ({
                     name: deck.name,
@@ -222,10 +223,12 @@ auth.onAuthStateChanged(async user => {
                 updateUIForCurrentUser();
             } else {
                 console.log("User document not found for UID:", user.uid);
+                currentUser = null; // Aseguramos que currentUser sea null si no hay documento
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
             alert("Error fetching user data. Proceeding with local data.");
+            currentUser = null; // En caso de error, reseteamos currentUser
         }
         await loadUsersAndLikes();
     } else {
@@ -586,6 +589,9 @@ function displayUserDecks() {
         });
         deckCard.querySelector('.delete-deck-btn').addEventListener('click', async () => {
             try {
+                if (!auth.currentUser) {
+                    throw new Error("User not authenticated");
+                }
                 currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
                 await loadUsersAndLikes();
@@ -599,6 +605,9 @@ function displayUserDecks() {
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', async () => {
             try {
+                if (!auth.currentUser) {
+                    throw new Error("User not authenticated");
+                }
                 deck.isPublic = !deck.isPublic;
                 if (!deck.isPublic) {
                     const likeKeys = Object.keys(userLikes).filter(key => key.endsWith(`:${deck.name}`));
@@ -732,6 +741,23 @@ function showDeckModal(mode, deck = null) {
             return;
         }
 
+        // Verificar que el usuario esté autenticado
+        if (!auth.currentUser) {
+            alert("User not authenticated. Please log in again.");
+            authModal.style.display = 'none';
+            showAuthModal('login');
+            return;
+        }
+
+        // Verificar que currentUser.uid coincida con auth.currentUser.uid
+        if (currentUser.uid !== auth.currentUser.uid) {
+            console.error("UID mismatch:", { currentUserUid: currentUser.uid, authUid: auth.currentUser.uid });
+            alert("Authentication error: User ID mismatch. Please log in again.");
+            authModal.style.display = 'none';
+            showAuthModal('login');
+            return;
+        }
+
         const newDeck = {
             name: deckName,
             heroId,
@@ -742,6 +768,7 @@ function showDeckModal(mode, deck = null) {
         };
 
         try {
+            console.log("Attempting to save deck for user:", { username: currentUser.username, uid: currentUser.uid });
             if (mode === 'add') {
                 currentUser.decks.push(newDeck);
             } else {
@@ -780,6 +807,9 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
     console.log("Delete Account button clicked");
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
+        if (!auth.currentUser) {
+            throw new Error("User not authenticated");
+        }
         await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
         const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(currentUser.username));
         for (const key of likeKeys) {
