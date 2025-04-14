@@ -134,7 +134,8 @@ let userLikes = {};
 // GitHub repository base URL for images
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
 
-// Function to get the image URL for a hero or troop
+// Function to get the image URL for a hero or troopítani
+
 function getImageUrl(name, type) {
     if (!name) return ''; // Avoid errors if name is undefined
     const formattedName = name.toUpperCase().replace(/\s/g, '_');
@@ -218,7 +219,6 @@ async function loadUsersAndLikes() {
         isLoadingUsersAndLikes = false;
     }
 }
-
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
@@ -598,55 +598,28 @@ function displayHeroes() {
 }
 
 // Display Decks for a Specific Hero
-async function displayHeroDecks(hero) {
+function displayHeroDecks(hero) {
     document.getElementById('hero-decks-title').textContent = `${hero.name} Decks`;
     const publicDecks = hero.decks.filter(d => d.isPublic);
-    publicDecks.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    publicDecks.sort((a, b) => b.likes - a.likes);
 
     heroDecksList.innerHTML = '';
-    for (const deck of publicDecks) {
+    publicDecks.forEach(deck => {
         const deckCard = document.createElement('div');
         const deckHero = heroes.find(h => h.id === deck.heroId);
-
-        // Crear contenedor para la imagen del héroe
-        const heroImage = document.createElement('img');
-        heroImage.src = getImageUrl(deckHero ? deckHero.name : 'Unknown', 'heroes');
-        heroImage.alt = deckHero ? deckHero.name : 'Unknown';
-        heroImage.classList.add('deck-hero-image');
-
-        // Crear contenedor para las imágenes de las tropas
-        const troopsContainer = document.createElement('div');
-        troopsContainer.classList.add('deck-troops');
-        deck.troops.forEach(troopId => {
-            const troop = troops.find(t => t.id === troopId);
-            const troopImage = document.createElement('img');
-            troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
-            troopImage.alt = troop ? troop.name : 'Unknown';
-            troopImage.classList.add('deck-troop-image');
-            troopsContainer.appendChild(troopImage);
-        });
-
-        // Determinar si el usuario ya dio like
-        const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
-        const hasLiked = likeKey && userLikes[likeKey];
-
-        // Crear el contenido del deck con el ícono de corazón
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
-            <p>Likes: <span class="like-count">${deck.likes || 0}</span></p>
-            <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
+            <p>${deck.description}</p>
+            <p>Hero: ${deckHero ? deckHero.name : 'Unknown'}</p>
+            <p>Likes: ${deck.likes}</p>
+            <button class="like-btn">Like</button>
         `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Likes"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Created by"
-
         deckCard.addEventListener('click', (e) => {
-            if (e.target.classList.contains('like-heart')) return;
+            if (e.target.classList.contains('like-btn')) return;
             showDeckDetails(deck);
         });
-
-        const likeHeart = deckCard.querySelector('.like-heart');
-        likeHeart.addEventListener('click', async () => {
+        deckCard.querySelector('.like-btn').addEventListener('click', async () => {
             if (!currentUser) {
                 alert('Please log in to like a deck!');
                 return;
@@ -657,45 +630,37 @@ async function displayHeroDecks(hero) {
                 return;
             }
 
-            // Guardar el estado original para revertir si falla
-            const originalLikes = deck.likes || 0;
-            const originalTotalLikes = hero.totalLikes || 0;
-
             try {
-                // Cambiar el ícono a corazón lleno y color rosa (UI optimista)
-                likeHeart.classList.remove('far');
-                likeHeart.classList.add('fas', 'liked');
-                deckCard.querySelector('.like-count').textContent = originalLikes + 1;
+                // Incrementar el conteo de likes localmente
+                deck.likes = (deck.likes || 0) + 1;
+                hero.totalLikes = (hero.totalLikes || 0) + 1;
+                userLikes[likeKey] = true;
 
                 // Guardar el like en la colección userLikes
                 await firestoreOperationWithRetry(() => 
                     db.collection('userLikes').doc(likeKey).set({ value: true })
                 );
 
-                // Incrementar el conteo de likes solo después de éxito en Firestore
-                deck.likes = originalLikes + 1;
-                hero.totalLikes = originalTotalLikes + 1;
-                userLikes[likeKey] = true;
-
                 // Recargar los datos para sincronizar
                 await loadUsersAndLikes();
+
+                // Actualizar la UI
+                deckCard.querySelector('p:nth-child(5)').textContent = `Likes: ${deck.likes}`;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
 
-                // Revertir los cambios en la UI
-                likeHeart.classList.remove('fas', 'liked');
-                likeHeart.classList.add('far');
-                deckCard.querySelector('.like-count').textContent = originalLikes;
-
-                // Asegurar que el estado local refleje el fallo
-                deck.likes = originalLikes;
-                hero.totalLikes = originalTotalLikes;
+                // Revertir los cambios locales
+                deck.likes = (deck.likes || 0) - 1;
+                hero.totalLikes = (hero.totalLikes || 0) - 1;
                 delete userLikes[likeKey];
+
+                // Actualizar la UI
+                deckCard.querySelector('p:nth-child(5)').textContent = `Likes: ${deck.likes}`;
             }
         });
         heroDecksList.appendChild(deckCard);
-    }
+    });
 }
 
 // Display User's Decks
@@ -706,37 +671,15 @@ function displayUserDecks() {
     currentUser.decks.forEach(deck => {
         const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
-
-        // Crear contenedor para la imagen del héroe
-        const heroImage = document.createElement('img');
-        heroImage.src = getImageUrl(hero ? hero.name : 'Unknown', 'heroes');
-        heroImage.alt = hero ? hero.name : 'Unknown';
-        heroImage.classList.add('deck-hero-image');
-
-        // Crear contenedor para las imágenes de las tropas
-        const troopsContainer = document.createElement('div');
-        troopsContainer.classList.add('deck-troops');
-        deck.troops.forEach(troopId => {
-            const troop = troops.find(t => t.id === troopId);
-            const troopImage = document.createElement('img');
-            troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
-            troopImage.alt = troop ? troop.name : 'Unknown';
-            troopImage.classList.add('deck-troop-image');
-            troopsContainer.appendChild(troopImage);
-        });
-
-        // Crear el contenido del deck
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
+            <p>${deck.description}</p>
             <p>Public: ${deck.isPublic ? 'Yes' : 'No'}</p>
             <button class="edit-deck-btn">Edit</button>
             <button class="delete-deck-btn">Delete</button>
             <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Public"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Hero"
-
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
             showDeckDetails(deck);
