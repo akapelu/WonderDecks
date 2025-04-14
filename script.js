@@ -218,35 +218,54 @@ async function loadUsersAndLikes() {
     }
 }
 
+// Authenticate user anonymously on page load
+auth.signInAnonymously().catch(error => {
+    console.error("Error signing in anonymously:", error);
+    alert("Error signing in anonymously. Please try again.");
+});
+
 // Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
-        console.log("User authenticated:", user.uid);
-        const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
-        if (userDoc.exists) {
-            currentUser = userDoc.data();
-            currentUser.uid = user.uid;
-            console.log("User data loaded:", currentUser);
-            // Normalize currentUser decks
-            currentUser.decks = currentUser.decks.map(deck => ({
-                name: deck.name,
-                heroId: deck.heroId,
-                troops: deck.troops,
-                description: deck.description,
-                isPublic: deck.isPublic,
-                creator: deck.creator,
-            }));
-            updateUIForCurrentUser();
-        } else {
-            console.log("No user document found for UID:", user.uid);
+        console.log("User signed in anonymously:", user.uid);
+        try {
+            // Check if a user document exists for this UID
+            const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
+            if (userDoc.exists) {
+                currentUser = userDoc.data();
+                currentUser.uid = user.uid;
+                console.log("Current user data loaded:", currentUser);
+                // Normalize currentUser decks
+                currentUser.decks = currentUser.decks.map(deck => ({
+                    name: deck.name,
+                    heroId: deck.heroId,
+                    troops: deck.troops,
+                    description: deck.description,
+                    isPublic: deck.isPublic,
+                    creator: deck.creator,
+                }));
+                updateUIForCurrentUser();
+            } else {
+                console.log("No user document found for UID:", user.uid);
+                currentUser = null;
+            }
+            // Load users and likes only once here
+            await loadUsersAndLikes();
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            alert("Error fetching user data. Proceeding with local data.");
             currentUser = null;
+            await loadUsersAndLikes();
         }
-        await loadUsersAndLikes();
     } else {
-        console.log("User not authenticated");
+        console.log("User signed out");
         currentUser = null;
         updateUIForCurrentUser();
-        await loadUsersAndLikes();
+        // Sign in anonymously again
+        auth.signInAnonymously().catch(error => {
+            console.error("Error signing in anonymously after logout:", error);
+            alert("Error signing in anonymously after logout. Please try again.");
+        });
     }
 });
 
@@ -402,53 +421,83 @@ authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('username-input').value;
     const password = document.getElementById('password-input').value;
-    const email = `${username}@wonderdecks.com`; // Generate a fake email based on username
 
     if (authSubmitBtn.textContent === 'Register') {
-        // Register
-        try {
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            const userId = userCredential.user.uid;
-            const newUser = { username, password, decks: [] };
-            await firestoreOperationWithRetry(() => 
-                db.collection('users').doc(userId).set(newUser)
-            );
-            currentUser = { ...newUser, uid: userId };
-            users.push(currentUser);
-
-            authModal.style.display = 'none';
-            updateUIForCurrentUser();
-            showSection(userAccountSection);
-            displayUserDecks();
-            await loadUsersAndLikes();
-        } catch (error) {
-            console.error("Error during registration:", error);
-            alert("Error during registration: " + error.message);
+        // Register new user
+        if (!auth.currentUser) {
+            alert("Authentication failed. Please try again.");
+            return;
         }
+
+        // Check if username already exists
+        const userSnapshot = await firestoreOperationWithRetry(() => 
+            db.collection('users').where('username', '==', username).get()
+        );
+        if (!userSnapshot.empty) {
+            alert('Username already exists!');
+            return;
+        }
+
+        // Create new user with the current anonymous UID
+        const userId = auth.currentUser.uid;
+        const newUser = { username, password, decks: [] };
+        await firestoreOperationWithRetry(() => 
+            db.collection('users').doc(userId).set(newUser)
+        );
+        currentUser = { ...newUser, uid: userId };
+        users.push(currentUser);
+
+        authModal.style.display = 'none';
+        updateUIForCurrentUser();
+        showSection(userAccountSection);
+        displayUserDecks();
+        await loadUsersAndLikes();
     } else {
         // Login
-        try {
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const userId = userCredential.user.uid;
-            const userDoc = await firestoreOperationWithRetry(() => 
-                db.collection('users').doc(userId).get()
-            );
-            if (!userDoc.exists) {
-                alert('User not found!');
-                return;
-            }
-
-            currentUser = userDoc.data();
-            currentUser.uid = userId;
-            authModal.style.display = 'none';
-            updateUIForCurrentUser();
-            showSection(userAccountSection);
-            displayUserDecks();
-            await loadUsersAndLikes();
-        } catch (error) {
-            console.error("Error during login:", error);
-            alert("Error during login: " + error.message);
+        const userSnapshot = await firestoreOperationWithRetry(() => 
+            db.collection('users').where('username', '==', username).where('password', '==', password).get()
+        );
+        if (userSnapshot.empty) {
+            alert('Invalid credentials!');
+            return;
         }
+
+        const userDoc = userSnapshot.docs[0];
+        const userData = userDoc.data();
+        const storedUid = userDoc.id;
+        const currentUid = auth.currentUser.uid;
+
+        if (storedUid !== currentUid) {
+            console.log("UID mismatch during login, migrating user data...");
+            // Copy user data to the new UID
+            await firestoreOperationWithRetry(() => 
+                db.collection('users').doc(currentUid).set(userData)
+            );
+            // Update likes to use the new UID
+            const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
+            for (const key of likeKeys) {
+                const newKey = `${username}:${key.split(':')[1]}`;
+                await firestoreOperationWithRetry(() => 
+                    db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
+                );
+                await firestoreOperationWithRetry(() => 
+                    db.collection('userLikes').doc(key).delete()
+                );
+            }
+            // Delete the old document
+            await firestoreOperationWithRetry(() => 
+                db.collection('users').doc(storedUid).delete()
+            );
+            console.log("User document migrated successfully to UID:", currentUid);
+        }
+
+        currentUser = userData;
+        currentUser.uid = currentUid;
+        authModal.style.display = 'none';
+        updateUIForCurrentUser();
+        showSection(userAccountSection);
+        displayUserDecks();
+        await loadUsersAndLikes();
     }
 });
 
@@ -785,6 +834,31 @@ function showDeckModal(mode, deck = null) {
             authModal.style.display = 'none';
             showAuthModal('login');
             return;
+        }
+
+        // Verify currentUser.uid matches auth.currentUser.uid
+        if (currentUser.uid !== auth.currentUser.uid) {
+            console.error("UID mismatch:", { currentUserUid: currentUser.uid, authUid: auth.currentUser.uid });
+            // Update the user document with the current anonymous UID
+            try {
+                console.log("Migrating user document to new UID...");
+                await firestoreOperationWithRetry(() => db.collection('users').doc(auth.currentUser.uid).set({
+                    username: currentUser.username,
+                    password: currentUser.password,
+                    decks: currentUser.decks
+                }));
+                // Delete the old document
+                await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
+                // Update currentUser.uid
+                currentUser.uid = auth.currentUser.uid;
+                console.log("User document migrated successfully to UID:", currentUser.uid);
+            } catch (error) {
+                console.error("Error migrating user document:", error);
+                alert("Error syncing user data. Please log in again.");
+                authModal.style.display = 'none';
+                showAuthModal('login');
+                return;
+            }
         }
 
         const newDeck = {
