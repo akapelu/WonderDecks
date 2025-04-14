@@ -15,7 +15,7 @@ try {
     console.log("Firebase initialized successfully");
 } catch (error) {
     console.error("Error initializing Firebase:", error);
-    alert("Error initializing Firebase. Please check the console for details.");
+    alert("Error initializing Firebase. Please check your Firebase configuration (e.g., API key) and ensure you have a stable internet connection.");
 }
 
 const db = firebase.firestore();
@@ -28,6 +28,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     })
     .catch(error => {
         console.error("Error setting auth persistence:", error);
+        alert("Error setting authentication persistence. Please check the console for details.");
     });
 
 // Simulated backend data
@@ -42,7 +43,7 @@ let heroes = [
     { id: 8, name: "JARKOS", decks: [], totalLikes: 0 },
     { id: 9, name: "JIN", decks: [], totalLikes: 0 },
     { id: 10, name: "KADRIA", decks: [], totalLikes: 0 },
-    { id: 11, name: "KROGNAR", decks: [], totalLikes: 0 },
+    { id: 11, name: "KROGNAAR", decks: [], totalLikes: 0 },
     { id: 12, name: "LUSBAAL", decks: [], totalLikes: 0 },
     { id: 13, name: "LYON", decks: [], totalLikes: 0 },
     { id: 14, name: "PIPER", decks: [], totalLikes: 0 },
@@ -137,13 +138,16 @@ function getImageUrl(name, type) {
     return `${githubBaseUrl}${type}/${formattedName}.png`;
 }
 
-// Retry mechanism for Firestore operations
-async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 1000) {
+// Retry mechanism for Firestore operations with increased retries and delay
+async function firestoreOperationWithRetry(operation, maxRetries = 5, delay = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             return await operation();
         } catch (error) {
-            if (attempt === maxRetries) throw error;
+            if (attempt === maxRetries) {
+                console.error(`Firestore operation failed after ${maxRetries} retries:`, error);
+                throw error;
+            }
             console.warn(`Firestore operation failed, retrying (${attempt}/${maxRetries})...`, error);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -153,7 +157,7 @@ async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 10
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
-    alert("Error signing in anonymously. Please ensure Firebase Authentication (Anonymous) is enabled and the API key is correct. Check the console for details.");
+    alert("Error signing in anonymously. Please ensure Firebase Authentication (Anonymous) is enabled and check your internet connection.");
 });
 
 // Listen for auth state changes
@@ -180,6 +184,7 @@ auth.onAuthStateChanged(async user => {
                 }
             } catch (error) {
                 console.error("Error fetching user data:", error);
+                alert("Error fetching user data. Please check your internet connection and try again.");
             }
         }
         // Set up real-time listeners
@@ -191,6 +196,7 @@ auth.onAuthStateChanged(async user => {
         // Re-authenticate anonymously after signing out
         auth.signInAnonymously().catch(error => {
             console.error("Error signing in anonymously after logout:", error);
+            alert("Error signing in anonymously after logout. Please check your internet connection.");
         });
     }
 });
@@ -227,6 +233,7 @@ function setupRealtimeListeners() {
         }
     }, error => {
         console.error("Error listening to users collection:", error);
+        alert("Error syncing users in real-time. Please check your internet connection.");
     });
 
     // Listen for changes in the userLikes collection
@@ -249,6 +256,7 @@ function setupRealtimeListeners() {
         }
     }, error => {
         console.error("Error listening to userLikes collection:", error);
+        alert("Error syncing user likes in real-time. Please check your internet connection.");
     });
 }
 
@@ -380,9 +388,10 @@ logoutBtn.addEventListener('click', async () => {
         }
         savedUserName = null;
         showSection(welcomeSection);
+        updateUIForCurrentUser();
     } catch (error) {
         console.error("Error signing out:", error);
-        alert("Error signing out. Please check the console for details.");
+        alert("Error signing out. Please check your internet connection and try again.");
     }
 });
 
@@ -430,9 +439,11 @@ authForm.addEventListener('submit', async (e) => {
             }
             authModal.style.display = 'none';
             updateUIForCurrentUser();
+            showSection(userAccountSection);
+            displayUserDecks();
         } catch (error) {
             console.error("Error registering user:", error);
-            alert("Error registering user. Please check the console for details.");
+            alert("Error registering user. Please check your internet connection and try again.");
             return;
         }
     } else {
@@ -458,9 +469,11 @@ authForm.addEventListener('submit', async (e) => {
             }
             authModal.style.display = 'none';
             updateUIForCurrentUser();
+            showSection(userAccountSection);
+            displayUserDecks();
         } catch (error) {
             console.error("Error logging in:", error);
-            alert("Error logging in. Please check the console for details.");
+            alert("Error logging in. Please check your internet connection and try again.");
             return;
         }
     }
@@ -537,7 +550,7 @@ function displayHeroDecks(hero) {
                 }
             } catch (error) {
                 console.error("Error liking deck:", error);
-                alert("Error liking deck. Please check the console for details.");
+                alert("Error liking deck. Please check your internet connection and try again.");
             }
         });
         heroDecksList.appendChild(deckCard);
@@ -574,7 +587,7 @@ function displayUserDecks() {
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             } catch (error) {
                 console.error("Error deleting deck:", error);
-                alert("Error deleting deck. Please check the console for details.");
+                alert("Error deleting deck. Please check your internet connection and try again.");
             }
         });
         deckCard.querySelector('.toggle-public-btn').addEventListener('click', async () => {
@@ -591,7 +604,7 @@ function displayUserDecks() {
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             } catch (error) {
                 console.error("Error toggling deck visibility:", error);
-                alert("Error toggling deck visibility. Please check the console for details.");
+                alert("Error toggling deck visibility. Please check your internet connection and try again.");
             }
         });
         userDecksList.appendChild(deckCard);
@@ -734,7 +747,7 @@ function showDeckModal(mode, deck = null) {
             deckModal.style.display = 'none';
         } catch (error) {
             console.error("Error saving deck:", error);
-            alert("Error saving deck. Please check the console for details.");
+            alert("Error saving deck. Please check your internet connection and try again.");
         }
     };
 }
@@ -773,8 +786,25 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         }
         savedUserName = null;
         showSection(welcomeSection);
+        updateUIForCurrentUser(); // Asegurar que la UI se actualice después del logout
     } catch (error) {
         console.error("Error deleting account:", error);
-        alert("Error deleting account. Please check the console for details.");
+        alert("Error deleting account. Please check your internet connection and try again.");
+        // Forzar logout incluso si hay un error
+        try {
+            await auth.signOut();
+            currentUser = null;
+            try {
+                localStorage.removeItem('currentUser');
+            } catch (error) {
+                console.error("Error removing from localStorage:", error);
+            }
+            savedUserName = null;
+            showSection(welcomeSection);
+            updateUIForCurrentUser();
+        } catch (logoutError) {
+            console.error("Error forcing logout after failed account deletion:", logoutError);
+            alert("Error forcing logout after account deletion. Please try again.");
+        }
     }
 });
