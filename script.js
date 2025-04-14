@@ -347,8 +347,8 @@ function showSection(section) {
 }
 
 // Navbar Buttons
-document.getElementById('explore-heroes-btn').addEventListener('click', () => {
-    console.log("Explore Heroes button clicked");
+document.getElementById('hero-showcase-btn').addEventListener('click', () => {
+    console.log("Public Decks button clicked");
     if (!currentUser) {
         alert('Por favor, inicia sesión para ver los Public Decks.');
         showAuthModal('login');
