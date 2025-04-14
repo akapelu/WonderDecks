@@ -172,6 +172,14 @@ h2 {
     margin: 15px 0;
     color: #ffffff;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Estilos para las imágenes en las listas de decks */
@@ -190,6 +198,7 @@ h2 {
     justify-content: center;
     gap: 10px;
     margin: 10px 0;
+    min-height: 90px;
 }
 
 .card-list .deck-troop-image {
@@ -197,6 +206,12 @@ h2 {
     height: auto;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajustar el texto "Created by" y "Likes" para que tengan un tamaño fijo */
+.card-list p {
+    min-height: 20px;
+    margin: 5px 0;
 }
 
 /* Estilo para los botones dentro de las cartas */
@@ -211,6 +226,7 @@ h2 {
     color: #1a2a6c;
     box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
     margin: 5px;
+    width: 80px;
 }
 
 .card-list button:hover {
@@ -449,14 +465,35 @@ h2 {
 
     .card-list > div {
         width: 220px;
+        padding: 15px;
+    }
+
+    .card-list h3 {
+        font-size: 16px;
+        min-height: 35px;
     }
 
     .card-list .deck-hero-image {
         max-width: 55px;
     }
 
+    .card-list .deck-troops {
+        min-height: 80px;
+    }
+
     .card-list .deck-troop-image {
         max-width: 35px;
+    }
+
+    .card-list p {
+        font-size: 12px;
+        min-height: 18px;
+    }
+
+    .card-list button {
+        font-size: 12px;
+        padding: 6px 10px;
+        width: 70px;
     }
 
     .account-buttons {
@@ -483,7 +520,7 @@ h2 {
     .modal-content input,
     .modal-content select,
     .modal-content textarea {
-        font-size: 14px;
+        font-size: 16px;
         padding: 10px;
     }
 
@@ -544,14 +581,35 @@ h2 {
 
     .card-list > div {
         width: 180px;
+        padding: 10px;
+    }
+
+    .card-list h3 {
+        font-size: 14px;
+        min-height: 30px;
     }
 
     .card-list .deck-hero-image {
         max-width: 45px;
     }
 
+    .card-list .deck-troops {
+        min-height: 70px;
+    }
+
     .card-list .deck-troop-image {
         max-width: 30px;
+    }
+
+    .card-list p {
+        font-size: 11px;
+        min-height: 16px;
+    }
+
+    .card-list button {
+        font-size: 11px;
+        padding: 5px 8px;
+        width: 60px;
     }
 
     .account-buttons button {
@@ -572,7 +630,7 @@ h2 {
     .modal-content input,
     .modal-content select,
     .modal-content textarea {
-        font-size: 12px;
+        font-size: 16px;
         padding: 8px;
     }
 
