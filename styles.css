@@ -75,7 +75,7 @@ nav {
     color: #1a2a6c;
     box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
     min-width: 100px;
-    max-width: 150px; /* Aumentado para pantallas grandes */
+    max-width: 150px;
     text-align: center;
     white-space: nowrap;
     display: flex;
@@ -305,14 +305,28 @@ h2 {
 }
 
 .deck-details-hero-image img {
-    max-width: 150px; /* Reducido para que no sea tan grande */
+    max-width: 100px; /* Reducido para que el héroe sea más pequeño */
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
+#deck-details-troops {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+#deck-details-troops > div {
+    width: 45%; /* Para que se muestren en pares de 2 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 #deck-details-troops img {
-    max-width: 80px; /* Reducido para las tropas */
+    max-width: 60px; /* Reducido para las tropas */
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -417,11 +431,15 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 120px;
+        max-width: 80px;
+    }
+
+    #deck-details-troops > div {
+        width: 45%;
     }
 
     #deck-details-troops img {
-        max-width: 60px;
+        max-width: 50px;
     }
 }
 
@@ -492,10 +510,14 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 100px;
+        max-width: 60px;
+    }
+
+    #deck-details-troops > div {
+        width: 45%;
     }
 
     #deck-details-troops img {
-        max-width: 50px;
+        max-width: 40px;
     }
 }
