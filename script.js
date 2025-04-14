@@ -469,26 +469,37 @@ authForm.addEventListener('submit', async (e) => {
 
         if (storedUid !== currentUid) {
             console.log("UID mismatch during login, migrating user data...");
-            // Copy user data to the new UID
-            await firestoreOperationWithRetry(() => 
-                db.collection('users').doc(currentUid).set(userData)
-            );
-            // Update likes to use the new UID
-            const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
-            for (const key of likeKeys) {
-                const newKey = `${username}:${key.split(':')[1]}`;
+            try {
+                // Copy user data to the new UID
                 await firestoreOperationWithRetry(() => 
-                    db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
+                    db.collection('users').doc(currentUid).set(userData)
                 );
+                // Update likes to use the new UID
+                const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
+                for (const key of likeKeys) {
+                    const newKey = `${username}:${key.split(':')[1]}`;
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
+                    );
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('userLikes').doc(key).delete()
+                    );
+                }
+                // Delete the old document
                 await firestoreOperationWithRetry(() => 
-                    db.collection('userLikes').doc(key).delete()
+                    db.collection('users').doc(storedUid).delete()
                 );
+                console.log("User document migrated successfully to UID:", currentUid);
+
+                // Update local users array to remove the old UID
+                users = users.filter(user => user.uid !== storedUid);
+                userData.uid = currentUid;
+                users.push(userData);
+            } catch (error) {
+                console.error("Error during UID migration:", error);
+                alert("Error syncing user data with Firestore. Please try again.");
+                return; // Exit to prevent proceeding with inconsistent data
             }
-            // Delete the old document
-            await firestoreOperationWithRetry(() => 
-                db.collection('users').doc(storedUid).delete()
-            );
-            console.log("User document migrated successfully to UID:", currentUid);
         }
 
         currentUser = userData;
@@ -500,7 +511,6 @@ authForm.addEventListener('submit', async (e) => {
         await loadUsersAndLikes();
     }
 });
-
 // Display Heroes in Showcase
 function displayHeroes() {
     heroes.sort((a, b) => {
