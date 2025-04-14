@@ -155,6 +155,16 @@ async function loadUsersAndLikes() {
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
+            // Normalizar los decks para asegurar que tengan todos los campos esperados
+            userData.decks = userData.decks.map(deck => ({
+                name: deck.name,
+                heroId: deck.heroId,
+                troops: deck.troops,
+                description: deck.description,
+                isPublic: deck.isPublic,
+                creator: deck.creator,
+                likes: deck.likes != null ? deck.likes : 0 // Asegurar que likes siempre esté presente
+            }));
             users.push(userData);
         });
         console.log("Users loaded:", users);
@@ -207,6 +217,16 @@ auth.onAuthStateChanged(async user => {
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
+                // Normalizar los decks de currentUser
+                currentUser.decks = currentUser.decks.map(deck => ({
+                    name: deck.name,
+                    heroId: deck.heroId,
+                    troops: deck.troops,
+                    description: deck.description,
+                    isPublic: deck.isPublic,
+                    creator: deck.creator,
+                    likes: deck.likes != null ? deck.likes : 0
+                }));
                 updateUIForCurrentUser();
             } else {
                 console.log("User document not found for UID:", user.uid);
@@ -744,11 +764,22 @@ function showDeckModal(mode, deck = null) {
         };
 
         try {
+            // Normalizar los decks existentes en currentUser.decks
+            currentUser.decks = currentUser.decks.map(deck => ({
+                name: deck.name,
+                heroId: deck.heroId,
+                troops: deck.troops,
+                description: deck.description,
+                isPublic: deck.isPublic,
+                creator: deck.creator,
+                likes: deck.likes != null ? deck.likes : 0
+            }));
+
             if (mode === 'add') {
                 currentUser.decks.push(newDeck);
             } else {
                 const deckIndex = currentUser.decks.findIndex(d => d.name === deck.name);
-                newDeck.likes = deck.likes;
+                newDeck.likes = deck.likes || 0;
                 currentUser.decks[deckIndex] = newDeck;
             }
 
