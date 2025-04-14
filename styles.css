@@ -65,7 +65,7 @@ nav {
 
 .nav-right button, .nav-right span {
     margin-left: 5px;
-    padding: 8px 12px; /* Ajuste de padding para uniformidad */
+    padding: 8px 12px;
     font-size: 14px;
     border: none;
     border-radius: 20px;
@@ -74,10 +74,13 @@ nav {
     background: linear-gradient(145deg, #ffffff, #e6e6e6);
     color: #1a2a6c;
     box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
-    min-width: 100px; /* Ancho mínimo para uniformidad */
-    max-width: 120px; /* Ancho máximo para uniformidad */
-    text-align: center; /* Centrar el texto */
-    white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
+    min-width: 100px;
+    max-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+    display: flex; /* Añadido para centrado */
+    align-items: center; /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
 }
 
 /* Ajustes responsivos */
