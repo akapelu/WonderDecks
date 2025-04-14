@@ -16,10 +16,6 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-    // Enable offline persistence (optional, for better offline support)
-    db.enablePersistence().catch(error => {
-        console.warn("Failed to enable Firestore offline persistence:", error);
-    });
 } catch (error) {
     console.error("Error initializing Firebase:", error);
     alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
@@ -92,8 +88,6 @@ let troops = [
     { id: 43, name: "MURBY" },
     { id: 44, name: "NEYON JK" },
     { id: 45, name: "NEYON UR" },
-    { id: 46, name: "NEYON VC" },
-    { id: 47, name: "NORPUR JK" },
     { id: 48, name: "NORPUR VC" },
     { id: 49, name: "NORPUR VG" },
     { id: 50, name: "RAGOR" },
@@ -200,7 +194,7 @@ auth.onAuthStateChanged(async user => {
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
-            alert("Error fetching user data. Check your internet connection and try again.");
+            alert("Error fetching user data. Proceeding with local data.");
         }
         await loadUsersAndLikes();
     } else {
@@ -241,7 +235,7 @@ const heroDecksSection = document.getElementById('hero-decks-section');
 const userAccountSection = document.getElementById('user-account-section');
 const heroList = document.getElementById('hero-list');
 const heroDecksList = document.getElementById('hero-decks-list');
-const userDecksList = document.getElementById('user-decs-list');
+const userDecksList = document.getElementById('user-decks-list');
 const userNameDisplay = document.getElementById('user-name');
 const loginBtn = document.getElementById('login-btn');
 const registerBtn = document.getElementById('register-btn');
