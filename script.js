@@ -21,6 +21,15 @@ try {
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// Set persistence to LOCAL to maintain session after refresh
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log("Auth persistence set to LOCAL");
+    })
+    .catch(error => {
+        console.error("Error setting auth persistence:", error);
+    });
+
 // Simulated backend data
 let heroes = [
     { id: 1, name: "BLUE", decks: [], totalLikes: 0 },
@@ -33,7 +42,7 @@ let heroes = [
     { id: 8, name: "JARKOS", decks: [], totalLikes: 0 },
     { id: 9, name: "JIN", decks: [], totalLikes: 0 },
     { id: 10, name: "KADRIA", decks: [], totalLikes: 0 },
-    { id: 11, name: "KROGNAR", decks: [], totalLikes: 0 },
+    { id: 11, name: "KROGNAAR", decks: [], totalLikes: 0 },
     { id: 12, name: "LUSBAAL", decks: [], totalLikes: 0 },
     { id: 13, name: "LYON", decks: [], totalLikes: 0 },
     { id: 14, name: "PIPER", decks: [], totalLikes: 0 },
@@ -128,6 +137,19 @@ function getImageUrl(name, type) {
     return `${githubBaseUrl}${type}/${formattedName}.png`;
 }
 
+// Retry mechanism for Firestore operations
+async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 1000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            if (attempt === maxRetries) throw error;
+            console.warn(`Firestore operation failed, retrying (${attempt}/${maxRetries})...`, error);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+}
+
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
@@ -148,7 +170,7 @@ auth.onAuthStateChanged(async user => {
         }
         if (savedUser) {
             try {
-                const userDoc = await db.collection('users').doc(user.uid).get();
+                const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
                 if (userDoc.exists) {
                     currentUser = userDoc.data();
                     currentUser.uid = user.uid;
@@ -180,7 +202,7 @@ async function loadUsersAndLikes() {
         userLikes = {};
 
         // Load users
-        const usersSnapshot = await db.collection('users').get();
+        const usersSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
         usersSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
@@ -189,7 +211,7 @@ async function loadUsersAndLikes() {
         console.log("Users loaded:", users);
 
         // Load userLikes
-        const likesSnapshot = await db.collection('userLikes').get();
+        const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
         likesSnapshot.forEach(doc => {
             userLikes[doc.id] = doc.data().value;
         });
@@ -354,7 +376,7 @@ authForm.addEventListener('submit', async (e) => {
         }
         try {
             // Check if username already exists
-            const userSnapshot = await db.collection('users').where('username', '==', username).get();
+            const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).get());
             if (!userSnapshot.empty) {
                 alert('Username already exists!');
                 return;
@@ -363,7 +385,7 @@ authForm.addEventListener('submit', async (e) => {
             // Create new user
             const userId = auth.currentUser.uid;
             const newUser = { username, password, decks: [] };
-            await db.collection('users').doc(userId).set(newUser);
+            await firestoreOperationWithRetry(() => db.collection('users').doc(userId).set(newUser));
             currentUser = newUser;
             currentUser.uid = userId;
             users.push(currentUser);
@@ -376,7 +398,7 @@ authForm.addEventListener('submit', async (e) => {
     } else {
         // Login
         try {
-            const userSnapshot = await db.collection('users').where('username', '==', username).where('password', '==', password).get();
+            const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).where('password', '==', password).get());
             if (userSnapshot.empty) {
                 alert('Invalid credentials!');
                 return;
@@ -465,12 +487,12 @@ function displayHeroDecks(hero) {
                 deck.likes++;
                 hero.totalLikes++;
                 userLikes[likeKey] = true;
-                await db.collection('userLikes').doc(likeKey).set({ value: true });
+                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(likeKey).set({ value: true }));
                 const user = users.find(u => u.username === deck.creator);
                 const userDeck = user.decks.find(d => d.name === deck.name);
                 if (userDeck) {
                     userDeck.likes = deck.likes;
-                    await db.collection('users').doc(user.uid).update({ decks: user.decks });
+                    await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).update({ decks: user.decks }));
                 }
                 displayHeroDecks(hero);
                 displayHeroes();
@@ -485,6 +507,7 @@ function displayHeroDecks(hero) {
 
 // Display User's Decks
 function displayUserDecks() {
+    if (!currentUser) return;
     document.getElementById('user-account-title').textContent = `${currentUser.username}'s Decks`;
     userDecksList.innerHTML = '';
     currentUser.decks.forEach(deck => {
@@ -514,7 +537,7 @@ function displayUserDecks() {
                         hero.totalLikes -= deck.likes;
                         for (let key in userLikes) {
                             if (key.endsWith(`:${deck.name}`)) {
-                                await db.collection('userLikes').doc(key).delete();
+                                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
                                 delete userLikes[key];
                             }
                         }
@@ -522,7 +545,7 @@ function displayUserDecks() {
                     hero.decks = hero.decks.filter(d => d.name !== deck.name);
                 }
                 currentUser.decks = currentUser.decks.filter(d => d.name !== deck.name);
-                await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
+                await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
                 displayUserDecks();
                 displayHeroes();
             } catch (error) {
@@ -542,14 +565,14 @@ function displayUserDecks() {
                         hero.totalLikes -= deck.likes;
                         for (let key in userLikes) {
                             if (key.endsWith(`:${deck.name}`)) {
-                                await db.collection('userLikes').doc(key).delete();
+                                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
                                 delete userLikes[key];
                             }
                         }
                         deck.likes = 0;
                     }
                 }
-                await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
+                await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
                 displayUserDecks();
                 displayHeroes();
             } catch (error) {
@@ -589,6 +612,11 @@ function showDeckModal(mode, deck = null) {
     deckModalTitle.textContent = mode === 'add' ? 'Add New Deck' : 'Edit Deck';
     deckSubmitBtn.textContent = mode === 'add' ? 'Add Deck' : 'Save Changes';
     deckModal.style.display = 'flex';
+
+    // Clear previous form event listeners to prevent duplication
+    const newDeckForm = deckForm.cloneNode(true);
+    deckForm.parentNode.replaceChild(newDeckForm, deckForm);
+    deckForm = newDeckForm;
 
     heroSelect.innerHTML = '<option value="" disabled selected>Select Hero</option>';
     heroes.forEach(hero => {
@@ -644,6 +672,15 @@ function showDeckModal(mode, deck = null) {
         });
         document.getElementById('deck-description-input').value = deck.description;
         document.getElementById('deck-public-input').checked = deck.isPublic;
+    } else {
+        // Clear form for adding a new deck
+        document.getElementById('deck-name-input').value = '';
+        document.getElementById('deck-description-input').value = '';
+        document.getElementById('deck-public-input').checked = false;
+        troopSelects.forEach(select => {
+            select.value = '';
+            select.dispatchEvent(new Event('change'));
+        });
     }
 
     deckForm.onsubmit = async (e) => {
@@ -653,6 +690,12 @@ function showDeckModal(mode, deck = null) {
         const troops = troopSelects.map(s => parseInt(s.value));
         const description = document.getElementById('deck-description-input').value;
         const isPublic = document.getElementById('deck-public-input').checked;
+
+        // Check for duplicate deck name
+        if (mode === 'add' && currentUser.decks.some(d => d.name === deckName)) {
+            alert('A deck with this name already exists!');
+            return;
+        }
 
         const newDeck = {
             name: deckName,
@@ -686,9 +729,10 @@ function showDeckModal(mode, deck = null) {
                 }
             }
 
-            await db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks });
+            await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
             deckModal.style.display = 'none';
             displayUserDecks();
+            displayHeroes();
         } catch (error) {
             console.error("Error saving deck:", error);
             alert("Error saving deck. Please check the console for details.");
@@ -711,10 +755,10 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
     console.log("Delete Account button clicked");
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) return;
     try {
-        await db.collection('users').doc(currentUser.uid).delete();
+        await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
         for (let key in userLikes) {
             if (key.startsWith(currentUser.username)) {
-                await db.collection('userLikes').doc(key).delete();
+                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
                 delete userLikes[key];
             }
         }
