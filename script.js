@@ -347,8 +347,13 @@ function showSection(section) {
 }
 
 // Navbar Buttons
-document.getElementById('hero-showcase-btn').addEventListener('click', () => {
-    console.log("Hero Showcase button clicked");
+document.getElementById('explore-heroes-btn').addEventListener('click', () => {
+    console.log("Explore Heroes button clicked");
+    if (!currentUser) {
+        alert('Por favor, inicia sesión para ver los Public Decks.');
+        showAuthModal('login');
+        return;
+    }
     showSection(heroShowcaseSection);
     displayHeroes();
 });
@@ -365,6 +370,11 @@ document.getElementById('get-started-btn').addEventListener('click', () => {
 
 document.getElementById('explore-heroes-btn').addEventListener('click', () => {
     console.log("Explore Heroes button clicked");
+    if (!currentUser) {
+        alert('Por favor, inicia sesión para ver los Public Decks.');
+        showAuthModal('login');
+        return;
+    }
     showSection(heroShowcaseSection);
     displayHeroes();
 });
