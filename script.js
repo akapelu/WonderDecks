@@ -1,12 +1,12 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
-  authDomain: "wonderdecks-6cadf.firebaseapp.com",
-  projectId: "wonderdecks-6cadf",
-  storageBucket: "wonderdecks-6cadf.firebasestorage.app",
-  messagingSenderId: "715734231945",
-  appId: "1:715734231945:web:d74cd383ec031e980ecf58",
-  measurementId: "G-Q9DJVZYCY6"
+    apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
+    authDomain: "wonderdecks-6cadf.firebaseapp.com",
+    projectId: "wonderdecks-6cadf",
+    storageBucket: "wonderdecks-6cadf.firebasestorage.app",
+    messagingSenderId: "715734231945",
+    appId: "1:715734231945:web:d74cd383ec031e980ecf58",
+    measurementId: "G-Q9DJVZCY6"
 };
 
 // Initialize Firebase
@@ -88,6 +88,8 @@ let troops = [
     { id: 43, name: "MURBY" },
     { id: 44, name: "NEYON JK" },
     { id: 45, name: "NEYON UR" },
+    { id: 46, name: "NEYON VC" },
+    { id: 47, name: "NORPUR JK" },
     { id: 48, name: "NORPUR VC" },
     { id: 49, name: "NORPUR VG" },
     { id: 50, name: "RAGOR" },
@@ -164,6 +166,23 @@ async function loadUsersAndLikes() {
             userLikes[doc.id] = doc.data().value;
         });
         console.log("UserLikes loaded:", userLikes);
+
+        // Recalcular los likes para cada deck
+        users.forEach(user => {
+            user.decks.forEach(deck => {
+                // Contar cuántos usuarios han dado like a este deck
+                const deckLikes = Object.keys(userLikes).filter(key => 
+                    key.endsWith(`:${deck.name}`) && userLikes[key] === true
+                ).length;
+                deck.likes = deckLikes;
+            });
+            // Actualizar el documento del usuario en Firestore con el conteo correcto de likes
+            firestoreOperationWithRetry(() => 
+                db.collection('users').doc(user.uid).update({ decks: user.decks })
+            ).catch(error => {
+                console.error("Error updating deck likes for user", user.uid, ":", error);
+            });
+        });
 
         // Update heroes' decks
         loadHeroesDecks();
@@ -495,24 +514,46 @@ function displayHeroDecks(hero) {
                 alert('You have already liked this deck!');
                 return;
             }
+
             try {
-                deck.likes++;
-                hero.totalLikes++;
+                // Incrementar el conteo de likes localmente
+                deck.likes = (deck.likes || 0) + 1;
+                hero.totalLikes = (hero.totalLikes || 0) + 1;
                 userLikes[likeKey] = true;
-                await firestoreOperationWithRetry(() => db.collection('userLikes').doc(likeKey).set({ value: true }));
+
+                // Guardar el like en la colección userLikes
+                await firestoreOperationWithRetry(() => 
+                    db.collection('userLikes').doc(likeKey).set({ value: true })
+                );
+
+                // Actualizar el documento del creador en Firestore
                 const user = users.find(u => u.username === deck.creator);
-                const userDeck = user.decks.find(d => d.name === deck.name);
-                if (userDeck) {
-                    userDeck.likes = deck.likes;
-                    await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).update({ decks: user.decks }));
+                if (user) {
+                    const userDeck = user.decks.find(d => d.name === deck.name);
+                    if (userDeck) {
+                        userDeck.likes = deck.likes;
+                        await firestoreOperationWithRetry(() => 
+                            db.collection('users').doc(user.uid).update({ decks: user.decks })
+                        );
+                    }
                 }
+
+                // Recargar los datos para sincronizar
                 await loadUsersAndLikes();
+
+                // Actualizar la UI
+                deckCard.querySelector('p:nth-child(5)').textContent = `Likes: ${deck.likes}`;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
-                deck.likes--;
-                hero.totalLikes--;
+
+                // Revertir los cambios locales
+                deck.likes = (deck.likes || 0) - 1;
+                hero.totalLikes = (hero.totalLikes || 0) - 1;
                 delete userLikes[likeKey];
+
+                // Actualizar la UI
+                deckCard.querySelector('p:nth-child(5)').textContent = `Likes: ${deck.likes}`;
             }
         });
         heroDecksList.appendChild(deckCard);
