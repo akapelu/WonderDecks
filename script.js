@@ -17,7 +17,9 @@ try {
     console.error("Error initializing Firebase:", error);
     alert("Error initializing Firebase. Please check your Firebase configuration (e.g., API key) and ensure you have a stable internet connection.");
 }
-
+db.collection('test').doc('testDoc').set({ testField: "Hello World" })
+    .then(() => console.log("Test document written successfully"))
+    .catch(error => console.error("Error writing test document:", error));
 const db = firebase.firestore();
 const auth = firebase.auth();
 
