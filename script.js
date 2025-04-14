@@ -626,21 +626,27 @@ function displayHeroDecks(hero) {
             troopsContainer.appendChild(troopImage);
         });
 
-        // Crear el contenido del deck
+        // Determinar si el usuario ya dio like
+        const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
+        const hasLiked = likeKey && userLikes[likeKey];
+
+        // Crear el contenido del deck con el ícono de corazón
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
-            <p>Likes: ${deck.likes}</p>
-            <button class="like-btn">Like</button>
+            <p>Likes: <span class="like-count">${deck.likes}</span></p>
+            <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
         `;
         deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Likes"
         deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Created by"
 
         deckCard.addEventListener('click', (e) => {
-            if (e.target.classList.contains('like-btn')) return;
+            if (e.target.classList.contains('like-heart')) return;
             showDeckDetails(deck);
         });
-        deckCard.querySelector('.like-btn').addEventListener('click', async () => {
+
+        const likeHeart = deckCard.querySelector('.like-heart');
+        likeHeart.addEventListener('click', async () => {
             if (!currentUser) {
                 alert('Please log in to like a deck!');
                 return;
@@ -657,6 +663,10 @@ function displayHeroDecks(hero) {
                 hero.totalLikes = (hero.totalLikes || 0) + 1;
                 userLikes[likeKey] = true;
 
+                // Cambiar el ícono a corazón lleno y color rosa
+                likeHeart.classList.remove('far');
+                likeHeart.classList.add('fas', 'liked');
+
                 // Guardar el like en la colección userLikes
                 await firestoreOperationWithRetry(() => 
                     db.collection('userLikes').doc(likeKey).set({ value: true })
@@ -666,7 +676,7 @@ function displayHeroDecks(hero) {
                 await loadUsersAndLikes();
 
                 // Actualizar la UI
-                deckCard.querySelector('p:nth-child(3)').textContent = `Likes: ${deck.likes}`;
+                deckCard.querySelector('.like-count').textContent = deck.likes;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
@@ -676,8 +686,12 @@ function displayHeroDecks(hero) {
                 hero.totalLikes = (hero.totalLikes || 0) - 1;
                 delete userLikes[likeKey];
 
+                // Revertir el ícono a corazón vacío
+                likeHeart.classList.remove('fas', 'liked');
+                likeHeart.classList.add('far');
+
                 // Actualizar la UI
-                deckCard.querySelector('p:nth-child(3)').textContent = `Likes: ${deck.likes}`;
+                deckCard.querySelector('.like-count').textContent = deck.likes;
             }
         });
         heroDecksList.appendChild(deckCard);
