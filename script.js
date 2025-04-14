@@ -448,36 +448,69 @@ authForm.addEventListener('submit', async (e) => {
     } else {
         // Login
         try {
-            const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).where('password', '==', password).get());
+            const userSnapshot = await firestoreOperationWithRetry(() => 
+                db.collection('users').where('username', '==', username).where('password', '==', password).get()
+            );
             if (userSnapshot.empty) {
                 alert('Invalid credentials!');
                 return;
             }
+
             const userDoc = userSnapshot.docs[0];
             const userData = userDoc.data();
             const userId = userDoc.id;
 
-            // Actualizar el documento del usuario con el UID anónimo actual
+            // Verificar si el UID coincide con el UID anónimo actual
             if (userId !== auth.currentUser.uid) {
                 console.log("UID mismatch during login, updating user document...");
-                // Copiar los datos del usuario al nuevo UID anónimo
-                await firestoreOperationWithRetry(() => db.collection('users').doc(auth.currentUser.uid).set(userData));
-                // Opcional: Eliminar el documento antiguo
-                await firestoreOperationWithRetry(() => db.collection('users').doc(userId).delete());
-                // Actualizar los likes para reflejar el nuevo UID
-                const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
-                for (const key of likeKeys) {
-                    const newKey = key.replace(`${username}:`, `${username}:`);
-                    if (key !== newKey) {
-                        await firestoreOperationWithRetry(() => db.collection('userLikes').doc(newKey).set({ value: userLikes[key] }));
-                        await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
-                    }
-                }
-            }
+                try {
+                    // 1. Verificar si ya existe un documento con el UID actual
+                    const existingDoc = await firestoreOperationWithRetry(() => 
+                        db.collection('users').doc(auth.currentUser.uid).get()
+                    );
+                    if (existingDoc.exists) {
+                        // Si ya existe un documento con el UID actual, no creamos uno nuevo
+                        console.warn("Document with current UID already exists, skipping migration.");
+                        currentUser = existingDoc.data();
+                        currentUser.uid = auth.currentUser.uid;
+                    } else {
+                        // 2. Copiar los datos del usuario al nuevo UID anónimo
+                        await firestoreOperationWithRetry(() => 
+                            db.collection('users').doc(auth.currentUser.uid).set(userData)
+                        );
 
-            currentUser = userData;
-            currentUser.uid = auth.currentUser.uid; // Usar el UID anónimo actual
-            console.log("User logged in:", currentUser);
+                        // 3. Actualizar los likes para reflejar el nuevo UID
+                        const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
+                        for (const key of likeKeys) {
+                            const newKey = `${username}:${key.split(':')[1]}`;
+                            await firestoreOperationWithRetry(() => 
+                                db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
+                            );
+                            await firestoreOperationWithRetry(() => 
+                                db.collection('userLikes').doc(key).delete()
+                            );
+                        }
+
+                        // 4. Eliminar el documento antiguo
+                        await firestoreOperationWithRetry(() => 
+                            db.collection('users').doc(userId).delete()
+                        );
+
+                        currentUser = userData;
+                        currentUser.uid = auth.currentUser.uid;
+                        console.log("User document migrated successfully to UID:", currentUser.uid);
+                    }
+                } catch (error) {
+                    console.error("Error during UID migration:", error);
+                    alert("Error syncing user data with Firestore. Proceeding with local data.");
+                    currentUser = userData;
+                    currentUser.uid = auth.currentUser.uid;
+                }
+            } else {
+                currentUser = userData;
+                currentUser.uid = auth.currentUser.uid;
+                console.log("User logged in:", currentUser);
+            }
 
             // Close modal and update UI
             authModal.style.display = 'none';
@@ -495,7 +528,7 @@ authForm.addEventListener('submit', async (e) => {
             const localUser = users.find(u => u.username === username && u.password === password);
             if (localUser) {
                 currentUser = localUser;
-                currentUser.uid = auth.currentUser.uid; // Actualizar el UID
+                currentUser.uid = auth.currentUser.uid;
                 authModal.style.display = 'none';
                 updateUIForCurrentUser();
                 showSection(userAccountSection);
