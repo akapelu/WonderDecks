@@ -131,7 +131,7 @@ h2 {
 
 #welcome-section button:hover {
     background: linear-gradient(145deg, #e6e6e6, #ffffff);
-    box-shadow: 0 4px 10px rgba(255, strikeout255, 255, 0.5);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
 }
 
@@ -172,6 +172,51 @@ h2 {
     margin: 15px 0;
     color: #ffffff;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos para las imágenes en las listas de decks */
+.card-list .deck-hero-image {
+    max-width: 65px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    margin: 10px auto;
+    display: block;
+}
+
+.card-list .deck-troops {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.card-list .deck-troop-image {
+    max-width: 40px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para los botones dentro de las cartas */
+.card-list button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+    margin: 5px;
+}
+
+.card-list button:hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .troop-selectors {
@@ -313,7 +358,7 @@ h2 {
 }
 
 .deck-details-hero-image img {
-    max-width: 65px !important; /* Slightly larger than troops (60px) */
+    max-width: 65px !important;
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -327,14 +372,14 @@ h2 {
 }
 
 #deck-details-troops > div {
-    width: 45%; /* Display in pairs of 2 */
+    width: 45%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 #deck-details-troops img {
-    max-width: 60px; /* Troop size */
+    max-width: 60px;
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -406,8 +451,12 @@ h2 {
         width: 220px;
     }
 
-    .card-list img {
-        width: 150px;
+    .card-list .deck-hero-image {
+        max-width: 55px;
+    }
+
+    .card-list .deck-troop-image {
+        max-width: 35px;
     }
 
     .account-buttons {
@@ -449,7 +498,7 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 55px !important; /* Slightly larger than troops (50px) */
+        max-width: 55px !important;
     }
 
     #deck-details-troops > div {
@@ -497,8 +546,12 @@ h2 {
         width: 180px;
     }
 
-    .card-list img {
-        width: 120px;
+    .card-list .deck-hero-image {
+        max-width: 45px;
+    }
+
+    .card-list .deck-troop-image {
+        max-width: 30px;
     }
 
     .account-buttons button {
@@ -529,7 +582,7 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 45px !important; /* Slightly larger than troops (40px) */
+        max-width: 45px !important;
     }
 
     #deck-details-troops > div {
