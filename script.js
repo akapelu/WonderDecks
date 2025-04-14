@@ -161,7 +161,14 @@ async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 20
 }
 
 // Load users and userLikes from Firestore
+let isLoadingUsersAndLikes = false;
+
 async function loadUsersAndLikes() {
+    if (isLoadingUsersAndLikes) {
+        console.log("loadUsersAndLikes already in progress, skipping...");
+        return;
+    }
+    isLoadingUsersAndLikes = true;
     try {
         // Load users
         const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
@@ -177,9 +184,11 @@ async function loadUsersAndLikes() {
                 description: deck.description,
                 isPublic: deck.isPublic,
                 creator: deck.creator,
-                // No seteamos likes aquí, lo calcularemos dinámicamente
             }));
-            users.push(userData);
+            // Evitar duplicados de usuarios basados en UID
+            if (!users.some(u => u.uid === userData.uid)) {
+                users.push(userData);
+            }
         });
         console.log("Users loaded:", users);
 
@@ -206,9 +215,10 @@ async function loadUsersAndLikes() {
     } catch (error) {
         console.error("Error loading users and likes:", error);
         alert("Error loading data from Firestore. Some features may not work correctly.");
+    } finally {
+        isLoadingUsersAndLikes = false;
     }
 }
-
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
