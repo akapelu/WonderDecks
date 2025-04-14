@@ -6,14 +6,14 @@
 }
 
 body {
-    background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c 100%) !important;
+    background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c  CLEANUP: Remove duplicate gradient declaration
     color: #e6e6e6;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
 }
 
-/* Fondo con partículas brillantes */
+/* Background with sparkling particles */
 body::before {
     content: '';
     position: fixed;
@@ -305,7 +305,7 @@ h2 {
 }
 
 .deck-details-hero-image img {
-    max-width: 65px; /* Solo un poco más grande que las tropas (60px) */
+    max-width: 65px !important; /* Slightly larger than troops (60px) */
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -319,20 +319,20 @@ h2 {
 }
 
 #deck-details-troops > div {
-    width: 45%; /* Para que se muestren en pares de 2 */
+    width: 45%; /* Display in pairs of 2 */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 #deck-details-troops img {
-    max-width: 60px; /* Tamaño de las tropas */
+    max-width: 60px; /* Troop size */
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Ajustes responsivos para móviles */
+/* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     body {
         background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c 100%) !important;
@@ -431,7 +431,7 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 55px; /* Solo un poco más grande que las tropas (50px) */
+        max-width: 55px !important; /* Slightly larger than troops (50px) */
     }
 
     #deck-details-troops > div {
@@ -510,7 +510,7 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 45px; /* Solo un poco más grande que las tropas (40px) */
+        max-width: 45px !important; /* Slightly larger than troops (40px) */
     }
 
     #deck-details-troops > div {
