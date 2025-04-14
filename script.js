@@ -42,7 +42,7 @@ let heroes = [
     { id: 8, name: "JARKOS", decks: [], totalLikes: 0 },
     { id: 9, name: "JIN", decks: [], totalLikes: 0 },
     { id: 10, name: "KADRIA", decks: [], totalLikes: 0 },
-    { id: 11, name: "KROGNAAR", decks: [], totalLikes: 0 },
+    { id: 11, name: "KROGNAR", decks: [], totalLikes: 0 },
     { id: 12, name: "LUSBAAL", decks: [], totalLikes: 0 },
     { id: 13, name: "LYON", decks: [], totalLikes: 0 },
     { id: 14, name: "PIPER", decks: [], totalLikes: 0 },
