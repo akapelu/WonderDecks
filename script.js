@@ -1,12 +1,12 @@
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
-  authDomain: "wonderdecks-6cadf.firebaseapp.com",
-  projectId: "wonderdecks-6cadf",
-  storageBucket: "wonderdecks-6cadf.firebasestorage.app",
-  messagingSenderId: "715734231945",
-  appId: "1:715734231945:web:d74cd383ec031e980ecf58",
-  measurementId: "G-Q9DJVZYCY6"
+    apiKey: "TU_API_KEY_AQUÍ", // Reemplaza con la clave correcta de Firebase
+    authDomain: "wonderdecks-6ca4f.firebaseapp.com",
+    projectId: "wonderdecks-6ca4f",
+    storageBucket: "wonderdecks-6ca4f.appspot.com",
+    messagingSenderId: "715734231945",
+    appId: "1:715734231945:web:d74cd383ec031e980ecf58",
+    measurementId: "G-Q9DJVZCY6"
 };
 
 // Initialize Firebase
@@ -15,6 +15,7 @@ try {
     console.log("Firebase initialized successfully");
 } catch (error) {
     console.error("Error initializing Firebase:", error);
+    alert("Error initializing Firebase. Please check the console for details.");
 }
 
 const db = firebase.firestore();
@@ -116,6 +117,7 @@ let troops = [
 let currentUser = null;
 let users = [];
 let userLikes = {};
+let savedUserName = null;
 
 // GitHub repository base URL for images
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
@@ -129,19 +131,20 @@ function getImageUrl(name, type) {
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
-    alert("Error connecting to Firebase. Please check the console for details.");
+    alert("Error signing in anonymously. Please ensure Firebase Authentication (Anonymous) is enabled and the API key is correct. Check the console for details.");
 });
 
 // Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
-        let savedUser;
+        let savedUser = null;
         try {
             savedUser = localStorage.getItem('currentUser');
+            savedUserName = savedUser;
         } catch (error) {
             console.error("Error accessing localStorage:", error);
-            savedUser = null;
+            savedUser = savedUserName;
         }
         if (savedUser) {
             try {
@@ -155,7 +158,6 @@ auth.onAuthStateChanged(async user => {
                 }
             } catch (error) {
                 console.error("Error fetching user data:", error);
-                alert("Error fetching user data. Please check the console for details.");
             }
         }
         // Load all users and userLikes from Firestore
@@ -324,6 +326,7 @@ logoutBtn.addEventListener('click', async () => {
         } catch (error) {
             console.error("Error removing from localStorage:", error);
         }
+        savedUserName = null;
         showSection(welcomeSection);
     } catch (error) {
         console.error("Error signing out:", error);
@@ -345,6 +348,10 @@ authForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password-input').value;
 
     if (authSubmitBtn.textContent === 'Register') {
+        if (!auth.currentUser) {
+            alert("Authentication failed. Please ensure Firebase is properly configured and try again.");
+            return;
+        }
         try {
             // Check if username already exists
             const userSnapshot = await db.collection('users').where('username', '==', username).get();
@@ -387,8 +394,10 @@ authForm.addEventListener('submit', async (e) => {
 
     try {
         localStorage.setItem('currentUser', currentUser.username);
+        savedUserName = currentUser.username;
     } catch (error) {
         console.error("Error setting localStorage:", error);
+        savedUserName = currentUser.username;
     }
     authModal.style.display = 'none';
     updateUIForCurrentUser();
@@ -732,6 +741,7 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         } catch (error) {
             console.error("Error removing from localStorage:", error);
         }
+        savedUserName = null;
         showSection(welcomeSection);
     } catch (error) {
         console.error("Error deleting account:", error);
