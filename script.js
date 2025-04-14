@@ -134,8 +134,7 @@ let userLikes = {};
 // GitHub repository base URL for images
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
 
-// Function to get the image URL for a hero or troopítani
-
+// Function to get the image URL for a hero or troop
 function getImageUrl(name, type) {
     if (!name) return ''; // Avoid errors if name is undefined
     const formattedName = name.toUpperCase().replace(/\s/g, '_');
@@ -219,6 +218,7 @@ async function loadUsersAndLikes() {
         isLoadingUsersAndLikes = false;
     }
 }
+
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
@@ -607,14 +607,35 @@ function displayHeroDecks(hero) {
     publicDecks.forEach(deck => {
         const deckCard = document.createElement('div');
         const deckHero = heroes.find(h => h.id === deck.heroId);
+
+        // Crear contenedor para la imagen del héroe
+        const heroImage = document.createElement('img');
+        heroImage.src = getImageUrl(deckHero ? deckHero.name : 'Unknown', 'heroes');
+        heroImage.alt = deckHero ? deckHero.name : 'Unknown';
+        heroImage.classList.add('deck-hero-image');
+
+        // Crear contenedor para las imágenes de las tropas
+        const troopsContainer = document.createElement('div');
+        troopsContainer.classList.add('deck-troops');
+        deck.troops.forEach(troopId => {
+            const troop = troops.find(t => t.id === troopId);
+            const troopImage = document.createElement('img');
+            troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
+            troopImage.alt = troop ? troop.name : 'Unknown';
+            troopImage.classList.add('deck-troop-image');
+            troopsContainer.appendChild(troopImage);
+        });
+
+        // Crear el contenido del deck
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
-            <p>${deck.description}</p>
-            <p>Hero: ${deckHero ? deckHero.name : 'Unknown'}</p>
             <p>Likes: ${deck.likes}</p>
             <button class="like-btn">Like</button>
         `;
+        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Likes"
+        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Created by"
+
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('like-btn')) return;
             showDeckDetails(deck);
@@ -645,7 +666,7 @@ function displayHeroDecks(hero) {
                 await loadUsersAndLikes();
 
                 // Actualizar la UI
-                deckCard.querySelector('p:nth-child(5)').textContent = `Likes: ${deck.likes}`;
+                deckCard.querySelector('p:nth-child(3)').textContent = `Likes: ${deck.likes}`;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
@@ -656,7 +677,7 @@ function displayHeroDecks(hero) {
                 delete userLikes[likeKey];
 
                 // Actualizar la UI
-                deckCard.querySelector('p:nth-child(5)').textContent = `Likes: ${deck.likes}`;
+                deckCard.querySelector('p:nth-child(3)').textContent = `Likes: ${deck.likes}`;
             }
         });
         heroDecksList.appendChild(deckCard);
@@ -671,15 +692,37 @@ function displayUserDecks() {
     currentUser.decks.forEach(deck => {
         const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
+
+        // Crear contenedor para la imagen del héroe
+        const heroImage = document.createElement('img');
+        heroImage.src = getImageUrl(hero ? hero.name : 'Unknown', 'heroes');
+        heroImage.alt = hero ? hero.name : 'Unknown';
+        heroImage.classList.add('deck-hero-image');
+
+        // Crear contenedor para las imágenes de las tropas
+        const troopsContainer = document.createElement('div');
+        troopsContainer.classList.add('deck-troops');
+        deck.troops.forEach(troopId => {
+            const troop = troops.find(t => t.id === troopId);
+            const troopImage = document.createElement('img');
+            troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
+            troopImage.alt = troop ? troop.name : 'Unknown';
+            troopImage.classList.add('deck-troop-image');
+            troopsContainer.appendChild(troopImage);
+        });
+
+        // Crear el contenido del deck
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
-            <p>${deck.description}</p>
             <p>Public: ${deck.isPublic ? 'Yes' : 'No'}</p>
             <button class="edit-deck-btn">Edit</button>
             <button class="delete-deck-btn">Delete</button>
             <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
+        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Public"
+        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Hero"
+
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
             showDeckDetails(deck);
