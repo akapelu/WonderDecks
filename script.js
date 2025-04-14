@@ -8,30 +8,27 @@ const firebaseConfig = {
     appId: "1:715734231945:web:d74cd383ec031e980ecf58",
     measurementId: "G-Q9DJVZCY6"
 };
-
 // Initialize Firebase
+let db, auth;
 try {
     firebase.initializeApp(firebaseConfig);
     console.log("Firebase initialized successfully");
+    db = firebase.firestore();
+    auth = firebase.auth();
+
+    // Set persistence to LOCAL to maintain session after refresh
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            console.log("Auth persistence set to LOCAL");
+        })
+        .catch(error => {
+            console.error("Error setting auth persistence:", error);
+            alert("Error setting authentication persistence. Please check the console for details.");
+        });
 } catch (error) {
     console.error("Error initializing Firebase:", error);
     alert("Error initializing Firebase. Please check your Firebase configuration (e.g., API key) and ensure you have a stable internet connection.");
 }
-db.collection('test').doc('testDoc').set({ testField: "Hello World" })
-    .then(() => console.log("Test document written successfully"))
-    .catch(error => console.error("Error writing test document:", error));
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-// Set persistence to LOCAL to maintain session after refresh
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
-        console.log("Auth persistence set to LOCAL");
-    })
-    .catch(error => {
-        console.error("Error setting auth persistence:", error);
-        alert("Error setting authentication persistence. Please check the console for details.");
-    });
 
 // Simulated backend data
 let heroes = [
@@ -42,7 +39,7 @@ let heroes = [
     { id: 5, name: "HARALK", decks: [], totalLikes: 0 },
     { id: 6, name: "HARUAKI", decks: [], totalLikes: 0 },
     { id: 7, name: "HINDAYA", decks: [], totalLikes: 0 },
-    { id: 8, name: "JARKOS", decks: [], totalLikes: 0 },
+    { id: 8, toLowerCase: "JARKOS", decks: [], totalLikes: 0 },
     { id: 9, name: "JIN", decks: [], totalLikes: 0 },
     { id: 10, name: "KADRIA", decks: [], totalLikes: 0 },
     { id: 11, name: "KROGNAR", decks: [], totalLikes: 0 },
@@ -129,7 +126,7 @@ let troops = [
 let currentUser = null;
 let users = [];
 let userLikes = {};
-let savedUserName = null;
+let savedUserName = null; // Esta variable ya no se necesita, pero la mantendremos para evitar errores por ahora
 
 // GitHub repository base URL for images
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
@@ -168,28 +165,18 @@ auth.signInAnonymously().catch(error => {
 auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
-        let savedUser = null;
         try {
-            savedUser = localStorage.getItem('currentUser');
-            savedUserName = savedUser;
-        } catch (error) {
-            console.error("Error accessing localStorage:", error);
-            savedUser = savedUserName;
-        }
-        if (savedUser) {
-            try {
-                const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
-                if (userDoc.exists) {
-                    currentUser = userDoc.data();
-                    currentUser.uid = user.uid;
-                    updateUIForCurrentUser();
-                } else {
-                    console.log("User document not found for UID:", user.uid);
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                alert("Error fetching user data. Please check your internet connection and try again.");
+            const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
+            if (userDoc.exists) {
+                currentUser = userDoc.data();
+                currentUser.uid = user.uid;
+                updateUIForCurrentUser();
+            } else {
+                console.log("User document not found for UID:", user.uid);
             }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            alert("Error fetching user data. Please check your internet connection and try again.");
         }
         // Set up real-time listeners
         setupRealtimeListeners();
@@ -309,7 +296,7 @@ const troopSelectors = document.getElementById('troop-selectors');
 const deckDetailsModal = document.getElementById('deck-details-modal');
 const deckDetailsTitle = document.getElementById('deck-details-title');
 const deckDetailsCreator = document.getElementById('deck-details-creator');
-const deckDetailsDescription = document.getElementbyId('deck-details-description');
+const deckDetailsDescription = document.getElementById('deck-details-description');
 const deckDetailsHero = document.getElementById('deck-details-hero');
 const deckDetailsHeroImage = document.getElementById('deck-details-hero-image');
 const deckDetailsTroops = document.getElementById('deck-details-troops');
@@ -385,12 +372,6 @@ logoutBtn.addEventListener('click', async () => {
     try {
         await auth.signOut();
         currentUser = null;
-        try {
-            localStorage.removeItem('currentUser');
-        } catch (error) {
-            console.error("Error removing from localStorage:", error);
-        }
-        savedUserName = null;
         showSection(welcomeSection);
         updateUIForCurrentUser();
     } catch (error) {
@@ -433,15 +414,6 @@ authForm.addEventListener('submit', async (e) => {
             users.push(currentUser);
             console.log("User registered:", currentUser);
 
-            // Update localStorage and UI
-            try {
-                localStorage.setItem('currentUser', currentUser.username);
-                savedUserName = currentUser.username;
-            } catch (error) {
-                console.error("Error setting localStorage:", error);
-                savedUserName = currentUser.username;
-            }
-
             // Close modal and update UI
             authModal.style.display = 'none';
             updateUIForCurrentUser();
@@ -464,15 +436,6 @@ authForm.addEventListener('submit', async (e) => {
             currentUser = userDoc.data();
             currentUser.uid = userDoc.id;
             console.log("User logged in:", currentUser);
-
-            // Update localStorage and UI
-            try {
-                localStorage.setItem('currentUser', currentUser.username);
-                savedUserName = currentUser.username;
-            } catch (error) {
-                console.error("Error setting localStorage:", error);
-                savedUserName = currentUser.username;
-            }
 
             // Close modal and update UI
             authModal.style.display = 'none';
@@ -791,12 +754,6 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         // Sign out and reset state
         await auth.signOut();
         currentUser = null;
-        try {
-            localStorage.removeItem('currentUser');
-        } catch (error) {
-            console.error("Error removing from localStorage:", error);
-        }
-        savedUserName = null;
         showSection(welcomeSection);
         updateUIForCurrentUser();
     } catch (error) {
@@ -806,12 +763,6 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         try {
             await auth.signOut();
             currentUser = null;
-            try {
-                localStorage.removeItem('currentUser');
-            } catch (error) {
-                console.error("Error removing from localStorage:", error);
-            }
-            savedUserName = null;
             showSection(welcomeSection);
             updateUIForCurrentUser();
         } catch (logoutError) {
