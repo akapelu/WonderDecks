@@ -16,15 +16,14 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-    // Configurar persistencia de autenticación con manejo de errores
+    // Set authentication persistence with error handling
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .catch(error => {
             console.warn("Error setting auth persistence to LOCAL:", error);
-            // Si LOCAL falla, intentar con SESSION
+            // If LOCAL fails, try SESSION
             return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
                 .catch(sessionError => {
                     console.error("Error setting auth persistence to SESSION:", sessionError);
-                    // Si ambas fallan, continuar sin persistencia
                     console.warn("Proceeding without auth persistence.");
                     return Promise.resolve();
                 });
@@ -136,7 +135,7 @@ const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/mai
 
 // Function to get the image URL for a hero or troop
 function getImageUrl(name, type) {
-    if (!name) return ''; // Avoid errors if name is undefined
+    if (!name) return '';
     const formattedName = name.toUpperCase().replace(/\s/g, '_');
     return `${githubBaseUrl}${type}/${formattedName}.png`;
 }
@@ -175,7 +174,7 @@ async function loadUsersAndLikes() {
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
-            // Normalizar los decks para asegurar que tengan todos los campos esperados
+            // Normalize decks to ensure they have all expected fields
             userData.decks = userData.decks.map(deck => ({
                 name: deck.name,
                 heroId: deck.heroId,
@@ -184,7 +183,7 @@ async function loadUsersAndLikes() {
                 isPublic: deck.isPublic,
                 creator: deck.creator,
             }));
-            // Evitar duplicados de usuarios basados en UID
+            // Avoid duplicate users based on UID
             if (!users.some(u => u.uid === userData.uid)) {
                 users.push(userData);
             }
@@ -199,13 +198,13 @@ async function loadUsersAndLikes() {
         });
         console.log("UserLikes loaded:", userLikes);
 
-        // Calcular los likes para cada deck dinámicamente
+        // Calculate likes for each deck dynamically
         users.forEach(user => {
             user.decks.forEach(deck => {
                 const deckLikes = Object.keys(userLikes).filter(key => 
                     key.endsWith(`:${deck.name}`) && userLikes[key] === true
                 ).length;
-                deck.likes = deckLikes; // Asignamos los likes dinámicamente
+                deck.likes = deckLikes; // Assign likes dynamically
             });
         });
 
@@ -219,54 +218,35 @@ async function loadUsersAndLikes() {
     }
 }
 
-// Authenticate user anonymously on page load
-auth.signInAnonymously().catch(error => {
-    console.error("Error signing in anonymously:", error);
-    alert("Error signing in anonymously. Please try again.");
-});
-
 // Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
-        console.log("User signed in anonymously:", user.uid);
-        try {
-            // Check if a user document exists for this UID
-            const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
-            if (userDoc.exists) {
-                currentUser = userDoc.data();
-                currentUser.uid = user.uid;
-                console.log("Current user data loaded:", currentUser);
-                // Normalizar los decks de currentUser
-                currentUser.decks = currentUser.decks.map(deck => ({
-                    name: deck.name,
-                    heroId: deck.heroId,
-                    troops: deck.troops,
-                    description: deck.description,
-                    isPublic: deck.isPublic,
-                    creator: deck.creator,
-                }));
-                updateUIForCurrentUser();
-            } else {
-                console.log("No user document found for UID:", user.uid);
-                currentUser = null;
-            }
-            // Load users and likes only once here
-            await loadUsersAndLikes();
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            alert("Error fetching user data. Proceeding with local data.");
+        console.log("User authenticated:", user.uid);
+        const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
+        if (userDoc.exists) {
+            currentUser = userDoc.data();
+            currentUser.uid = user.uid;
+            console.log("User data loaded:", currentUser);
+            // Normalize currentUser decks
+            currentUser.decks = currentUser.decks.map(deck => ({
+                name: deck.name,
+                heroId: deck.heroId,
+                troops: deck.troops,
+                description: deck.description,
+                isPublic: deck.isPublic,
+                creator: deck.creator,
+            }));
+            updateUIForCurrentUser();
+        } else {
+            console.log("No user document found for UID:", user.uid);
             currentUser = null;
-            await loadUsersAndLikes();
         }
+        await loadUsersAndLikes();
     } else {
-        console.log("User signed out");
+        console.log("User not authenticated");
         currentUser = null;
         updateUIForCurrentUser();
-        // Sign in anonymously again
-        auth.signInAnonymously().catch(error => {
-            console.error("Error signing in anonymously after logout:", error);
-            alert("Error signing in anonymously after logout. Please try again.");
-        });
+        await loadUsersAndLikes();
     }
 });
 
@@ -350,7 +330,7 @@ function showSection(section) {
 document.getElementById('hero-showcase-btn').addEventListener('click', () => {
     console.log("Public Decks button clicked");
     if (!currentUser) {
-        alert('Por favor, inicia sesión para ver los Public Decks.');
+        alert('Please log in to view Public Decks.');
         showAuthModal('login');
         return;
     }
@@ -371,7 +351,7 @@ document.getElementById('get-started-btn').addEventListener('click', () => {
 document.getElementById('explore-heroes-btn').addEventListener('click', () => {
     console.log("Explore Heroes button clicked");
     if (!currentUser) {
-        alert('Por favor, inicia sesión para ver los Public Decks.');
+        alert('Please log in to view Public Decks.');
         showAuthModal('login');
         return;
     }
@@ -422,151 +402,52 @@ authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('username-input').value;
     const password = document.getElementById('password-input').value;
+    const email = `${username}@wonderdecks.com`; // Generate a fake email based on username
 
     if (authSubmitBtn.textContent === 'Register') {
-        if (!auth.currentUser) {
-            alert("Authentication failed. Please try again.");
-            return;
-        }
-
-        // Check if username already exists
+        // Register
         try {
-            const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').where('username', '==', username).get());
-            if (!userSnapshot.empty) {
-                alert('Username already exists!');
-                return;
-            }
-        } catch (error) {
-            console.error("Error checking username:", error);
-            // Proceed with local check if Firestore fails
-            if (users.some(user => user.username === username)) {
-                alert('Username already exists!');
-                return;
-            }
-        }
-
-        // Create new user
-        const userId = auth.currentUser.uid;
-        const newUser = { username, password, decks: [] };
-        try {
-            await firestoreOperationWithRetry(() => db.collection('users').doc(userId).set(newUser));
-            console.log("User registered in Firestore:", newUser);
-        } catch (error) {
-            console.error("Error registering user in Firestore:", error);
-            alert("Error saving user to Firestore. Proceeding with local data.");
-        }
-
-        // Update local state regardless of Firestore success
-        currentUser = { ...newUser, uid: userId };
-        users.push(currentUser);
-        console.log("User registered locally:", currentUser);
-
-        // Close modal and update UI
-        authModal.style.display = 'none';
-        updateUIForCurrentUser();
-        showSection(userAccountSection);
-        displayUserDecks();
-
-        // Reload users and likes
-        await loadUsersAndLikes();
-    } else {
-        // Login
-        try {
-            const userSnapshot = await firestoreOperationWithRetry(() => 
-                db.collection('users').where('username', '==', username).where('password', '==', password).get()
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const userId = userCredential.user.uid;
+            const newUser = { username, password, decks: [] };
+            await firestoreOperationWithRetry(() => 
+                db.collection('users').doc(userId).set(newUser)
             );
-            if (userSnapshot.empty) {
-                alert('Invalid credentials!');
-                return;
-            }
-    
-            const userDoc = userSnapshot.docs[0];
-            const userData = userDoc.data();
-            const storedUid = userDoc.id;
-            const currentUid = auth.currentUser.uid;
-    
-            if (storedUid !== currentUid) {
-                console.log("UID mismatch during login, merging user data...");
-                try {
-                    // Check if a document already exists for the current UID
-                    const existingDoc = await firestoreOperationWithRetry(() => 
-                        db.collection('users').doc(currentUid).get()
-                    );
-                    if (existingDoc.exists) {
-                        // If a document exists, merge the decks and update the existing document
-                        const existingData = existingDoc.data();
-                        // Merge decks, avoiding duplicates by name
-                        const mergedDecks = [...existingData.decks];
-                        userData.decks.forEach(deck => {
-                            if (!mergedDecks.some(d => d.name === deck.name)) {
-                                mergedDecks.push(deck);
-                            }
-                        });
-                        await firestoreOperationWithRetry(() => 
-                            db.collection('users').doc(currentUid).update({ decks: mergedDecks })
-                        );
-                    } else {
-                        // If no document exists, create a new one with the current UID
-                        await firestoreOperationWithRetry(() => 
-                            db.collection('users').doc(currentUid).set(userData)
-                        );
-                    }
-    
-                    // Update likes to use the new UID
-                    const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
-                    for (const key of likeKeys) {
-                        const newKey = `${username}:${key.split(':')[1]}`;
-                        if (key !== newKey) {
-                            await firestoreOperationWithRetry(() => 
-                                db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
-                            );
-                            await firestoreOperationWithRetry(() => 
-                                db.collection('userLikes').doc(key).delete()
-                            );
-                        }
-                    }
-    
-                    // Delete the old document
-                    await firestoreOperationWithRetry(() => 
-                        db.collection('users').doc(storedUid).delete()
-                    );
-    
-                    console.log("User document migrated successfully to UID:", currentUid);
-                } catch (error) {
-                    console.error("Error during UID migration:", error);
-                    alert("Error syncing user data with Firestore. Proceeding with local data.");
-                }
-            }
-    
-            // Set the current user
-            currentUser = userData;
-            currentUser.uid = currentUid;
-            console.log("User logged in:", currentUser);
-    
-            // Close modal and update UI
+            currentUser = { ...newUser, uid: userId };
+            users.push(currentUser);
+
             authModal.style.display = 'none';
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
-    
-            // Reload users and likes
             await loadUsersAndLikes();
         } catch (error) {
-            console.error("Error logging in:", error);
-            alert("Error logging in. Checking local data.");
-    
-            // Fallback: Check local users if Firestore fails
-            const localUser = users.find(u => u.username === username && u.password === password);
-            if (localUser) {
-                currentUser = localUser;
-                currentUser.uid = auth.currentUser.uid;
-                authModal.style.display = 'none';
-                updateUIForCurrentUser();
-                showSection(userAccountSection);
-                displayUserDecks();
-            } else {
-                alert("Invalid credentials and unable to verify with Firestore.");
+            console.error("Error during registration:", error);
+            alert("Error during registration: " + error.message);
+        }
+    } else {
+        // Login
+        try {
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const userId = userCredential.user.uid;
+            const userDoc = await firestoreOperationWithRetry(() => 
+                db.collection('users').doc(userId).get()
+            );
+            if (!userDoc.exists) {
+                alert('User not found!');
+                return;
             }
+
+            currentUser = userDoc.data();
+            currentUser.uid = userId;
+            authModal.style.display = 'none';
+            updateUIForCurrentUser();
+            showSection(userAccountSection);
+            displayUserDecks();
+            await loadUsersAndLikes();
+        } catch (error) {
+            console.error("Error during login:", error);
+            alert("Error during login: " + error.message);
         }
     }
 });
@@ -608,13 +489,13 @@ function displayHeroDecks(hero) {
         const deckCard = document.createElement('div');
         const deckHero = heroes.find(h => h.id === deck.heroId);
 
-        // Crear contenedor para la imagen del héroe
+        // Create container for hero image
         const heroImage = document.createElement('img');
         heroImage.src = getImageUrl(deckHero ? deckHero.name : 'Unknown', 'heroes');
         heroImage.alt = deckHero ? deckHero.name : 'Unknown';
         heroImage.classList.add('deck-hero-image');
 
-        // Crear contenedor para las imágenes de las tropas
+        // Create container for troop images
         const troopsContainer = document.createElement('div');
         troopsContainer.classList.add('deck-troops');
         deck.troops.forEach(troopId => {
@@ -626,19 +507,19 @@ function displayHeroDecks(hero) {
             troopsContainer.appendChild(troopImage);
         });
 
-        // Determinar si el usuario ya dio like
+        // Determine if the user has already liked the deck
         const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
         const hasLiked = likeKey && userLikes[likeKey];
 
-        // Crear el contenido del deck con el ícono de corazón
+        // Create deck content with like heart icon
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
             <p>Likes: <span class="like-count">${deck.likes}</span></p>
             <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
         `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Likes"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Created by"
+        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Likes"
+        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Created by"
 
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('like-heart')) return;
@@ -658,39 +539,39 @@ function displayHeroDecks(hero) {
             }
 
             try {
-                // Incrementar el conteo de likes localmente
+                // Increment like count locally
                 deck.likes = (deck.likes || 0) + 1;
                 hero.totalLikes = (hero.totalLikes || 0) + 1;
                 userLikes[likeKey] = true;
 
-                // Cambiar el ícono a corazón lleno y color rosa
+                // Change icon to filled heart and pink color
                 likeHeart.classList.remove('far');
                 likeHeart.classList.add('fas', 'liked');
 
-                // Guardar el like en la colección userLikes
+                // Save like to userLikes collection
                 await firestoreOperationWithRetry(() => 
                     db.collection('userLikes').doc(likeKey).set({ value: true })
                 );
 
-                // Recargar los datos para sincronizar
+                // Reload data to sync
                 await loadUsersAndLikes();
 
-                // Actualizar la UI
+                // Update UI
                 deckCard.querySelector('.like-count').textContent = deck.likes;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
 
-                // Revertir los cambios locales
+                // Revert local changes
                 deck.likes = (deck.likes || 0) - 1;
                 hero.totalLikes = (hero.totalLikes || 0) - 1;
                 delete userLikes[likeKey];
 
-                // Revertir el ícono a corazón vacío
+                // Revert icon to empty heart
                 likeHeart.classList.remove('fas', 'liked');
                 likeHeart.classList.add('far');
 
-                // Actualizar la UI
+                // Update UI
                 deckCard.querySelector('.like-count').textContent = deck.likes;
             }
         });
@@ -707,13 +588,13 @@ function displayUserDecks() {
         const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
 
-        // Crear contenedor para la imagen del héroe
+        // Create container for hero image
         const heroImage = document.createElement('img');
         heroImage.src = getImageUrl(hero ? hero.name : 'Unknown', 'heroes');
         heroImage.alt = hero ? hero.name : 'Unknown';
         heroImage.classList.add('deck-hero-image');
 
-        // Crear contenedor para las imágenes de las tropas
+        // Create container for troop images
         const troopsContainer = document.createElement('div');
         troopsContainer.classList.add('deck-troops');
         deck.troops.forEach(troopId => {
@@ -725,7 +606,7 @@ function displayUserDecks() {
             troopsContainer.appendChild(troopImage);
         });
 
-        // Crear el contenido del deck
+        // Create deck content
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
@@ -734,8 +615,8 @@ function displayUserDecks() {
             <button class="delete-deck-btn">Delete</button>
             <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Public"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes del "Hero"
+        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Public"
+        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Hero"
 
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
@@ -898,37 +779,12 @@ function showDeckModal(mode, deck = null) {
             return;
         }
 
-        // Verificar que el usuario esté autenticado
+        // Verify user is authenticated
         if (!auth.currentUser) {
             alert("User not authenticated. Please log in again.");
             authModal.style.display = 'none';
             showAuthModal('login');
             return;
-        }
-
-        // Verificar que currentUser.uid coincida con auth.currentUser.uid
-        if (currentUser.uid !== auth.currentUser.uid) {
-            console.error("UID mismatch:", { currentUserUid: currentUser.uid, authUid: auth.currentUser.uid });
-            // Actualizar el documento del usuario con el UID anónimo actual
-            try {
-                console.log("Migrating user document to new UID...");
-                await firestoreOperationWithRetry(() => db.collection('users').doc(auth.currentUser.uid).set({
-                    username: currentUser.username,
-                    password: currentUser.password,
-                    decks: currentUser.decks
-                }));
-                // Eliminar el documento antiguo
-                await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
-                // Actualizar currentUser.uid
-                currentUser.uid = auth.currentUser.uid;
-                console.log("User document migrated successfully to UID:", currentUser.uid);
-            } catch (error) {
-                console.error("Error migrating user document:", error);
-                alert("Error syncing user data. Please log in again.");
-                authModal.style.display = 'none';
-                showAuthModal('login');
-                return;
-            }
         }
 
         const newDeck = {
