@@ -430,9 +430,16 @@ authForm.addEventListener('submit', async (e) => {
         }
 
         // Check if username already exists
-        const userSnapshot = await firestoreOperationWithRetry(() => 
-            db.collection('users').where('username', '==', username).get()
-        );
+        let userSnapshot;
+        try {
+            userSnapshot = await firestoreOperationWithRetry(() => 
+                db.collection('users').where('username', '==', username).get()
+            );
+        } catch (error) {
+            console.error("Error checking for existing username:", error);
+            alert("Error checking username availability. Please try again.");
+            return;
+        }
         if (!userSnapshot.empty) {
             alert('Username already exists!');
             return;
@@ -441,22 +448,35 @@ authForm.addEventListener('submit', async (e) => {
         // Create new user with the current anonymous UID
         const userId = auth.currentUser.uid;
         const newUser = { username, password, decks: [] };
-        await firestoreOperationWithRetry(() => 
-            db.collection('users').doc(userId).set(newUser)
-        );
-        currentUser = { ...newUser, uid: userId };
-        users.push(currentUser);
+        try {
+            await firestoreOperationWithRetry(() => 
+                db.collection('users').doc(userId).set(newUser)
+            );
+            currentUser = { ...newUser, uid: userId };
+            users.push(currentUser);
 
-        authModal.style.display = 'none';
-        updateUIForCurrentUser();
-        showSection(userAccountSection);
-        displayUserDecks();
-        await loadUsersAndLikes();
+            authModal.style.display = 'none';
+            updateUIForCurrentUser();
+            showSection(userAccountSection);
+            displayUserDecks();
+            await loadUsersAndLikes();
+        } catch (error) {
+            console.error("Error creating new user:", error);
+            alert("Error registering user. Please try again.");
+            return;
+        }
     } else {
         // Login
-        const userSnapshot = await firestoreOperationWithRetry(() => 
-            db.collection('users').where('username', '==', username).where('password', '==', password).get()
-        );
+        let userSnapshot;
+        try {
+            userSnapshot = await firestoreOperationWithRetry(() => 
+                db.collection('users').where('username', '==', username).where('password', '==', password).get()
+            );
+        } catch (error) {
+            console.error("Error checking user credentials:", error);
+            alert("Error verifying credentials. Please try again.");
+            return;
+        }
         if (userSnapshot.empty) {
             alert('Invalid credentials!');
             return;
@@ -498,6 +518,14 @@ authForm.addEventListener('submit', async (e) => {
             } catch (error) {
                 console.error("Error during UID migration:", error);
                 alert("Error syncing user data with Firestore. Please try again.");
+                // Attempt to clean up by deleting the new document if it was created
+                try {
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('users').doc(currentUid).delete()
+                    );
+                } catch (cleanupError) {
+                    console.warn("Failed to clean up new document after migration error:", cleanupError);
+                }
                 return; // Exit to prevent proceeding with inconsistent data
             }
         }
