@@ -1003,3 +1003,32 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         updateUIForCurrentUser();
     }
 });
+
+
+async function toggleLike(deckId, username) {
+    if (!currentUser) {
+        alert('You must be logged in to like a deck.');
+        return;
+    }
+
+    try {
+        const userLikesRef = db.collection('UserLikes').doc(currentUser.uid);
+        const doc = await userLikesRef.get();
+        let likesData = doc.exists ? doc.data() : {};
+
+        const alreadyLiked = likesData[deckId] === true;
+
+        if (alreadyLiked) {
+            delete likesData[deckId];
+        } else {
+            likesData[deckId] = true;
+        }
+
+        await userLikesRef.set(likesData, { merge: true });
+
+        updateLikesDisplay(deckId, !alreadyLiked);
+    } catch (error) {
+        console.error("Error toggling like:", error);
+        alert("There was an issue updating your like. Please try again.");
+    }
+}
