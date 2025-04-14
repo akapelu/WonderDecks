@@ -598,13 +598,13 @@ function displayHeroes() {
 }
 
 // Display Decks for a Specific Hero
-function displayHeroDecks(hero) {
+async function displayHeroDecks(hero) {
     document.getElementById('hero-decks-title').textContent = `${hero.name} Decks`;
     const publicDecks = hero.decks.filter(d => d.isPublic);
-    publicDecks.sort((a, b) => b.likes - a.likes);
+    publicDecks.sort((a, b) => (b.likes || 0) - (a.likes || 0));
 
     heroDecksList.innerHTML = '';
-    publicDecks.forEach(deck => {
+    for (const deck of publicDecks) {
         const deckCard = document.createElement('div');
         const deckHero = heroes.find(h => h.id === deck.heroId);
 
@@ -634,7 +634,7 @@ function displayHeroDecks(hero) {
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p>Created by: ${deck.creator}</p>
-            <p>Likes: <span class="like-count">${deck.likes}</span></p>
+            <p>Likes: <span class="like-count">${deck.likes || 0}</span></p>
             <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
         `;
         deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes del "Likes"
@@ -657,45 +657,45 @@ function displayHeroDecks(hero) {
                 return;
             }
 
-            try {
-                // Incrementar el conteo de likes localmente
-                deck.likes = (deck.likes || 0) + 1;
-                hero.totalLikes = (hero.totalLikes || 0) + 1;
-                userLikes[likeKey] = true;
+            // Guardar el estado original para revertir si falla
+            const originalLikes = deck.likes || 0;
+            const originalTotalLikes = hero.totalLikes || 0;
 
-                // Cambiar el ícono a corazón lleno y color rosa
+            try {
+                // Cambiar el ícono a corazón lleno y color rosa (UI optimista)
                 likeHeart.classList.remove('far');
                 likeHeart.classList.add('fas', 'liked');
+                deckCard.querySelector('.like-count').textContent = originalLikes + 1;
 
                 // Guardar el like en la colección userLikes
                 await firestoreOperationWithRetry(() => 
                     db.collection('userLikes').doc(likeKey).set({ value: true })
                 );
 
+                // Incrementar el conteo de likes solo después de éxito en Firestore
+                deck.likes = originalLikes + 1;
+                hero.totalLikes = originalTotalLikes + 1;
+                userLikes[likeKey] = true;
+
                 // Recargar los datos para sincronizar
                 await loadUsersAndLikes();
-
-                // Actualizar la UI
-                deckCard.querySelector('.like-count').textContent = deck.likes;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
 
-                // Revertir los cambios locales
-                deck.likes = (deck.likes || 0) - 1;
-                hero.totalLikes = (hero.totalLikes || 0) - 1;
-                delete userLikes[likeKey];
-
-                // Revertir el ícono a corazón vacío
+                // Revertir los cambios en la UI
                 likeHeart.classList.remove('fas', 'liked');
                 likeHeart.classList.add('far');
+                deckCard.querySelector('.like-count').textContent = originalLikes;
 
-                // Actualizar la UI
-                deckCard.querySelector('.like-count').textContent = deck.likes;
+                // Asegurar que el estado local refleje el fallo
+                deck.likes = originalLikes;
+                hero.totalLikes = originalTotalLikes;
+                delete userLikes[likeKey];
             }
         });
         heroDecksList.appendChild(deckCard);
-    });
+    }
 }
 
 // Display User's Decks
