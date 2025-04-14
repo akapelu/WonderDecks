@@ -16,6 +16,10 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
+    // Configurar persistencia de autenticación en localStorage
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(error => {
+        console.error("Error setting auth persistence:", error);
+    });
 } catch (error) {
     console.error("Error initializing Firebase:", error);
     alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
@@ -80,7 +84,7 @@ let troops = [
     { id: 35, name: "JEN" },
     { id: 36, name: "KHEELDREN" },
     { id: 37, name: "KOTTON" },
-    { id: 38, name: "KULTH" },
+    { id: 34, name: "KULTH" },
     { id: 39, name: "LILY" },
     { id: 40, name: "LUMINA" },
     { id: 41, name: "MAHOMOT" },
@@ -206,6 +210,7 @@ auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
         try {
+            // Intentar cargar el documento del usuario desde Firestore
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
@@ -274,7 +279,7 @@ const userNameDisplay = document.getElementById('user-name');
 const loginBtn = document.getElementById('login-btn');
 const registerBtn = document.getElementById('register-btn');
 const logoutBtn = document.getElementById('logout-btn');
-const authModal = document.getElementById('auth-modal');
+const authModal = document.getElementwonderdecks-6cadfElement('auth-modal');
 const authModalTitle = document.getElementById('auth-modal-title');
 const authSubmitBtn = document.getElementById('auth-submit-btn');
 const authForm = document.getElementById('auth-form');
@@ -440,8 +445,29 @@ authForm.addEventListener('submit', async (e) => {
                 return;
             }
             const userDoc = userSnapshot.docs[0];
-            currentUser = userDoc.data();
-            currentUser.uid = userDoc.id;
+            const userData = userDoc.data();
+            const userId = userDoc.id;
+
+            // Actualizar el documento del usuario con el UID anónimo actual
+            if (userId !== auth.currentUser.uid) {
+                console.log("UID mismatch during login, updating user document...");
+                // Copiar los datos del usuario al nuevo UID anónimo
+                await firestoreOperationWithRetry(() => db.collection('users').doc(auth.currentUser.uid).set(userData));
+                // Opcional: Eliminar el documento antiguo
+                await firestoreOperationWithRetry(() => db.collection('users').doc(userId).delete());
+                // Actualizar los likes para reflejar el nuevo UID
+                const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
+                for (const key of likeKeys) {
+                    const newKey = key.replace(`${username}:`, `${username}:`);
+                    if (key !== newKey) {
+                        await firestoreOperationWithRetry(() => db.collection('userLikes').doc(newKey).set({ value: userLikes[key] }));
+                        await firestoreOperationWithRetry(() => db.collection('userLikes').doc(key).delete());
+                    }
+                }
+            }
+
+            currentUser = userData;
+            currentUser.uid = auth.currentUser.uid; // Usar el UID anónimo actual
             console.log("User logged in:", currentUser);
 
             // Close modal and update UI
@@ -460,6 +486,7 @@ authForm.addEventListener('submit', async (e) => {
             const localUser = users.find(u => u.username === username && u.password === password);
             if (localUser) {
                 currentUser = localUser;
+                currentUser.uid = auth.currentUser.uid; // Actualizar el UID
                 authModal.style.display = 'none';
                 updateUIForCurrentUser();
                 showSection(userAccountSection);
@@ -752,10 +779,26 @@ function showDeckModal(mode, deck = null) {
         // Verificar que currentUser.uid coincida con auth.currentUser.uid
         if (currentUser.uid !== auth.currentUser.uid) {
             console.error("UID mismatch:", { currentUserUid: currentUser.uid, authUid: auth.currentUser.uid });
-            alert("Authentication error: User ID mismatch. Please log in again.");
-            authModal.style.display = 'none';
-            showAuthModal('login');
-            return;
+            // Actualizar el documento del usuario con el UID anónimo actual
+            try {
+                console.log("Migrating user document to new UID...");
+                await firestoreOperationWithRetry(() => db.collection('users').doc(auth.currentUser.uid).set({
+                    username: currentUser.username,
+                    password: currentUser.password,
+                    decks: currentUser.decks
+                }));
+                // Eliminar el documento antiguo
+                await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
+                // Actualizar currentUser.uid
+                currentUser.uid = auth.currentUser.uid;
+                console.log("User document migrated successfully to UID:", currentUser.uid);
+            } catch (error) {
+                console.error("Error migrating user document:", error);
+                alert("Error syncing user data. Please log in again.");
+                authModal.style.display = 'none';
+                showAuthModal('login');
+                return;
+            }
         }
 
         const newDeck = {
