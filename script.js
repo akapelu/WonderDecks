@@ -43,7 +43,7 @@ let heroes = [
     { id: 8, name: "JARKOS", decks: [], totalLikes: 0 },
     { id: 9, name: "JIN", decks: [], totalLikes: 0 },
     { id: 10, name: "KADRIA", decks: [], totalLikes: 0 },
-    { id: 11, name: "KROGNAAR", decks: [], totalLikes: 0 },
+    { id: 11, name: "KROGNAR", decks: [], totalLikes: 0 },
     { id: 12, name: "LUSBAAL", decks: [], totalLikes: 0 },
     { id: 13, name: "LYON", decks: [], totalLikes: 0 },
     { id: 14, name: "PIPER", decks: [], totalLikes: 0 },
@@ -142,7 +142,9 @@ function getImageUrl(name, type) {
 async function firestoreOperationWithRetry(operation, maxRetries = 5, delay = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            return await operation();
+            const result = await operation();
+            console.log(`Firestore operation succeeded on attempt ${attempt}`);
+            return result;
         } catch (error) {
             if (attempt === maxRetries) {
                 console.error(`Firestore operation failed after ${maxRetries} retries:`, error);
@@ -305,7 +307,7 @@ const troopSelectors = document.getElementById('troop-selectors');
 const deckDetailsModal = document.getElementById('deck-details-modal');
 const deckDetailsTitle = document.getElementById('deck-details-title');
 const deckDetailsCreator = document.getElementById('deck-details-creator');
-const deckDetailsDescription = document.getElementById('deck-details-description');
+const deckDetailsDescription = document.getElementbyId('deck-details-description');
 const deckDetailsHero = document.getElementById('deck-details-hero');
 const deckDetailsHeroImage = document.getElementById('deck-details-hero-image');
 const deckDetailsTroops = document.getElementById('deck-details-troops');
@@ -437,13 +439,15 @@ authForm.addEventListener('submit', async (e) => {
                 console.error("Error setting localStorage:", error);
                 savedUserName = currentUser.username;
             }
+
+            // Close modal and update UI
             authModal.style.display = 'none';
             updateUIForCurrentUser();
             showSection(userAccountSection);
             displayUserDecks();
         } catch (error) {
             console.error("Error registering user:", error);
-            alert("Error registering user. Please check your internet connection and try again.");
+            alert("Error registering user. Please check your internet connection and Firebase configuration.");
             return;
         }
     } else {
@@ -467,6 +471,8 @@ authForm.addEventListener('submit', async (e) => {
                 console.error("Error setting localStorage:", error);
                 savedUserName = currentUser.username;
             }
+
+            // Close modal and update UI
             authModal.style.display = 'none';
             updateUIForCurrentUser();
             showSection(userAccountSection);
@@ -744,10 +750,14 @@ function showDeckModal(mode, deck = null) {
             }
 
             await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).update({ decks: currentUser.decks }));
+            console.log("Deck saved successfully:", newDeck);
+
+            // Close modal and update UI
             deckModal.style.display = 'none';
+            displayUserDecks();
         } catch (error) {
             console.error("Error saving deck:", error);
-            alert("Error saving deck. Please check your internet connection and try again.");
+            alert("Error saving deck. Please check your internet connection and Firebase configuration.");
         }
     };
 }
@@ -786,7 +796,7 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         }
         savedUserName = null;
         showSection(welcomeSection);
-        updateUIForCurrentUser(); // Asegurar que la UI se actualice después del logout
+        updateUIForCurrentUser();
     } catch (error) {
         console.error("Error deleting account:", error);
         alert("Error deleting account. Please check your internet connection and try again.");
