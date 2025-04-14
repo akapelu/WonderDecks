@@ -305,7 +305,7 @@ h2 {
 }
 
 .deck-details-hero-image img {
-    max-width: 70px; /* Reducido aún más para que el héroe sea solo un poco más grande que las tropas */
+    max-width: 65px; /* Solo un poco más grande que las tropas (60px) */
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -332,7 +332,7 @@ h2 {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Responsive adjustments for mobile */
+/* Ajustes responsivos para móviles */
 @media (max-width: 768px) {
     body {
         background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c 100%) !important;
@@ -431,7 +431,7 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 60px; /* Ajustado para pantallas más pequeñas */
+        max-width: 55px; /* Solo un poco más grande que las tropas (50px) */
     }
 
     #deck-details-troops > div {
@@ -510,7 +510,7 @@ h2 {
     }
 
     .deck-details-hero-image img {
-        max-width: 50px; /* Ajustado para pantallas más pequeñas */
+        max-width: 45px; /* Solo un poco más grande que las tropas (40px) */
     }
 
     #deck-details-troops > div {
