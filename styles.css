@@ -927,7 +927,7 @@ h2 {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .logo-image {
-        height: 50px; /* Slightly smaller for mobile */
+        height: 100px; /* Slightly smaller for mobile */
     }
 
     .lang-flag {
@@ -953,7 +953,7 @@ h2 {
 
 @media (max-width: 480px) {
     .logo-image {
-        height: 40px; /* Further adjust for smaller screens */
+        height: 80px; /* Further adjust for smaller screens */
     }
 
     .lang-flag {
