@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="content-language" content="en">
     <title>Wonder Decks</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
@@ -57,10 +58,10 @@
         <div class="modal-content">
             <span class="close-modal">×</span>
             <h2 id="auth-modal-title">Login</h2>
-            <form id="auth-form">
-                <input type="text" id="username-input" placeholder="Username" required>
-                <input type="password" id="password-input" placeholder="Password" required>
-                <button type="submit" id="auth-submit-btn">Login</button>
+            <form id="auth-form" translate="no">
+                <input type="text" id="username-input" placeholder="Username" required translate="no">
+                <input type="password" id="password-input" placeholder="Password" required translate="no">
+                <button type="submit" id="auth-submit-btn" translate="no">Login</button>
             </form>
         </div>
     </div>
@@ -69,7 +70,7 @@
         <div class="modal-content">
             <span class="close-modal">×</span>
             <h2 id="deck-modal-title">Add New Deck</h2>
-            <form id="deck-form">
+            <form id="deck-form" translate="no">
                 <input type="text" id="deck-name-input" placeholder="Deck Name" required>
                 <select id="hero-select" required></select>
                 <div id="troop-selectors" class="troop-selectors"></div>
