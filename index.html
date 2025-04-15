@@ -92,7 +92,16 @@
             <div id="deck-details-troops" class="card-list"></div>
         </div>
     </div>
-
+        <!-- Modal para mostrar la información de la tropa -->
+    <div id="troop-info-modal" class="modal" style="display: none;">
+        <div class="modal-content troop-info-modal-content">
+            <span class="close-modal">×</span>
+            <h2 id="troop-info-title"></h2>
+            <div id="troop-info-image" class="troop-info-image"></div>
+            <p class="stats" id="troop-info-stats"></p>
+            <p class="ability" id="troop-info-ability"></p>
+        </div>
+    </div>
     <!-- Firebase SDK (compat version) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
