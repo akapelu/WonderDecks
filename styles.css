@@ -745,3 +745,81 @@ h2 {
         font-size: 12px;
     }
 }
+/* Estilos para el modal de información de la tropa */
+.troop-info-modal-content {
+    max-width: 400px; /* Más pequeño que otros modales */
+    padding: 20px;
+    text-align: center;
+}
+
+.troop-info-image img {
+    max-width: 60px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin-bottom: 15px;
+}
+
+.troop-info-modal-content .stats {
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+    margin: 10px 0;
+}
+
+.troop-info-modal-content .ability {
+    font-style: italic;
+    color: #d1d1d1;
+    margin: 10px 0;
+}
+
+/* Hacer que las imágenes de las tropas sean clicables */
+.card-list .deck-troop-image {
+    cursor: pointer; /* Indica que es clicable */
+}
+
+.card-list .deck-troop-image:hover {
+    transform: scale(1.1); /* Efecto de escala al pasar el mouse */
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive adjustments para el modal de la tropa */
+@media (max-width: 768px) {
+    .troop-info-modal-content {
+        max-width: 90%;
+        padding: 15px;
+    }
+
+    .troop-info-image img {
+        max-width: 50px;
+    }
+
+    .troop-info-modal-content h2 {
+        font-size: 20px;
+    }
+
+    .troop-info-modal-content .stats,
+    .troop-info-modal-content .ability {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .troop-info-modal-content {
+        max-width: 95%;
+        padding: 10px;
+    }
+
+    .troop-info-image img {
+        max-width: 40px;
+    }
+
+    .troop-info-modal-content h2 {
+        font-size: 18px;
+    }
+
+    .troop-info-modal-content .stats,
+    .troop-info-modal-content .ability {
+        font-size: 12px;
+    }
+}
