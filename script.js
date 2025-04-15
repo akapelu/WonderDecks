@@ -760,6 +760,28 @@ const deckDetailsDescription = document.getElementById('deck-details-description
 const deckDetailsHero = document.getElementById('deck-details-hero');
 const deckDetailsHeroImage = document.getElementById('deck-details-hero-image');
 const deckDetailsTroops = document.getElementById('deck-details-troops');
+const troopInfoModal = document.getElementById('troop-info-modal');
+const troopInfoTitle = document.getElementById('troop-info-title');
+const troopInfoImage = document.getElementById('troop-info-image');
+const troopInfoStats = document.getElementById('troop-info-stats');
+const troopInfoAbility = document.getElementById('troop-info-ability');
+
+// Mostrar la información de la tropa en un modal
+function showTroopInfo(troopName) {
+    const info = troopInfo[troopName];
+    if (info) {
+        troopInfoTitle.textContent = troopName;
+        troopInfoImage.innerHTML = `<img src="${getImageUrl(troopName, 'troops')}" alt="${troopName}">`;
+        troopInfoStats.textContent = `Attack: ${info.attack} | Health: ${info.health}`;
+        troopInfoAbility.textContent = `Ability: ${info.ability}`;
+    } else {
+        troopInfoTitle.textContent = troopName;
+        troopInfoImage.innerHTML = `<img src="${getImageUrl(troopName, 'troops')}" alt="${troopName}">`;
+        troopInfoStats.textContent = "Stats not available.";
+        troopInfoAbility.textContent = "Ability: Unknown.";
+    }
+    troopInfoModal.style.display = 'flex';
+}
 
 // Update UI based on current user
 function updateUIForCurrentUser() {
@@ -859,7 +881,12 @@ document.querySelectorAll('.close-modal').forEach(btn => {
         deckDetailsModal.style.display = 'none';
     });
 });
-
+// Cerrar el modal de información de la tropa al hacer clic fuera
+troopInfoModal.addEventListener('click', (e) => {
+    if (e.target === troopInfoModal || e.target.classList.contains('close-modal')) {
+        troopInfoModal.style.display = 'none';
+    }
+});
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('username-input').value;
@@ -1037,6 +1064,11 @@ function displayHeroDecks(hero) {
             troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
             troopImage.alt = troop ? troop.name : 'Unknown';
             troopImage.classList.add('deck-troop-image');
+            // Añadir evento de clic para mostrar la información de la tropa
+            troopImage.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el clic en la tropa abra los detalles del mazo
+                showTroopInfo(troop ? troop.name : 'Unknown');
+            });
             troopsContainer.appendChild(troopImage);
         });
 
@@ -1173,6 +1205,11 @@ function displayUserDecks() {
             troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
             troopImage.alt = troop ? troop.name : 'Unknown';
             troopImage.classList.add('deck-troop-image');
+            // Añadir evento de clic para mostrar la información de la tropa
+            troopImage.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evitar que el clic en la tropa abra los detalles del mazo
+                showTroopInfo(troop ? troop.name : 'Unknown');
+            });
             troopsContainer.appendChild(troopImage);
         });
 
@@ -1250,10 +1287,19 @@ function showDeckDetails(deck) {
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
         const troopCard = document.createElement('div');
-        troopCard.innerHTML = `
-            <img src="${getImageUrl(troop ? troop.name : 'Unknown', 'troops')}" alt="${troop ? troop.name : 'Unknown'}">
-            <p>${troop ? troop.name : 'Unknown'}</p>
-        `;
+        const troopImage = document.createElement('img');
+        troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
+        troopImage.alt = troop ? troop.name : 'Unknown';
+        troopImage.classList.add('deck-troop-image');
+        // Añadir evento de clic para mostrar la información de la tropa
+        troopImage.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic en la tropa interfiera con otros eventos
+            showTroopInfo(troop ? troop.name : 'Unknown');
+        });
+        troopCard.appendChild(troopImage);
+        const troopName = document.createElement('p');
+        troopName.textContent = troop ? troop.name : 'Unknown';
+        troopCard.appendChild(troopName);
         deckDetailsTroops.appendChild(troopCard);
     });
 
