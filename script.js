@@ -496,17 +496,6 @@ authForm.addEventListener('submit', async (e) => {
                 await firestoreOperationWithRetry(() => 
                     db.collection('users').doc(currentUid).set(userData)
                 );
-                // Update likes to use the new UID
-                const likeKeys = Object.keys(userLikes).filter(key => key.startsWith(`${username}:`));
-                for (const key of likeKeys) {
-                    const newKey = `${username}:${key.split(':')[1]}`;
-                    await firestoreOperationWithRetry(() => 
-                        db.collection('userLikes').doc(newKey).set({ value: userLikes[key] })
-                    );
-                    await firestoreOperationWithRetry(() => 
-                        db.collection('userLikes').doc(key).delete()
-                    );
-                }
                 // Delete the old document
                 await firestoreOperationWithRetry(() => 
                     db.collection('users').doc(storedUid).delete()
