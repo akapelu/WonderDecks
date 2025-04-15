@@ -773,8 +773,8 @@ document.getElementById('logo-link').addEventListener('click', (e) => {
 });
 
 // Language switching functionality
-const langEnBtn = document.getElementById('lang-en');
-const langEsBtn = document.getElementById('lang-es');
+const langEnFlag = document.getElementById('lang-en');
+const langEsFlag = document.getElementById('lang-es');
 
 const translations = {
     en: {
@@ -862,8 +862,8 @@ function updateLanguage(lang) {
     document.querySelector('#hero-showcase-section h2').textContent = translations[lang]['Public Decks'];
 }
 
-langEnBtn.addEventListener('click', () => updateLanguage('en'));
-langEsBtn.addEventListener('click', () => updateLanguage('es'));
+langEnFlag.addEventListener('click', () => updateLanguage('en'));
+langEsFlag.addEventListener('click', () => updateLanguage('es'));
 
 // Initial language setup
 updateLanguage('en');
