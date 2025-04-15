@@ -677,3 +677,71 @@ h2 {
         max-width: 40px;
     }
 }
+/* Styles for the hero information section */
+.hero-info {
+    background: linear-gradient(145deg, #0a1c3d, #1a2a6c);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e6e6e6;
+}
+
+.hero-info h3 {
+    font-size: 24px;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    margin-bottom: 15px;
+}
+
+.hero-info p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.hero-info .stats {
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.hero-info .ability {
+    font-style: italic;
+    color: #d1d1d1;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .hero-info {
+        padding: 15px;
+        margin: 15px auto;
+        max-width: 90%;
+    }
+
+    .hero-info h3 {
+        font-size: 20px;
+    }
+
+    .hero-info p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-info {
+        padding: 10px;
+        margin: 10px auto;
+        max-width: 95%;
+    }
+
+    .hero-info h3 {
+        font-size: 18px;
+    }
+
+    .hero-info p {
+        font-size: 12px;
+    }
+}
