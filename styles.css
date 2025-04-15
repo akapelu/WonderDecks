@@ -826,37 +826,6 @@ h2 {
         font-size: 12px;
     }
 }
-/* Logo styling */
-.logo-image {
-    height: 40px; /* Match the original h1 height */
-    width: auto;
-}
-
-/* Language buttons styling */
-.language-buttons {
-    display: flex;
-    gap: 5px;
-    margin-right: 10px;
-}
-
-.lang-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.lang-btn img {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease;
-}
-
-.lang-btn img:hover {
-    transform: scale(1.1);
-}
 
 /* Adjust hero cards on mobile to show 3 per row */
 @media (max-width: 768px) {
@@ -911,14 +880,93 @@ h2 {
         font-size: 9px;
         min-height: 14px;
     }
+}
+/* Logo styling */
+.logo-image {
+    height: 60px; /* Increased size for better visibility */
+    width: auto;
+}
 
-    .language-buttons {
-        gap: 3px;
-        margin-right: 5px;
+/* Remove the .language-buttons container styling */
+.nav-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: relative;
+}
+
+/* Style the flags directly */
+.lang-flag {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-left: 5px;
+}
+
+.lang-flag:hover {
+    transform: scale(1.1);
+}
+
+/* Position flags in the top-right corner */
+.nav-right .lang-flag {
+    order: 1; /* Ensure flags are rendered last in the flex container */
+}
+
+/* Adjust nav-right layout to push flags to the right */
+.nav-right {
+    justify-content: flex-end;
+}
+
+/* Ensure other buttons don't overlap with flags */
+.nav-right button, .nav-right span {
+    order: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .logo-image {
+        height: 50px; /* Slightly smaller for mobile */
     }
 
-    .lang-btn img {
+    .lang-flag {
         width: 20px;
         height: 20px;
+    }
+
+    .nav-right {
+        justify-content: center;
+        position: relative;
+    }
+
+    .nav-right .lang-flag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .nav-right .lang-flag#lang-es {
+        right: 40px; /* Position the Spanish flag to the left of the English flag */
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-image {
+        height: 40px; /* Further adjust for smaller screens */
+    }
+
+    .lang-flag {
+        width: 18px;
+        height: 18px;
+    }
+
+    .nav-right .lang-flag {
+        top: 5px;
+        right: 5px;
+    }
+
+    .nav-right .lang-flag#lang-es {
+        right: 30px;
     }
 }
