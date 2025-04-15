@@ -126,6 +126,99 @@ let troops = [
     { id: 69, name: "YOYU" },
     { id: 70, name: "YURKI" }
 ];
+// Hero information map with attack, health, and abilities
+const heroInfo = {
+    LYON: {
+        attack: 20,
+        health: 280,
+        ability: "When an allied troop enters the arena in the middle or right lane, that troop gains 10 shield."
+    },
+    KROGNAR: {
+        attack: 30,
+        health: 280,
+        ability: "No special ability."
+    },
+    GROTH: {
+        attack: 20,
+        health: 300,
+        ability: "When an allied troop enters the arena, Groth deals 10 DMG to its enemy troop."
+    },
+    BLUE: {
+        attack: 20,
+        health: 300,
+        ability: "When an allied troop enters the arena and there are 2 or more allied troops, the enemy troop's ability is blocked by Blue for that round."
+    },
+    GIDROCK: {
+        attack: 0,
+        health: 310,
+        ability: "Gidrock kills all enemy and allied troops in the arena with 10 HP or less and gains +10 ATK permanently."
+    },
+    WAKAN: {
+        attack: 20,
+        health: 300,
+        ability: "Start of round: Heals +10 HP to the first damaged troop with the highest attack in the arena. Wakan performs this ability if he took no combat damage in the previous turn."
+    },
+    PIPER: {
+        attack: 20,
+        health: 300,
+        ability: "End of round: Every 3 rounds, deals +20 DMG to the enemy hero. Starts on round 1."
+    },
+    HARUAKI: {
+        attack: 20,
+        health: 280,
+        ability: "End of round: Heals 10 HP to units (hero and troops) that haven't been in the arena that round and have less than 50 HP."
+    },
+    LUSBAAL: {
+        attack: 20,
+        health: 300,
+        ability: "End of round: If the enemy hero has 35% HP or less and Lusbaal hasn't fought them that round, Lusbaal deals 20 DMG to the enemy hero."
+    },
+    HINDAYA: {
+        attack: 20,
+        health: 300,
+        ability: "Start of round: Casts a charm on the first enemy troop with 20 ATK or less, preventing it from dealing damage that round (abilities still apply)."
+    },
+    HARALK: {
+        attack: 20,
+        health: 280,
+        ability: "Leaves 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage."
+    },
+    JARKOS: {
+        attack: 20,
+        health: 320,
+        ability: "Start of round: Enhances Troops and Creatures in combat (+10 ATK) if Jarkos received at least 20 combat damage (not ability damage) in the previous round."
+    },
+    KADRIA: {
+        attack: 20,
+        health: 300,
+        ability: "End of round: If Kadria hasn't fought the enemy hero, summons a creature in the right lane. Requires 1 round to charge the summon. The longer Kadria waits, the stronger the summon: 2 rounds (10 ATK/20 HP), 3 rounds (20 ATK/30 HP), 4 rounds (30 ATK/40 HP), 5 rounds (40 ATK/50 HP)."
+    },
+    BLURP: {
+        attack: 20,
+        health: 300,
+        ability: "Start of round: On rounds 1 and 8, enhances the abilities (+10) of all allied troops. If an ability affects ATK and HP, that troop isn't enhanced. If an ability affects multiple troops, only the first enemy is enhanced."
+    },
+    RODERICH: {
+        attack: 20,
+        health: 300,
+        ability: "Before combat: When descending to fight, if Roderich has a troop adjacent to his right, gains +10 ATK. If he has a troop adjacent to his left, gains +20 shield. Can gain both."
+    },
+    STINKY: {
+        attack: 20,
+        health: 290,
+        ability: "End of round: If Stinky hasn't fought that round, deals +10 DMG (stackable up to 20) to the enemy leader. If he fights, the damage resets to 10 DMG."
+    },
+    SICKSY: {
+        attack: 20,
+        health: 320,
+        ability: "Before combat: Deals +20 DMG if fighting the same enemy twice in a row."
+    },
+    JIN: {
+        attack: 20,
+        health: 300,
+        ability: "End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights."
+    }
+};
 let currentUser = null;
 let users = [];
 let userLikes = {};
@@ -559,6 +652,20 @@ function displayHeroes() {
 // Display Decks for a Specific Hero
 function displayHeroDecks(hero) {
     document.getElementById('hero-decks-title').textContent = `${hero.name} Decks`;
+
+    // Display hero information
+    const heroInfoContainer = document.getElementById('hero-info');
+    const info = heroInfo[hero.name];
+    if (info) {
+        heroInfoContainer.innerHTML = `
+            <h3>${hero.name}</h3>
+            <p class="stats">Attack: ${info.attack} | Health: ${info.health}</p>
+            <p class="ability">Ability: ${info.ability}</p>
+        `;
+    } else {
+        heroInfoContainer.innerHTML = `<p>Information for ${hero.name} is not available.</p>`;
+    }
+
     const publicDecks = hero.decks.filter(d => d.isPublic);
     publicDecks.sort((a, b) => b.likes - a.likes);
 
