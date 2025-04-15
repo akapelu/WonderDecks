@@ -97,7 +97,7 @@ let troops = [
     { id: 40, name: "LUMINA" },
     { id: 41, name: "MAHOMOT" },
     { id: 42, name: "MONJ" },
-    { id: 43, name: "MURBY" },
+    { id: 43, name: "MURBI" },
     { id: 44, name: "NEYON JK" },
     { id: 45, name: "NEYON UR" },
     { id: 46, name: "NEYON VC" },
