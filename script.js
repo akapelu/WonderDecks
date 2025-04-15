@@ -766,6 +766,108 @@ const troopInfoImage = document.getElementById('troop-info-image');
 const troopInfoStats = document.getElementById('troop-info-stats');
 const troopInfoAbility = document.getElementById('troop-info-ability');
 
+// Logo click to return to welcome section
+document.getElementById('logo-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection(welcomeSection);
+});
+
+// Language switching functionality
+const langEnBtn = document.getElementById('lang-en');
+const langEsBtn = document.getElementById('lang-es');
+
+const translations = {
+    en: {
+        'Public Decks': 'Public Decks',
+        'Login': 'Login',
+        'Register': 'Register',
+        'Logout': 'Logout',
+        'Welcome to Wonder Decks!': 'Welcome to Wonder Decks!',
+        'Create, save and share your decks with the community.': 'Create, save and share your decks with the community.',
+        'Get Started': 'Get Started',
+        'Add Deck': 'Add Deck',
+        'Delete Account': 'Delete Account',
+        'Created by': 'Created by',
+        'Likes': 'Likes',
+        'Public': 'Public',
+        'Yes': 'Yes',
+        'No': 'No',
+        'Edit': 'Edit',
+        'Delete': 'Delete',
+        'Make Public': 'Make Public',
+        'Make Private': 'Make Private',
+        'Description': 'Description',
+        'Hero': 'Hero',
+        'Troops': 'Troops',
+        'Add New Deck': 'Add New Deck',
+        'Save Changes': 'Save Changes',
+        'Select Hero': 'Select Hero',
+        'Deck Name': 'Deck Name',
+        'Select Troop': 'Select Troop',
+        'Make Public': 'Make Public'
+    },
+    es: {
+        'Public Decks': 'Mazos Públicos',
+        'Login': 'Iniciar Sesión',
+        'Register': 'Registrarse',
+        'Logout': 'Cerrar Sesión',
+        'Welcome to Wonder Decks!': '¡Bienvenido a Wonder Decks!',
+        'Create, save and share your decks with the community.': 'Crea, guarda y comparte tus mazos con la comunidad.',
+        'Get Started': 'Comenzar',
+        'Add Deck': 'Agregar Mazo',
+        'Delete Account': 'Eliminar Cuenta',
+        'Created by': 'Creado por',
+        'Likes': 'Me gusta',
+        'Public': 'Público',
+        'Yes': 'Sí',
+        'No': 'No',
+        'Edit': 'Editar',
+        'Delete': 'Eliminar',
+        'Make Public': 'Hacer Público',
+        'Make Private': 'Hacer Privado',
+        'Description': 'Descripción',
+        'Hero': 'Héroe',
+        'Troops': 'Tropas',
+        'Add New Deck': 'Agregar Nuevo Mazo',
+        'Save Changes': 'Guardar Cambios',
+        'Select Hero': 'Seleccionar Héroe',
+        'Deck Name': 'Nombre del Mazo',
+        'Select Troop': 'Seleccionar Tropa',
+        'Make Public': 'Hacer Público'
+    }
+};
+
+let currentLang = 'en';
+
+function updateLanguage(lang) {
+    currentLang = lang;
+    document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        element.textContent = translations[lang][key] || key;
+    });
+
+    // Update button texts
+    document.getElementById('hero-showcase-btn').textContent = translations[lang]['Public Decks'];
+    document.getElementById('login-btn').textContent = translations[lang]['Login'];
+    document.getElementById('register-btn').textContent = translations[lang]['Register'];
+    document.getElementById('logout-btn').textContent = translations[lang]['Logout'];
+    document.getElementById('get-started-btn').textContent = translations[lang]['Get Started'];
+    document.getElementById('explore-heroes-btn').textContent = translations[lang]['Public Decks'];
+    document.getElementById('add-deck-btn').textContent = translations[lang]['Add Deck'];
+    document.getElementById('delete-account-btn').textContent = translations[lang]['Delete Account'];
+
+    // Update section headings and other static content
+    document.querySelector('#welcome-section h2').textContent = translations[lang]['Welcome to Wonder Decks!'];
+    document.querySelector('#welcome-section p').textContent = translations[lang]['Create, save and share your decks with the community.'];
+    document.querySelector('#hero-showcase-section h2').textContent = translations[lang]['Public Decks'];
+}
+
+langEnBtn.addEventListener('click', () => updateLanguage('en'));
+langEsBtn.addEventListener('click', () => updateLanguage('es'));
+
+// Initial language setup
+updateLanguage('en');
+
 // Mostrar la información de la tropa en un modal
 function showTroopInfo(troopName) {
     const info = troopInfo[troopName];
@@ -1024,8 +1126,8 @@ function displayHeroes() {
         heroCard.innerHTML = `
             <img src="${getImageUrl(hero.name, 'heroes')}" alt="${hero.name}">
             <h3>${hero.name}</h3>
-            <p>Public Decks: ${hero.decks.filter(d => d.isPublic).length}</p>
-            <p>Total Likes: ${hero.totalLikes}</p>
+            <p data-translate="Public Decks">Public Decks: ${hero.decks.filter(d => d.isPublic).length}</p>
+            <p data-translate="Likes">Total Likes: ${hero.totalLikes}</p>
         `;
         heroCard.addEventListener('click', () => {
             showSection(heroDecksSection);
@@ -1075,9 +1177,8 @@ function displayHeroDecks(hero) {
             troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
             troopImage.alt = troop ? troop.name : 'Unknown';
             troopImage.classList.add('deck-troop-image');
-            // Añadir evento de clic para mostrar la información de la tropa
             troopImage.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evitar que el clic en la tropa abra los detalles del mazo
+                e.stopPropagation();
                 showTroopInfo(troop ? troop.name : 'Unknown');
             });
             troopsContainer.appendChild(troopImage);
@@ -1087,11 +1188,11 @@ function displayHeroDecks(hero) {
         const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
         const hasLiked = likeKey && userLikes[likeKey];
 
-        // Create deck content with like heart icon
+        // Create deck content with like heart icon and translation attributes
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p>Created by: ${deck.creator}</p>
-            <p>Likes: <span class="like-count">${deck.likes}</span></p>
+            <p data-translate="Created by">Created by: ${deck.creator}</p>
+            <p data-translate="Likes">Likes: <span class="like-count">${deck.likes}</span></p>
             <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
         `;
         deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Likes"
@@ -1111,79 +1212,61 @@ function displayHeroDecks(hero) {
             const likeKey = `${currentUser.username}:${deck.name}`;
         
             if (userLikes[likeKey]) {
-                // User has already liked the deck, so this click will remove the like
                 try {
-                    // Decrement like count locally
                     deck.likes = (deck.likes || 0) - 1;
                     hero.totalLikes = (hero.totalLikes || 0) - 1;
                     delete userLikes[likeKey];
         
-                    // Change icon back to empty heart
                     likeHeart.classList.remove('fas', 'liked');
                     likeHeart.classList.add('far');
         
-                    // Remove like from userLikes collection
                     await firestoreOperationWithRetry(() => 
                         db.collection('userLikes').doc(likeKey).delete()
                     );
         
-                    // Reload data to sync
                     await loadUsersAndLikes();
         
-                    // Update UI
                     deckCard.querySelector('.like-count').textContent = deck.likes;
                 } catch (error) {
                     console.error("Error removing like from deck:", error);
                     alert("Error removing like from deck. Reverting changes.");
         
-                    // Revert local changes
                     deck.likes = (deck.likes || 0) + 1;
                     hero.totalLikes = (hero.totalLikes || 0) + 1;
                     userLikes[likeKey] = true;
         
-                    // Revert icon to filled heart
                     likeHeart.classList.remove('far');
                     likeHeart.classList.add('fas', 'liked');
         
-                    // Update UI
                     deckCard.querySelector('.like-count').textContent = deck.likes;
                 }
             } else {
-                // User has not liked the deck yet, so this click will add a like
                 try {
-                    // Increment like count locally
                     deck.likes = (deck.likes || 0) + 1;
                     hero.totalLikes = (hero.totalLikes || 0) + 1;
                     userLikes[likeKey] = true;
         
-                    // Change icon to filled heart and pink color
                     likeHeart.classList.remove('far');
                     likeHeart.classList.add('fas', 'liked');
         
-                    // Save like to userLikes collection
                     await firestoreOperationWithRetry(() => 
                         db.collection('userLikes').doc(likeKey).set({ value: true })
                     );
         
-                    // Reload data to sync
                     await loadUsersAndLikes();
         
-                    // Update UI
                     deckCard.querySelector('.like-count').textContent = deck.likes;
                 } catch (error) {
                     console.error("Error liking deck:", error);
                     alert("Error liking deck. Reverting changes.");
         
-                    // Revert local changes
                     deck.likes = (deck.likes || 0) - 1;
                     hero.totalLikes = (hero.totalLikes || 0) - 1;
                     delete userLikes[likeKey];
         
-                    // Revert icon to empty heart
                     likeHeart.classList.remove('fas', 'liked');
                     likeHeart.classList.add('far');
         
-                    // Update UI
                     deckCard.querySelector('.like-count').textContent = deck.likes;
                 }
             }
@@ -1216,22 +1299,21 @@ function displayUserDecks() {
             troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
             troopImage.alt = troop ? troop.name : 'Unknown';
             troopImage.classList.add('deck-troop-image');
-            // Añadir evento de clic para mostrar la información de la tropa
             troopImage.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evitar que el clic en la tropa abra los detalles del mazo
+                e.stopPropagation();
                 showTroopInfo(troop ? troop.name : 'Unknown');
             });
             troopsContainer.appendChild(troopImage);
         });
 
-        // Create deck content
+        // Create deck content with translation attributes
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p>Hero: ${hero ? hero.name : 'Unknown'}</p>
-            <p>Public: ${deck.isPublic ? 'Yes' : 'No'}</p>
-            <button class="edit-deck-btn">Edit</button>
-            <button class="delete-deck-btn">Delete</button>
-            <button class="toggle-public-btn">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
+            <p data-translate="Hero">Hero: ${hero ? hero.name : 'Unknown'}</p>
+            <p data-translate="Public">Public: <span data-translate="${deck.isPublic ? 'Yes' : 'No'}">${deck.isPublic ? 'Yes' : 'No'}</span></p>
+            <button class="edit-deck-btn" data-translate="Edit">Edit</button>
+            <button class="delete-deck-btn" data-translate="Delete">Delete</button>
+            <button class="toggle-public-btn" data-translate="${deck.isPublic ? 'Make Private' : 'Make Public'}">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
         deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Public"
         deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Hero"
