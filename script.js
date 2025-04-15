@@ -217,7 +217,6 @@ async function loadUsersAndLikes() {
         isLoadingUsersAndLikes = false;
     }
 }
-
 // Authenticate user anonymously on page load
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
@@ -244,22 +243,24 @@ auth.onAuthStateChanged(async user => {
                     isPublic: deck.isPublic,
                     creator: deck.creator,
                 }));
-                updateUIForCurrentUser();
             } else {
                 console.log("No user document found for UID:", user.uid);
-                currentUser = null;
+                // Do not set currentUser to null immediately; allow UI to persist until data is reloaded
             }
             // Load users and likes only once here
             await loadUsersAndLikes();
+            updateUIForCurrentUser();
         } catch (error) {
             console.error("Error fetching user data:", error);
             alert("Error fetching user data. Proceeding with local data.");
-            currentUser = null;
             await loadUsersAndLikes();
+            updateUIForCurrentUser();
         }
     } else {
         console.log("User signed out");
         currentUser = null;
+        // Load users and likes to refresh the UI
+        await loadUsersAndLikes();
         updateUIForCurrentUser();
         // Sign in anonymously again
         auth.signInAnonymously().catch(error => {
@@ -399,10 +400,11 @@ logoutBtn.addEventListener('click', async () => {
     console.log("Logout button clicked");
     try {
         await auth.signOut();
-        currentUser = null;
+        // Do not set currentUser to null here; let onAuthStateChanged handle it
         showSection(welcomeSection);
-        updateUIForCurrentUser();
+        // Update UI and reload data
         await loadUsersAndLikes();
+        updateUIForCurrentUser();
     } catch (error) {
         console.error("Error signing out:", error);
         alert("Error signing out. Please try again.");
@@ -624,40 +626,40 @@ function displayHeroDecks(hero) {
                 alert('You have already liked this deck!');
                 return;
             }
-
+        
             try {
                 // Increment like count locally
                 deck.likes = (deck.likes || 0) + 1;
                 hero.totalLikes = (hero.totalLikes || 0) + 1;
                 userLikes[likeKey] = true;
-
+        
                 // Change icon to filled heart and pink color
                 likeHeart.classList.remove('far');
                 likeHeart.classList.add('fas', 'liked');
-
+        
                 // Save like to userLikes collection
                 await firestoreOperationWithRetry(() => 
                     db.collection('userLikes').doc(likeKey).set({ value: true })
                 );
-
+        
                 // Reload data to sync
                 await loadUsersAndLikes();
-
+        
                 // Update UI
                 deckCard.querySelector('.like-count').textContent = deck.likes;
             } catch (error) {
                 console.error("Error liking deck:", error);
                 alert("Error liking deck. Reverting changes.");
-
+        
                 // Revert local changes
                 deck.likes = (deck.likes || 0) - 1;
                 hero.totalLikes = (hero.totalLikes || 0) - 1;
                 delete userLikes[likeKey];
-
+        
                 // Revert icon to empty heart
                 likeHeart.classList.remove('fas', 'liked');
                 likeHeart.classList.add('far');
-
+        
                 // Update UI
                 deckCard.querySelector('.like-count').textContent = deck.likes;
             }
