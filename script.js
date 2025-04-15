@@ -874,17 +874,28 @@ logoutBtn.addEventListener('click', async () => {
     }
 });
 
+// Cerrar modales al hacer clic en la "X", asegurándose de no interferir con modales anidados
 document.querySelectorAll('.close-modal').forEach(btn => {
-    btn.addEventListener('click', () => {
-        authModal.style.display = 'none';
-        deckModal.style.display = 'none';
-        deckDetailsModal.style.display = 'none';
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evitar propagación del evento
+        const modal = btn.closest('.modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     });
 });
-// Cerrar el modal de información de la tropa al hacer clic fuera
+// Cerrar el modal de información de la tropa al hacer clic fuera, sin afectar otros modales
 troopInfoModal.addEventListener('click', (e) => {
     if (e.target === troopInfoModal || e.target.classList.contains('close-modal')) {
+        e.stopPropagation(); // Evitar que el evento se propague a modales subyacentes
         troopInfoModal.style.display = 'none';
+    }
+});
+// Cerrar el modal de detalles del mazo al hacer clic fuera, sin interferir con el modal de la tropa
+deckDetailsModal.addEventListener('click', (e) => {
+    // Solo cerrar si el clic es directamente en el fondo del modal de detalles del mazo
+    if (e.target === deckDetailsModal || e.target.classList.contains('close-modal')) {
+        deckDetailsModal.style.display = 'none';
     }
 });
 authForm.addEventListener('submit', async (e) => {
