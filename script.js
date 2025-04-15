@@ -607,50 +607,87 @@ function displayHeroDecks(hero) {
         const likeHeart = deckCard.querySelector('.like-heart');
         likeHeart.addEventListener('click', async () => {
             if (!currentUser) {
-                alert('Please log in to like a deck!');
+                alert('Please log in to like or unlike a deck!');
                 return;
             }
             const likeKey = `${currentUser.username}:${deck.name}`;
+        
             if (userLikes[likeKey]) {
-                alert('You have already liked this deck!');
-                return;
-            }
+                // User has already liked the deck, so this click will remove the like
+                try {
+                    // Decrement like count locally
+                    deck.likes = (deck.likes || 0) - 1;
+                    hero.totalLikes = (hero.totalLikes || 0) - 1;
+                    delete userLikes[likeKey];
         
-            try {
-                // Increment like count locally
-                deck.likes = (deck.likes || 0) + 1;
-                hero.totalLikes = (hero.totalLikes || 0) + 1;
-                userLikes[likeKey] = true;
+                    // Change icon back to empty heart
+                    likeHeart.classList.remove('fas', 'liked');
+                    likeHeart.classList.add('far');
         
-                // Change icon to filled heart and pink color
-                likeHeart.classList.remove('far');
-                likeHeart.classList.add('fas', 'liked');
+                    // Remove like from userLikes collection
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('userLikes').doc(likeKey).delete()
+                    );
         
-                // Save like to userLikes collection
-                await firestoreOperationWithRetry(() => 
-                    db.collection('userLikes').doc(likeKey).set({ value: true })
-                );
+                    // Reload data to sync
+                    await loadUsersAndLikes();
         
-                // Reload data to sync
-                await loadUsersAndLikes();
+                    // Update UI
+                    deckCard.querySelector('.like-count').textContent = deck.likes;
+                } catch (error) {
+                    console.error("Error removing like from deck:", error);
+                    alert("Error removing like from deck. Reverting changes.");
         
-                // Update UI
-                deckCard.querySelector('.like-count').textContent = deck.likes;
-            } catch (error) {
-                console.error("Error liking deck:", error);
-                alert("Error liking deck. Reverting changes.");
+                    // Revert local changes
+                    deck.likes = (deck.likes || 0) + 1;
+                    hero.totalLikes = (hero.totalLikes || 0) + 1;
+                    userLikes[likeKey] = true;
         
-                // Revert local changes
-                deck.likes = (deck.likes || 0) - 1;
-                hero.totalLikes = (hero.totalLikes || 0) - 1;
-                delete userLikes[likeKey];
+                    // Revert icon to filled heart
+                    likeHeart.classList.remove('far');
+                    likeHeart.classList.add('fas', 'liked');
         
-                // Revert icon to empty heart
-                likeHeart.classList.remove('fas', 'liked');
-                likeHeart.classList.add('far');
+                    // Update UI
+                    deckCard.querySelector('.like-count').textContent = deck.likes;
+                }
+            } else {
+                // User has not liked the deck yet, so this click will add a like
+                try {
+                    // Increment like count locally
+                    deck.likes = (deck.likes || 0) + 1;
+                    hero.totalLikes = (hero.totalLikes || 0) + 1;
+                    userLikes[likeKey] = true;
         
-                // Update UI
-                deckCard.querySelector('.like-count').textContent = deck.likes;
+                    // Change icon to filled heart and pink color
+                    likeHeart.classList.remove('far');
+                    likeHeart.classList.add('fas', 'liked');
+        
+                    // Save like to userLikes collection
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('userLikes').doc(likeKey).set({ value: true })
+                    );
+        
+                    // Reload data to sync
+                    await loadUsersAndLikes();
+        
+                    // Update UI
+                    deckCard.querySelector('.like-count').textContent = deck.likes;
+                } catch (error) {
+                    console.error("Error liking deck:", error);
+                    alert("Error liking deck. Reverting changes.");
+        
+                    // Revert local changes
+                    deck.likes = (deck.likes || 0) - 1;
+                    hero.totalLikes = (hero.totalLikes || 0) - 1;
+                    delete userLikes[likeKey];
+        
+                    // Revert icon to empty heart
+                    likeHeart.classList.remove('fas', 'liked');
+                    likeHeart.classList.add('far');
+        
+                    // Update UI
+                    deckCard.querySelector('.like-count').textContent = deck.likes;
+                }
             }
         });
         heroDecksList.appendChild(deckCard);
