@@ -219,6 +219,354 @@ const heroInfo = {
         ability: "End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights."
     }
 };
+// Troop information map with attack, health, and abilities in English
+const troopInfo = {
+    FRIDA: {
+        attack: 10,
+        health: 40,
+        ability: "On entry: Deals +30 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane."
+    },
+    LUMINA: {
+        attack: 0,
+        health: 80,
+        ability: "End of round: Heals +30 HP to the allied hero."
+    },
+    THRAGOS: {
+        attack: 10,
+        health: 80,
+        ability: "After combat: If it hits the enemy hero, deals 30 extra DMG."
+    },
+    SCALDRAX: {
+        attack: 10,
+        health: 80,
+        ability: "In combat: If Scaldrax kills the enemy troop and survives, Scaldrax deals 50 DMG to the enemy hero."
+    },
+    GRETA: {
+        attack: 10,
+        health: 40,
+        ability: "When a troop dies (enemy or allied): Greta gains +10 ATK and +10 HP."
+    },
+    SKIVER: {
+        attack: 20,
+        health: 80,
+        ability: "Start of round: If there are 2 or more allied troops in the arena, gains +20 ATK."
+    },
+    HIKA: {
+        attack: 10,
+        health: 50,
+        ability: "Start of round: Deals 30 DMG to the enemy troop in the same lane."
+    },
+    "BUZZ VG": {
+        attack: 30,
+        health: 30,
+        ability: "After combat: Heals +20 HP when it hits an enemy."
+    },
+    "BUZZ VC": {
+        attack: 30,
+        health: 50,
+        ability: "In combat: Applies 2 stacks of Burn (to heroes only). Burn: At the end of the round, consumes 1 stack and deals 10 DMG."
+    },
+    "BUZZ JK": {
+        attack: 30,
+        health: 50,
+        ability: "In combat: Each time it attacks, the enemy receives 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks."
+    },
+    FLITUS: {
+        attack: 20,
+        health: 50,
+        ability: "On entry: Grants +20 ATK to the allied hero until the end of the round."
+    },
+    "FLITUS VC": {
+        attack: 0,
+        health: 10,
+        ability: "On entry: Deals 40 DMG to the enemy hero."
+    },
+    "FLITUS JK": {
+        attack: 10,
+        health: 40,
+        ability: "On entry: Applies 3 stacks of Injury to the enemy troop in the opposite lane. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks."
+    },
+    "NEYON UR": {
+        attack: 0,
+        health: 70,
+        ability: "On death: Grants +10 ATK and -20 HP to the allied hero."
+    },
+    "NEYON VC": {
+        attack: 20,
+        health: 50,
+        ability: "On death: Explodes and deals +30 DMG to the enemy in front."
+    },
+    "NEYON JK": {
+        attack: 20,
+        health: 50,
+        ability: "On death: Applies 3 stacks of Injury to all enemies in the arena. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks."
+    },
+    "DROGDOR VG": {
+        attack: 20,
+        health: 60,
+        ability: "After combat: Gains +20 ATK each time it attacks the enemy hero."
+    },
+    "DROGDOR VC": {
+        attack: 30,
+        health: 60,
+        ability: "After combat: If it hits the enemy hero, deals 20 extra DMG."
+    },
+    "DROGDOR JK": {
+        attack: 30,
+        health: 60,
+        ability: "Before combat: If the enemy has a negative effect, Drogdor JK deals 20 DMG."
+    },
+    "IVUR VG": {
+        attack: 20,
+        health: 40,
+        ability: "On switch: Gains +20 ATK and +20 HP until the end of the round."
+    },
+    "IVUR VC": {
+        attack: 20,
+        health: 50,
+        ability: "On switch: Deals 30 DMG to the enemy hero."
+    },
+    "IVUR JK": {
+        attack: 20,
+        health: 70,
+        ability: "On switch: Enemy troops in adjacent lanes receive 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks."
+    },
+    "NORPUR VG": {
+        attack: 20,
+        health: 60,
+        ability: "Start of round: If there is an enemy troop in the same lane, heals 20 HP to the hero. Otherwise, deals 20 DMG to the enemy hero."
+    },
+    "NORPUR VC": {
+        attack: 20,
+        health: 80,
+        ability: "Start of round: Applies 1 stack of Burn to the enemy hero. Burn: At the end of the round, consumes 1 stack and deals 10 DMG."
+    },
+    MAHOMOT: {
+        attack: 10,
+        health: 80,
+        ability: "After combat: If the enemy has a negative effect, Mahomot deals 30 DMG."
+    },
+    SVEN: {
+        attack: 20,
+        health: 50,
+        ability: "In combat: If there are 3 or more troops (enemy or allied) in the arena with less than their max HP, Sven gains +20 ATK and +20 HP for that round."
+    },
+    LILY: {
+        attack: 10,
+        health: 90,
+        ability: "Start of round: Deals 10 DMG to the strongest enemy troop."
+    },
+    HUK: {
+        attack: 20,
+        health: 90,
+        ability: "On entry: Deals 20 DMG to the troop in the farthest lane."
+    },
+    BOGGER: {
+        attack: 30,
+        health: 30,
+        ability: "On entry: Consumes an allied troop and Bogger gains +40 ATK and +40 HP until the end of the round."
+    },
+    BOXTER: {
+        attack: 10,
+        health: 50,
+        ability: "On death: Boxter grants +10 ATK and +10 HP permanently to all allied troops in the arena."
+    },
+    CHOMPER: {
+        attack: 10,
+        health: 70,
+        ability: "On death: Chomper deals +20 DMG to all enemies in the arena."
+    },
+    CEDRICK: {
+        attack: 10,
+        health: 90,
+        ability: "End of round: Heals +20 HP to the allied hero."
+    },
+    AVERY: {
+        attack: 60,
+        health: 20,
+        ability: "No special ability."
+    },
+    SIRO: {
+        attack: 20,
+        health: 80,
+        ability: "In combat: Each time it attacks, the enemy troop receives 2 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage."
+    },
+    BLUVER: {
+        attack: 20,
+        health: 60,
+        ability: "In combat: Each time it attacks, the enemy receives 3 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage."
+    },
+    YOYU: {
+        attack: 0,
+        health: 70,
+        ability: "After combat: Enhances the next troop in the arena with +10 ATK and +10 HP permanently."
+    },
+    JEN: {
+        attack: 20,
+        health: 80,
+        ability: "End of round: Heals +20 HP to the most damaged allied troop in the arena."
+    },
+    SHYOR: {
+        attack: 0,
+        health: 70,
+        ability: "Before combat: Protects adjacent allied troops before they enter combat (+30 shield)."
+    },
+    KULTH: {
+        attack: 10,
+        health: 50,
+        ability: "End of round: Deals +30 DMG to the enemy troop with the least HP."
+    },
+    ULDREN: {
+        attack: 20,
+        health: 60,
+        ability: "When a troop dies (enemy or allied): Uldren gains +20 HP."
+    },
+    SGRAG: {
+        attack: 30,
+        health: 60,
+        ability: "In combat: If Sgrag kills the enemy troop and survives, Sgrag deals 40 DMG to the enemy hero."
+    },
+    RAGOR: {
+        attack: 10,
+        health: 60,
+        ability: "Each time it takes damage, gains +20 ATK."
+    },
+    GYZORBOTS: {
+        attack: 10,
+        health: 60,
+        ability: "Start of round: Reduces the ATK of the strongest enemy troop by 30 while Gyzorbots is in the arena."
+    },
+    WARINX: {
+        attack: 20,
+        health: 50,
+        ability: "In combat: Each time it attacks, the enemy receives 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage."
+    },
+    GRIBER: {
+        attack: 10,
+        health: 30,
+        ability: "Before combat: Deals +30 DMG to its enemy."
+    },
+    FERGOR: {
+        attack: 20,
+        health: 30,
+        ability: "Start of round: Deals +30 DMG to the enemy hero."
+    },
+    WILLIAM: {
+        attack: 20,
+        health: 50,
+        ability: "Before combat: If there are no allied troops in the arena, gains +30 ATK for that round."
+    },
+    SHAWMIT: {
+        attack: 0,
+        health: 40,
+        ability: "On entry: Deals +40 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane."
+    },
+    TWEEKS: {
+        attack: 0,
+        health: 60,
+        ability: "Start of round: Gains +30 ATK each time an allied troop with higher ATK enters the arena."
+    },
+    YURKI: {
+        attack: 20,
+        health: 90,
+        ability: "After combat: Gains +10 ATK each time it attacks the enemy hero."
+    },
+    MONJ: {
+        attack: 0,
+        health: 80,
+        ability: "Each time it takes damage, reflects +30 DMG."
+    },
+    KHEELDREN: {
+        attack: 20,
+        health: 40,
+        ability: "Before combat: Deals +20 DMG to its enemy."
+    },
+    WERTH: {
+        attack: 10,
+        health: 60,
+        ability: "Start of round: Deals +20 DMG to the enemy hero."
+    },
+    GRANTMOR: {
+        attack: 10,
+        health: 60,
+        ability: "Before combat: Protects itself with +30 shield."
+    },
+    SHAMEERA: {
+        attack: 10,
+        health: 80,
+        ability: "End of round: Heals +30 HP to the most damaged allied troop in the arena."
+    },
+    GLOB: {
+        attack: 50,
+        health: 40,
+        ability: "No special ability."
+    },
+    MURBI: {
+        attack: 30,
+        health: 80,
+        ability: "No special ability."
+    },
+    "BOB MB": {
+        attack: 30,
+        health: 30,
+        ability: "On death: Explodes and deals +40 DMG to the enemy in front."
+    },
+    FREDDY: {
+        attack: 10,
+        health: 50,
+        ability: "After combat: Shoots +30 DMG to enemy troops in adjacent lanes."
+    },
+    SOPHIE: {
+        attack: 20,
+        health: 50,
+        ability: "Before combat: Protects adjacent allied troops before they enter combat (+20 shield)."
+    },
+    JACK: {
+        attack: 20,
+        health: 120,
+        ability: "No special ability."
+    },
+    BONNIE: {
+        attack: 20,
+        health: 60,
+        ability: "While Bonnie is in the arena, all allied troops in the arena receive +10 ATK and +10 HP."
+    },
+    SPYKE: {
+        attack: 20,
+        health: 50,
+        ability: "When any troop dies in the arena, Spyke gains +30 ATK until the end of the turn."
+    },
+    CLAUDINE: {
+        attack: 20,
+        health: 50,
+        ability: "Before combat: Protects itself with +20 shield."
+    },
+    WYN: {
+        attack: 10,
+        health: 170,
+        ability: "No special ability."
+    },
+    KOTTON: {
+        attack: 20,
+        health: 70,
+        ability: "After combat: Deals 10 DMG to all enemy troops in combat."
+    },
+    HALLUR: {
+        attack: 20,
+        health: 50,
+        ability: "Each time it takes damage, gains +10 ATK and +10 HP."
+    },
+    J4WS: {
+        attack: 20,
+        health: 40,
+        ability: "On switch: Consumes an allied troop and gains +20 ATK and +20 HP permanently."
+    },
+    VINCENT: {
+        attack: 40,
+        health: 50,
+        ability: "No special ability."
+    }
+};
 let currentUser = null;
 let users = [];
 let userLikes = {};
