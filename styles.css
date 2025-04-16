@@ -42,13 +42,15 @@ body::before {
 
 nav {
     background: linear-gradient(90deg, rgba(10, 28, 61, 0.9) 0%, rgba(26, 42, 108, 0.9) 100%);
-    padding: 5px 20px; /* Reducimos el padding para disminuir la altura */
+    padding: 5px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
+    max-height: 115px;
+    position: relative;
 }
 
 /* Aseguramos que el contenedor del logo no restrinja su tamaño */
@@ -58,8 +60,34 @@ nav {
 
 /* Logo styling */
 .logo-image {
-    height: 100px; /* Reducimos el tamaño del logo en escritorio para que el nav sea más pequeño */
+    height: 200px;
     width: auto;
+    max-height: 100px;
+    object-fit: contain;
+}
+
+/* Contenedor de las banderas */
+.lang-flags {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+}
+
+/* Estilo para las banderas */
+.lang-flag {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border-radius: 50%;
+    clip-path: circle(50%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.lang-flag:hover {
+    transform: scale(1.1);
 }
 
 .nav-right {
@@ -94,32 +122,6 @@ nav {
     background: linear-gradient(145deg, #e6e6e6, #ffffff);
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
-}
-
-/* Estilo para las banderas */
-.lang-flag {
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    border-radius: 50%;
-    clip-path: circle(50%);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.lang-flag:hover {
-    transform: scale(1.1);
-}
-
-/* Posicionar las banderas en la esquina superior derecha */
-.nav-right .lang-flag {
-    order: 1;
-    margin-left: 5px;
-}
-
-/* Asegurar que los botones no se solapen con las banderas */
-.nav-right button, .nav-right span {
-    order: 2;
 }
 
 section {
@@ -461,7 +463,7 @@ h2 {
     max-width: 600px;
     text-align: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 増255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #e6e6e6;
 }
 
@@ -591,17 +593,18 @@ h2 {
 
     nav {
         padding: 5px 15px;
+        max-height: 90px;
     }
 
     .logo-image {
-        height: 75px;
+        height: 150px;
+        max-height: 75px;
     }
 
     .nav-right {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        width: 100%;
         gap: 6px;
     }
 
@@ -613,14 +616,14 @@ h2 {
         max-width: 100px;
     }
 
+    .lang-flags {
+        top: 5px;
+        right: 5px;
+    }
+
     .lang-flag {
         width: 24px;
         height: 24px;
-    }
-
-    .nav-right .lang-flag {
-        position: static;
-        margin-left: 5px;
     }
 
     section {
@@ -771,21 +774,26 @@ h2 {
 
     nav {
         padding: 5px 10px;
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
+        max-height: 68px;
+        overflow: hidden;
     }
 
     .logo-image {
-        height: 180px;
+        height: 60px;
+        max-height: 40px;
+        margin: 0 auto;
     }
 
     .nav-right {
         flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: flex-end;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 4px;
-        width: auto;
+        width: 100%;
+        margin-top: 5px;
     }
 
     .nav-right button, .nav-right span {
@@ -795,18 +803,14 @@ h2 {
         max-width: 90px;
     }
 
+    .lang-flags {
+        top: 5px;
+        right: 5px;
+    }
+
     .lang-flag {
         width: 20px;
         height: 20px;
-    }
-
-    .nav-right .lang-flag {
-        position: static;
-        margin-left: 5px;
-    }
-
-    .nav-right .lang-flag#lang-es {
-        right: auto;
     }
 
     h2 {
