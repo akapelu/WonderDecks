@@ -62,7 +62,7 @@ nav {
 .logo-image {
     height: 200px;
     width: auto;
-    max-height: 100px;
+    max-height: 80px; /* Reduced for desktop */
     object-fit: contain;
 }
 
@@ -529,16 +529,17 @@ h2 {
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
 }
 
-/* Adjust hero cards on mobile to show 3 per row */
+/* Adjust hero cards on mobile */
 @media (max-width: 768px) {
     .card-list {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 15px;
     }
 
     .card-list > div {
-        width: 100%;
+        width: 180px;
         padding: 10px;
     }
 
@@ -560,11 +561,14 @@ h2 {
 
 @media (max-width: 480px) {
     .card-list {
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 10px;
     }
 
     .card-list > div {
+        width: 160px;
         padding: 8px;
     }
 
@@ -646,7 +650,7 @@ h2 {
     }
 
     .card-list > div {
-        width: 220px;
+        width: 180px;
         padding: 15px;
     }
 
@@ -777,14 +781,15 @@ h2 {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        max-height: 68px;
+        max-height: 100px;
         overflow: hidden;
     }
 
     .logo-image {
         height: 120px;
-        max-height: 40px;
+        max-height: 60px;
         margin: 0 auto;
+        display: block;
     }
 
     .nav-right {
@@ -793,7 +798,7 @@ h2 {
         justify-content: center;
         gap: 4px;
         width: 100%;
-        margin-top: 5px;
+        margin-top: 10px;
     }
 
     .nav-right button, .nav-right span {
@@ -828,31 +833,31 @@ h2 {
         margin: 5px;
     }
 
+    .card-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
     .card-list > div {
-        width: 180px;
-        padding: 10px;
+        width: 160px;
+        padding: 8px;
+    }
+
+    .card-list img {
+        width: 60px;
+        height: auto;
     }
 
     .card-list h3 {
-        font-size: 14px;
-        min-height: 30px;
-    }
-
-    .card-list .deck-hero-image {
-        max-width: 45px;
-    }
-
-    .card-list .deck-troops {
-        min-height: 70px;
-    }
-
-    .card-list .deck-troop-image {
-        max-width: 30px;
+        font-size: 12px;
+        min-height: 25px;
     }
 
     .card-list p {
-        font-size: 11px;
-        min-height: 16px;
+        font-size: 9px;
+        min-height: 14px;
     }
 
     .card-list button:not(.like-heart) {
@@ -896,12 +901,39 @@ h2 {
         max-width: 45px !important;
     }
 
+    #deck-details-troops {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
     #deck-details-troops > div {
-        width: 45%;
+        width: 100%;
+        max-width: 200px;
     }
 
     #deck-details-troops img {
         max-width: 40px;
+    }
+
+    #hero-decks-section {
+        padding: 15px;
+    }
+
+    #hero-info {
+        max-width: 100%;
+        padding: 10px;
+        margin: 10px auto;
+    }
+
+    #hero-decks-list.card-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #hero-decks-list.card-list > div {
+        width: 90%;
+        max-width: 300px;
     }
 
     .hero-info {
