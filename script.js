@@ -640,6 +640,286 @@ const troopInfo = {
         ability: "No special ability."
     }
 };
+// Traducciones de las habilidades de las tropas
+const troopAbilitiesTranslations = {
+    FRIDA: {
+        en: "On entry: Deals +30 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.",
+        es: "Al entrar: Inflige +30 de daño a la tropa en el carril más lejano. El carril derecho ataca al izquierdo, y viceversa. El carril central ataca al central."
+    },
+    LUMINA: {
+        en: "End of round: Heals +30 HP to the allied hero.",
+        es: "Fin de ronda: Cura +30 HP al héroe aliado."
+    },
+    THRAGOS: {
+        en: "After combat: If it hits the enemy hero, deals 30 extra DMG.",
+        es: "Después del combate: Si golpea al héroe enemigo, inflige 30 de daño extra."
+    },
+    SCALDRAX: {
+        en: "In combat: If Scaldrax kills the enemy troop and survives, Scaldrax deals 50 DMG to the enemy hero.",
+        es: "En combate: Si Scaldrax mata a la tropa enemiga y sobrevive, inflige 50 de daño al héroe enemigo."
+    },
+    GRETA: {
+        en: "When a troop dies (enemy or allied): Greta gains +10 ATK and +10 HP.",
+        es: "Cuando una tropa muere (enemiga o aliada): Greta gana +10 de ataque y +10 de HP."
+    },
+    SKIVER: {
+        en: "Start of round: If there are 2 or more allied troops in the arena, gains +20 ATK.",
+        es: "Inicio de ronda: Si hay 2 o más tropas aliadas en la arena, gana +20 de ataque."
+    },
+    HIKA: {
+        en: "Start of round: Deals 30 DMG to the enemy troop in the same lane.",
+        es: "Inicio de ronda: Inflige 30 de daño a la tropa enemiga en el mismo carril."
+    },
+    "BUZZ VG": {
+        en: "After combat: Heals +20 HP when it hits an enemy.",
+        es: "Después del combate: Cura +20 HP cuando golpea a un enemigo."
+    },
+    "BUZZ VC": {
+        en: "In combat: Applies 2 stacks of Burn (to heroes only). Burn: At the end of the round, consumes 1 stack and deals 10 DMG.",
+        es: "En combate: Aplica 2 acumulaciones de Quemadura (solo a héroes). Quemadura: Al final de la ronda, consume 1 acumulación e inflige 10 de daño."
+    },
+    "BUZZ JK": {
+        en: "In combat: Each time it attacks, the enemy receives 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.",
+        es: "En combate: Cada vez que ataca, el enemigo recibe 2 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida."
+    },
+    FLITUS: {
+        en: "On entry: Grants +20 ATK to the allied hero until the end of the round.",
+        es: "Al entrar: Otorga +20 de ataque al héroe aliado hasta el final de la ronda."
+    },
+    "FLITUS VC": {
+        en: "On entry: Deals 40 DMG to the enemy hero.",
+        es: "Al entrar: Inflige 40 de daño al héroe enemigo."
+    },
+    "FLITUS JK": {
+        en: "On entry: Applies 3 stacks of Injury to the enemy troop in the opposite lane. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.",
+        es: "Al entrar: Aplica 3 acumulaciones de Herida a la tropa enemiga en el carril opuesto. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida."
+    },
+    "NEYON UR": {
+        en: "On death: Grants +10 ATK and -20 HP to the allied hero.",
+        es: "Al morir: Otorga +10 de ataque y -20 de HP al héroe aliado."
+    },
+    "NEYON VC": {
+        en: "On death: Explodes and deals +30 DMG to the enemy in front.",
+        es: "Al morir: Explota e inflige +30 de daño al enemigo de enfrente."
+    },
+    "NEYON JK": {
+        en: "On death: Applies 3 stacks of Injury to all enemies in the arena. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.",
+        es: "Al morir: Aplica 3 acumulaciones de Herida a todos los enemigos en la arena. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida."
+    },
+    "DROGDOR VG": {
+        en: "After combat: Gains +20 ATK each time it attacks the enemy hero.",
+        es: "Después del combate: Gana +20 de ataque cada vez que ataca al héroe enemigo."
+    },
+    "DROGDOR VC": {
+        en: "After combat: If it hits the enemy hero, deals 20 extra DMG.",
+        es: "Después del combate: Si golpea al héroe enemigo, inflige 20 de daño extra."
+    },
+    "DROGDOR JK": {
+        en: "Before combat: If the enemy has a negative effect, Drogdor JK deals 20 DMG.",
+        es: "Antes del combate: Si el enemigo tiene un efecto negativo, Drogdor JK inflige 20 de daño."
+    },
+    "IVUR VG": {
+        en: "On switch: Gains +20 ATK and +20 HP until the end of the round.",
+        es: "Al cambiar: Gana +20 de ataque y +20 de HP hasta el final de la ronda."
+    },
+    "IVUR VC": {
+        en: "On switch: Deals 30 DMG to the enemy hero.",
+        es: "Al cambiar: Inflige 30 de daño al héroe enemigo."
+    },
+    "IVUR JK": {
+        en: "On switch: Enemy troops in adjacent lanes receive 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.",
+        es: "Al cambiar: Las tropas enemigas en carriles adyacentes reciben 3 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida."
+    },
+    "NORPUR VG": {
+        en: "Start of round: If there is an enemy troop in the same lane, heals 20 HP to the hero. Otherwise, deals 20 DMG to the enemy hero.",
+        es: "Inicio de ronda: Si hay una tropa enemiga en el mismo carril, cura 20 HP al héroe. De lo contrario, inflige 20 de daño al héroe enemigo."
+    },
+    "NORPUR VC": {
+        en: "Start of round: Applies 1 stack of Burn to the enemy hero. Burn: At the end of the round, consumes 1 stack and deals 10 DMG.",
+        es: "Inicio de ronda: Aplica 1 acumulación de Quemadura al héroe enemigo. Quemadura: Al final de la ronda, consume 1 acumulación e inflige 10 de daño."
+    },
+    MAHOMOT: {
+        en: "After combat: If the enemy has a negative effect, Mahomot deals 30 DMG.",
+        es: "Después del combate: Si el enemigo tiene un efecto negativo, Mahomot inflige 30 de daño."
+    },
+    SVEN: {
+        en: "In combat: If there are 3 or more troops (enemy or allied) in the arena with less than their max HP, Sven gains +20 ATK and +20 HP for that round.",
+        es: "En combate: Si hay 3 o más tropas (enemigas o aliadas) en la arena con menos de su HP máximo, Sven gana +20 de ataque y +20 de HP por esa ronda."
+    },
+    LILY: {
+        en: "Start of round: Deals 10 DMG to the strongest enemy troop.",
+        es: "Inicio de ronda: Inflige 10 de daño a la tropa enemiga más fuerte."
+    },
+    HUK: {
+        en: "On entry: Deals 20 DMG to the troop in the farthest lane.",
+        es: "Al entrar: Inflige 20 de daño a la tropa en el carril más lejano."
+    },
+    BOGGER: {
+        en: "On entry: Consumes an allied troop and Bogger gains +40 ATK and +40 HP until the end of the round.",
+        es: "Al entrar: Consume una tropa aliada y Bogger gana +40 de ataque y +40 de HP hasta el final de la ronda."
+    },
+    BOXTER: {
+        en: "On death: Boxter grants +10 ATK and +10 HP permanently to all allied troops in the arena.",
+        es: "Al morir: Boxter otorga +10 de ataque y +10 de HP permanentemente a todas las tropas aliadas en la arena."
+    },
+    CHOMPER: {
+        en: "On death: Chomper deals +20 DMG to all enemies in the arena.",
+        es: "Al morir: Chomper inflige +20 de daño a todos los enemigos en la arena."
+    },
+    CEDRICK: {
+        en: "End of round: Heals +20 HP to the allied hero.",
+        es: "Fin de ronda: Cura +20 HP al héroe aliado."
+    },
+    AVERY: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    },
+    SIRO: {
+        en: "In combat: Each time it attacks, the enemy troop receives 2 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.",
+        es: "En combate: Cada vez que ataca, la tropa enemiga recibe 2 acumulaciones de Marca de Cazador. Marca de Cazador: El próximo ataque (no habilidad) a una tropa con Marca de Cazador inflige daño extra igual al número de acumulaciones. 3 acumulaciones: 30 de daño extra."
+    },
+    BLUVER: {
+        en: "In combat: Each time it attacks, the enemy receives 3 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.",
+        es: "En combate: Cada vez que ataca, el enemigo recibe 3 acumulaciones de Marca de Cazador. Marca de Cazador: El próximo ataque (no habilidad) a una tropa con Marca de Cazador inflige daño extra igual al número de acumulaciones. 3 acumulaciones: 30 de daño extra."
+    },
+    YOYU: {
+        en: "After combat: Enhances the next troop in the arena with +10 ATK and +10 HP permanently.",
+        es: "Después del combate: Mejora a la siguiente tropa en la arena con +10 de ataque y +10 de HP permanentemente."
+    },
+    JEN: {
+        en: "End of round: Heals +20 HP to the most damaged allied troop in the arena.",
+        es: "Fin de ronda: Cura +20 HP a la tropa aliada más dañada en la arena."
+    },
+    SHYOR: {
+        en: "Before combat: Protects adjacent allied troops before they enter combat (+30 shield).",
+        es: "Antes del combate: Protege a las tropas aliadas adyacentes antes de que entren en combate (+30 de escudo)."
+    },
+    KULTH: {
+        en: "End of round: Deals +30 DMG to the enemy troop with the least HP.",
+        es: "Fin de ronda: Inflige +30 de daño a la tropa enemiga con menos HP."
+    },
+    ULDREN: {
+        en: "When a troop dies (enemy or allied): Uldren gains +20 HP.",
+        es: "Cuando una tropa muere (enemiga o aliada): Uldren gana +20 de HP."
+    },
+    SGRAG: {
+        en: "In combat: If Sgrag kills the enemy troop and survives, Sgrag deals 40 DMG to the enemy hero.",
+        es: "En combate: Si Sgrag mata a la tropa enemiga y sobrevive, inflige 40 de daño al héroe enemigo."
+    },
+    RAGOR: {
+        en: "Each time it takes damage, gains +20 ATK.",
+        es: "Cada vez que recibe daño, gana +20 de ataque."
+    },
+    GYZORBOTS: {
+        en: "Start of round: Reduces the ATK of the strongest enemy troop by 30 while Gyzorbots is in the arena.",
+        es: "Inicio de ronda: Reduce el ataque de la tropa enemiga más fuerte en 30 mientras Gyzorbots está en la arena."
+    },
+    WARINX: {
+        en: "In combat: Each time it attacks, the enemy receives 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.",
+        es: "En combate: Cada vez que ataca, el enemigo recibe 3 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación. Mover una tropa de su carril activa las acumulaciones de Herida, causando daño."
+    },
+    GRIBER: {
+        en: "Before combat: Deals +30 DMG to its enemy.",
+        es: "Antes del combate: Inflige +30 de daño a su enemigo."
+    },
+    FERGOR: {
+        en: "Start of round: Deals +30 DMG to the enemy hero.",
+        es: "Inicio de ronda: Inflige +30 de daño al héroe enemigo."
+    },
+    WILLIAM: {
+        en: "Before combat: If there are no allied troops in the arena, gains +30 ATK for that round.",
+        es: "Antes del combate: Si no hay tropas aliadas en la arena, gana +30 de ataque por esa ronda."
+    },
+    SHAWMIT: {
+        en: "On entry: Deals +40 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.",
+        es: "Al entrar: Inflige +40 de daño a la tropa en el carril más lejano. El carril derecho ataca al izquierdo, y viceversa. El carril central ataca al central."
+    },
+    TWEEKS: {
+        en: "Start of round: Gains +30 ATK each time an allied troop with higher ATK enters the arena.",
+        es: "Inicio de ronda: Gana +30 de ataque cada vez que una tropa aliada con mayor ataque entra en la arena."
+    },
+    YURKI: {
+        en: "After combat: Gains +10 ATK each time it attacks the enemy hero.",
+        es: "Después del combate: Gana +10 de ataque cada vez que ataca al héroe enemigo."
+    },
+    MONJ: {
+        en: "Each time it takes damage, reflects +30 DMG.",
+        es: "Cada vez que recibe daño, refleja +30 de daño."
+    },
+    KHEELDREN: {
+        en: "Before combat: Deals +20 DMG to its enemy.",
+        es: "Antes del combate: Inflige +20 de daño a su enemigo."
+    },
+    WERTH: {
+        en: "Start of round: Deals +20 DMG to the enemy hero.",
+        es: "Inicio de ronda: Inflige +20 de daño al héroe enemigo."
+    },
+    GRANTMOR: {
+        en: "Before combat: Protects itself with +30 shield.",
+        es: "Antes del combate: Se protege con +30 de escudo."
+    },
+    SHAMEERA: {
+        en: "End of round: Heals +30 HP to the most damaged allied troop in the arena.",
+        es: "Fin de ronda: Cura +30 HP a la tropa aliada más dañada en la arena."
+    },
+    GLOB: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    },
+    MURBI: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    },
+    "BOB MB": {
+        en: "On death: Explodes and deals +40 DMG to the enemy in front.",
+        es: "Al morir: Explota e inflige +40 de daño al enemigo de enfrente."
+    },
+    FREDDY: {
+        en: "After combat: Shoots +30 DMG to enemy troops in adjacent lanes.",
+        es: "Después del combate: Dispara +30 de daño a tropas enemigas en carriles adyacentes."
+    },
+    SOPHIE: {
+        en: "Before combat: Protects adjacent allied troops before they enter combat (+20 shield).",
+        es: "Antes del combate: Protege a las tropas aliadas adyacentes antes de que entren en combate (+20 de escudo)."
+    },
+    JACK: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    },
+    BONNIE: {
+        en: "While Bonnie is in the arena, all allied troops in the arena receive +10 ATK and +10 HP.",
+        es: "Mientras Bonnie está en la arena, todas las tropas aliadas en la arena reciben +10 de ataque y +10 de HP."
+    },
+    SPYKE: {
+        en: "When any troop dies in the arena, Spyke gains +30 ATK until the end of the turn.",
+        es: "Cuando cualquier tropa muere en la arena, Spyke gana +30 de ataque hasta el final del turno."
+    },
+    CLAUDINE: {
+        en: "Before combat: Protects itself with +20 shield.",
+        es: "Antes del combate: Se protege con +20 de escudo."
+    },
+    WYN: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    },
+    KOTTON: {
+        en: "After combat: Deals 10 DMG to all enemy troops in combat.",
+        es: "Después del combate: Inflige 10 de daño a todas las tropas enemigas en combate."
+    },
+    HALLUR: {
+        en: "Each time it takes damage, gains +10 ATK and +10 HP.",
+        es: "Cada vez que recibe daño, gana +10 de ataque y +10 de HP."
+    },
+    J4WS: {
+        en: "On switch: Consumes an allied troop and gains +20 ATK and +20 HP permanently.",
+        es: "Al cambiar: Consume una tropa aliada y gana +20 de ataque y +20 de HP permanentemente."
+    },
+    VINCENT: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    }
+};
+
 let currentUser = null;
 let users = [];
 let userLikes = {};
@@ -992,8 +1272,12 @@ function showTroopInfo(troopName) {
     if (info) {
         troopInfoTitle.textContent = troopName;
         troopInfoImage.innerHTML = `<img src="${getImageUrl(troopName, 'troops')}" alt="${troopName}">`;
-        troopInfoStats.textContent = `Attack: ${info.attack} | Health: ${info.health}`;
-        troopInfoAbility.textContent = `Ability: ${info.ability}`;
+        const attackLabel = translations[currentLang]['Attack'];
+        const healthLabel = translations[currentLang]['Health'];
+        const abilityLabel = translations[currentLang]['Ability'];
+        const abilityText = troopAbilitiesTranslations[troopName]?.[currentLang] || info.ability; // Usa la traducción si existe, sino usa el valor por defecto
+        troopInfoStats.textContent = `${attackLabel}: ${info.attack} | ${healthLabel}: ${info.health}`;
+        troopInfoAbility.textContent = `${abilityLabel}: ${abilityText}`;
     } else {
         troopInfoTitle.textContent = troopName;
         troopInfoImage.innerHTML = `<img src="${getImageUrl(troopName, 'troops')}" alt="${troopName}">`;
