@@ -1431,26 +1431,48 @@ function showDeckDetails(deck) {
 
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
+        const troopName = troop ? troop.name : 'Unknown';
         const troopCard = document.createElement('div');
-        troopCard.classList.add('troop-card'); // Añadir clase para estilizar
+        troopCard.classList.add('troop-card');
+
+        // Crear imagen de la tropa
         const troopImage = document.createElement('img');
-        troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
-        troopImage.alt = troop ? troop.name : 'Unknown';
+        const imageUrl = getImageUrl(troopName, 'troops');
+        console.log(`Loading image for troop ${troopName}: ${imageUrl}`); // Depuración
+        troopImage.src = imageUrl;
+        troopImage.alt = troopName;
         troopImage.classList.add('deck-troop-image');
-        troopImage.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showTroopInfo(troop ? troop.name : 'Unknown');
-        });
+
         // Manejar errores de carga de imagen
         troopImage.onerror = () => {
-            console.error(`Error loading image for troop ${troop ? troop.name : 'Unknown'}: ${troopImage.src}`);
-            troopImage.src = ''; // Opcional: asignar una imagen por defecto si falla
+            console.error(`Error loading image for troop ${troopName}: ${imageUrl}`);
+            // Mostrar un placeholder o texto si la imagen no carga
+            troopImage.style.display = 'none';
+            const placeholder = document.createElement('p');
+            placeholder.textContent = 'Image not found';
+            placeholder.style.color = 'red';
+            troopCard.insertBefore(placeholder, troopImage);
         };
+
+        // Añadir evento para mostrar información de la tropa
+        troopImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showTroopInfo(troopName);
+        });
+
+        // Asegurarse de que la imagen se renderice
+        troopImage.onload = () => {
+            console.log(`Image loaded successfully for troop ${troopName}`);
+        };
+
         troopCard.appendChild(troopImage);
-        const troopName = document.createElement('p');
-        troopName.textContent = troop ? troop.name : 'Unknown';
-        troopName.classList.add('troop-name'); // Añadir clase para estilizar
-        troopCard.appendChild(troopName);
+
+        // Añadir nombre de la tropa
+        const troopNameElement = document.createElement('p');
+        troopNameElement.textContent = troopName;
+        troopNameElement.classList.add('troop-name');
+        troopCard.appendChild(troopNameElement);
+
         troopsContainer.appendChild(troopCard);
     });
 
