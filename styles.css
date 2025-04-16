@@ -40,16 +40,20 @@ body::before {
     50% { opacity: 0.2; }
 }
 
-/* Ajustes para el logo y el nav */
 nav {
     background: linear-gradient(90deg, rgba(10, 28, 61, 0.9) 0%, rgba(26, 42, 108, 0.9) 100%);
-    padding: 10px 15px; /* Aumentamos ligeramente el padding para dar más espacio al logo */
+    padding: 10px 15px; /* Aumentamos el padding para dar más espacio al logo */
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
+}
+
+/* Aseguramos que el contenedor del logo no restrinja su tamaño */
+#logo-link {
+    display: inline-block;
 }
 
 /* Logo styling */
@@ -62,14 +66,14 @@ nav {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 8px; /* Reducimos el gap para un diseño más compacto */
+    gap: 8px;
     justify-content: flex-end;
 }
 
 .nav-right button, .nav-right span {
     margin-left: 5px;
-    padding: 6px 10px; /* Reducimos el padding de los botones */
-    font-size: 13px; /* Reducimos el tamaño de la fuente */
+    padding: 6px 10px;
+    font-size: 13px;
     border: none;
     border-radius: 20px;
     cursor: pointer;
@@ -94,13 +98,13 @@ nav {
 
 /* Estilo para las banderas */
 .lang-flag {
-    width: 28px; /* Aumentamos ligeramente el tamaño para mejor visibilidad */
+    width: 28px;
     height: 28px;
     cursor: pointer;
     transition: transform 0.3s ease;
-    border-radius: 50%; /* Hacemos las banderas redondeadas */
-    clip-path: circle(50%); /* Aseguramos que la imagen sea circular */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Añadimos una sombra sutil */
+    border-radius: 50%;
+    clip-path: circle(50%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .lang-flag:hover {
@@ -109,7 +113,7 @@ nav {
 
 /* Posicionar las banderas en la esquina superior derecha */
 .nav-right .lang-flag {
-    order: 1; /* Aseguramos que las banderas se rendericen al final del contenedor flex */
+    order: 1;
     margin-left: 5px;
 }
 
@@ -486,8 +490,8 @@ h2 {
 
 /* Estilos para el modal de información de la tropa */
 .troop-info-modal-content {
-    max-width: 400px; /* Ancho máximo en pantallas grandes */
-    width: 90%; /* Para que se ajuste al contenido, pero no supere el max-width */
+    max-width: 400px;
+    width: 90%;
     padding: 20px;
     text-align: center;
 }
@@ -515,11 +519,11 @@ h2 {
 
 /* Hacer que las imágenes de las tropas sean clicables */
 .card-list .deck-troop-image {
-    cursor: pointer; /* Indica que es clicable */
+    cursor: pointer;
 }
 
 .card-list .deck-troop-image:hover {
-    transform: scale(1.1); /* Efecto de escala al pasar el mouse */
+    transform: scale(1.1);
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
 }
 
@@ -527,17 +531,17 @@ h2 {
 @media (max-width: 768px) {
     .card-list {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+        grid-template-columns: repeat(3, 1fr);
         gap: 15px;
     }
 
     .card-list > div {
-        width: 100%; /* Full width of the grid cell */
+        width: 100%;
         padding: 10px;
     }
 
     .card-list img {
-        width: 80px; /* Smaller image size */
+        width: 80px;
         height: auto;
     }
 
@@ -554,7 +558,7 @@ h2 {
 
 @media (max-width: 480px) {
     .card-list {
-        grid-template-columns: repeat(3, 1fr); /* Still 3 per row */
+        grid-template-columns: repeat(3, 1fr);
         gap: 10px;
     }
 
@@ -563,7 +567,7 @@ h2 {
     }
 
     .card-list img {
-        width: 60px; /* Even smaller for very small screens */
+        width: 60px;
         height: auto;
     }
 
@@ -588,11 +592,11 @@ h2 {
     nav {
         flex-direction: column;
         align-items: center;
-        padding: 8px 12px; /* Reducimos aún más el padding */
+        padding: 8px 12px;
     }
 
     .logo-image {
-        height: 90px; /* Ajustamos el tamaño del logo para móviles */
+        height: 90px; /* Aumentamos el tamaño del logo en tablets */
     }
 
     .nav-right {
@@ -623,7 +627,7 @@ h2 {
     }
 
     .nav-right .lang-flag#lang-es {
-        right: 38px; /* Posicionamos la bandera española a la izquierda de la inglesa */
+        right: 38px;
     }
 
     section {
@@ -747,8 +751,8 @@ h2 {
     }
 
     .troop-info-modal-content {
-        max-width: 300px; /* Reducir el ancho máximo en tabletas */
-        width: 80%; /* Ajustar al contenido, pero no más del 80% */
+        max-width: 300px;
+        width: 80%;
         padding: 15px;
     }
 
@@ -777,7 +781,7 @@ h2 {
     }
 
     .logo-image {
-        height: 70px; /* Ajustamos aún más para pantallas pequeñas */
+        height: 70px; /* Aumentamos el tamaño del logo en móviles */
     }
 
     .nav-right {
@@ -911,8 +915,8 @@ h2 {
     }
 
     .troop-info-modal-content {
-        max-width: 280px; /* Ancho más pequeño para móviles */
-        width: 70%; /* Reducir aún más el porcentaje */
+        max-width: 280px;
+        width: 70%;
         padding: 10px;
     }
 
