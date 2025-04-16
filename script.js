@@ -1402,27 +1402,39 @@ function displayUserDecks() {
 function showDeckDetails(deck) {
     deckDetailsTitle.textContent = deck.name;
     deckDetailsCreator.textContent = deck.creator || currentUser.username;
-    deckDetailsDescription.textContent = deck.description;
+    deckDetailsDescription.textContent = deck.description || 'No description provided.';
     const hero = heroes.find(h => h.id === deck.heroId);
     deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
-    deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}">`;
+    deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}" onerror="this.src='https://via.placeholder.com/100?text=Hero+Image+Not+Found';">`;
 
-    deckDetailsTroops.innerHTML = '';
+    deckDetailsTroops.innerHTML = ''; // Clear previous troops
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
+        const troopName = troop ? troop.name : 'Unknown';
         const troopCard = document.createElement('div');
         const troopImage = document.createElement('img');
-        troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
-        troopImage.alt = troop ? troop.name : 'Unknown';
+        const imageUrl = getImageUrl(troopName, 'troops');
+        
+        // Set the image source and add an onerror fallback
+        troopImage.src = imageUrl;
+        troopImage.alt = troopName;
         troopImage.classList.add('deck-troop-image');
+        troopImage.onerror = () => {
+            troopImage.src = 'https://via.placeholder.com/50?text=Troop+Image+Not+Found';
+        };
+        
+        // Add click event to show troop info
         troopImage.addEventListener('click', (e) => {
             e.stopPropagation();
-            showTroopInfo(troop ? troop.name : 'Unknown');
+            showTroopInfo(troopName);
         });
+        
+        // Append image and name to the troop card
         troopCard.appendChild(troopImage);
-        const troopName = document.createElement('p');
-        troopName.textContent = troop ? troop.name : 'Unknown';
-        troopCard.appendChild(troopName);
+        const troopNameElement = document.createElement('p');
+        troopNameElement.textContent = troopName;
+        troopCard.appendChild(troopNameElement);
+        
         deckDetailsTroops.appendChild(troopCard);
     });
 
