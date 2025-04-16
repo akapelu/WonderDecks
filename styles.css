@@ -40,9 +40,10 @@ body::before {
     50% { opacity: 0.2; }
 }
 
+/* Ajustes para el logo y el nav */
 nav {
     background: linear-gradient(90deg, rgba(10, 28, 61, 0.9) 0%, rgba(26, 42, 108, 0.9) 100%);
-    padding: 8px 15px; /* Reducimos el padding para hacer la barra más compacta */
+    padding: 10px 15px; /* Aumentamos ligeramente el padding para dar más espacio al logo */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -53,7 +54,7 @@ nav {
 
 /* Logo styling */
 .logo-image {
-    height: 80px; /* Aumentamos el tamaño del logo para mejor visibilidad */
+    height: 120px; /* Aumentamos el tamaño del logo en escritorio */
     width: auto;
 }
 
@@ -587,11 +588,11 @@ h2 {
     nav {
         flex-direction: column;
         align-items: center;
-        padding: 6px 12px; /* Reducimos aún más el padding */
+        padding: 8px 12px; /* Reducimos aún más el padding */
     }
 
     .logo-image {
-        height: 60px; /* Ajustamos el tamaño del logo para móviles */
+        height: 90px; /* Ajustamos el tamaño del logo para móviles */
     }
 
     .nav-right {
@@ -772,11 +773,11 @@ h2 {
     }
 
     nav {
-        padding: 4px 8px;
+        padding: 6px 8px;
     }
 
     .logo-image {
-        height: 50px; /* Ajustamos aún más para pantallas pequeñas */
+        height: 70px; /* Ajustamos aún más para pantallas pequeñas */
     }
 
     .nav-right {
