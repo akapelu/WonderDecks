@@ -842,7 +842,13 @@ function updateLanguage(lang) {
     currentLang = lang;
     document.querySelectorAll('[data-translate]').forEach(element => {
         const key = element.getAttribute('data-translate');
-        element.textContent = translations[lang][key] || key;
+        // Solo traducir si el texto actual coincide con la clave o con la traducción en el idioma anterior
+        const currentText = element.textContent.trim();
+        const enTranslation = translations['en'][key] || key;
+        const esTranslation = translations['es'][key] || key;
+        if (currentText === key || currentText === enTranslation || currentText === esTranslation) {
+            element.textContent = translations[lang][key] || key;
+        }
     });
 
     // Update button texts
@@ -886,8 +892,17 @@ function updateLanguage(lang) {
             });
         });
     }
-}
 
+    // Refrescar el modal de detalles del mazo si está abierto
+    if (deckDetailsModal.style.display === 'flex') {
+        const deckName = deckDetailsTitle.textContent;
+        const deck = currentUser.decks.find(d => d.name === deckName) || 
+                    heroes.flatMap(h => h.decks).find(d => d.name === deckName);
+        if (deck) {
+            showDeckDetails(deck);
+        }
+    }
+}
 langEnFlag.addEventListener('click', () => updateLanguage('en'));
 langEsFlag.addEventListener('click', () => updateLanguage('es'));
 
