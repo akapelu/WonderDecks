@@ -1230,12 +1230,15 @@ troopInfoModal.addEventListener('click', (e) => {
 });
 // Cerrar el modal de detalles del mazo al hacer clic fuera, sin interferir con el modal de la tropa
 deckDetailsModal.addEventListener('click', (e) => {
-    // Solo cerrar si el clic es directamente en el fondo del modal de detalles del mazo
+    // Solo cerrar si el clic es directamente en el fondo del modal o en el botón de cierre
     if (e.target === deckDetailsModal || e.target.classList.contains('close-modal')) {
         deckDetailsModal.style.display = 'none';
+        // Volver a renderizar la sección de mazos del usuario si estaba visible
+        if (userAccountSection.style.display === 'block') {
+            displayUserDecks();
+        }
     }
 });
-
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('username-input').value;
