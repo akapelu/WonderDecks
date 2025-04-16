@@ -49,7 +49,7 @@ nav {
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    max-height: 150px; /* Aumentado de 140px a 150px */
+    max-height: 160px; /* Aumentado de 150px a 160px */
     position: relative;
 }
 
@@ -69,7 +69,7 @@ nav {
 /* Contenedor de las banderas */
 .lang-flags {
     position: absolute;
-    top: 15px; /* Aumentado de 10px a 15px */
+    top: 20px; /* Aumentado de 15px a 20px */
     right: 10px;
     display: flex;
     gap: 5px;
@@ -394,7 +394,7 @@ h2 {
 .modal-content textarea {
     padding: 12px;
     font-size: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 2525, 255, 0.3);
     border-radius: 8px;
     background: #1a2a6c;
     color: #e6e6e6;
@@ -679,7 +679,7 @@ h2 {
 
     #hero-decks-list.card-list img {
         width: 60px;
-        height: आसauto;
+        height: auto;
     }
 
     #hero-decks-list.card-list h3 {
@@ -709,14 +709,14 @@ h2 {
 
     nav {
         padding: 5px 15px;
-        max-height: 110px;
-        justify-content: center; /* Cambiado de space-between a center */
-        flex-direction: column; /* Aseguramos que los elementos se apilen verticalmente */
+        max-height: 150px; /* Aumentado de 110px a 150px */
+        justify-content: center;
+        flex-direction: column;
     }
 
     .nav-left {
         display: flex;
-        justify-content: center; /* Centrar el logo */
+        justify-content: center;
         width: 100%;
     }
 
@@ -728,10 +728,10 @@ h2 {
     .nav-right {
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: center; /* Ya estaba, pero lo confirmamos */
+        justify-content: center;
         gap: 6px;
-        width: 100%; /* Aseguramos que ocupe todo el ancho para centrar */
-        margin-top: 10px; /* Añadimos un margen superior para separación */
+        width: 100%;
+        margin-top: 10px;
     }
 
     .nav-right button, .nav-right span {
@@ -743,7 +743,7 @@ h2 {
     }
 
     .lang-flags {
-        top: 10px;
+        top: 15px; /* Ajustado de 10px a 15px */
         right: 5px;
     }
 
