@@ -1431,7 +1431,8 @@ function showDeckDetails(deck) {
 
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
-        const troopCard = document.createElement('div'); // Contenedor para cada tropa
+        const troopCard = document.createElement('div');
+        troopCard.classList.add('troop-card'); // Añadir clase para estilizar
         const troopImage = document.createElement('img');
         troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
         troopImage.alt = troop ? troop.name : 'Unknown';
@@ -1440,9 +1441,15 @@ function showDeckDetails(deck) {
             e.stopPropagation();
             showTroopInfo(troop ? troop.name : 'Unknown');
         });
+        // Manejar errores de carga de imagen
+        troopImage.onerror = () => {
+            console.error(`Error loading image for troop ${troop ? troop.name : 'Unknown'}: ${troopImage.src}`);
+            troopImage.src = ''; // Opcional: asignar una imagen por defecto si falla
+        };
         troopCard.appendChild(troopImage);
         const troopName = document.createElement('p');
         troopName.textContent = troop ? troop.name : 'Unknown';
+        troopName.classList.add('troop-name'); // Añadir clase para estilizar
         troopCard.appendChild(troopName);
         troopsContainer.appendChild(troopCard);
     });
