@@ -803,7 +803,97 @@ const translations = {
         'Select Hero': 'Select Hero',
         'Deck Name': 'Deck Name',
         'Select Troop': 'Select Troop',
-        'Make Public': 'Make Public'
+        'Make Public': 'Make Public',
+        // Nuevas traducciones para héroes y tropas
+        'Attack': 'Attack',
+        'Health': 'Health',
+        'Ability': 'Ability',
+        'Stats not available': 'Stats not available.',
+        'Ability: Unknown': 'Ability: Unknown.',
+        // Habilidades de héroes
+        'When an allied troop enters the arena in the middle or right lane, that troop gains 10 shield.': 'When an allied troop enters the arena in the middle or right lane, that troop gains 10 shield.',
+        'No special ability.': 'No special ability.',
+        'When an allied troop enters the arena, Groth deals 10 DMG to its enemy troop.': 'When an allied troop enters the arena, Groth deals 10 DMG to its enemy troop.',
+        'When an allied troop enters the arena and there are 2 or more allied troops, the enemy troop\'s ability is blocked by Blue for that round.': 'When an allied troop enters the arena and there are 2 or more allied troops, the enemy troop\'s ability is blocked by Blue for that round.',
+        'Gidrock kills all enemy and allied troops in the arena with 10 HP or less and gains +10 ATK permanently.': 'Gidrock kills all enemy and allied troops in the arena with 10 HP or less and gains +10 ATK permanently.',
+        'Start of round: Heals +10 HP to the first damaged troop with the highest attack in the arena. Wakan performs this ability if he took no combat damage in the previous turn.': 'Start of round: Heals +10 HP to the first damaged troop with the highest attack in the arena. Wakan performs this ability if he took no combat damage in the previous turn.',
+        'End of round: Every 3 rounds, deals +20 DMG to the enemy hero. Starts on round 1.': 'End of round: Every 3 rounds, deals +20 DMG to the enemy hero. Starts on round 1.',
+        'End of round: Heals 10 HP to units (hero and troops) that haven\'t been in the arena that round and have less than 50 HP.': 'End of round: Heals 10 HP to units (hero and troops) that haven\'t been in the arena that round and have less than 50 HP.',
+        'End of round: If the enemy hero has 35% HP or less and Lusbaal hasn\'t fought them that round, Lusbaal deals 20 DMG to the enemy hero.': 'End of round: If the enemy hero has 35% HP or less and Lusbaal hasn\'t fought them that round, Lusbaal deals 20 DMG to the enemy hero.',
+        'Start of round: Casts a charm on the first enemy troop with 20 ATK or less, preventing it from dealing damage that round (abilities still apply).': 'Start of round: Casts a charm on the first enemy troop with 20 ATK or less, preventing it from dealing damage that round (abilities still apply).',
+        'Leaves 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.': 'Leaves 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.',
+        'Start of round: Enhances Troops and Creatures in combat (+10 ATK) if Jarkos received at least 20 combat damage (not ability damage) in the previous round.': 'Start of round: Enhances Troops and Creatures in combat (+10 ATK) if Jarkos received at least 20 combat damage (not ability damage) in the previous round.',
+        'End of round: If Kadria hasn\'t fought the enemy hero, summons a creature in the right lane. Requires 1 round to charge the summon. The longer Kadria waits, the stronger the summon: 2 rounds (10 ATK/20 HP), 3 rounds (20 ATK/30 HP), 4 rounds (30 ATK/40 HP), 5 rounds (40 ATK/50 HP).': 'End of round: If Kadria hasn\'t fought the enemy hero, summons a creature in the right lane. Requires 1 round to charge the summon. The longer Kadria waits, the stronger the summon: 2 rounds (10 ATK/20 HP), 3 rounds (20 ATK/30 HP), 4 rounds (30 ATK/40 HP), 5 rounds (40 ATK/50 HP).',
+        'Start of round: On rounds 1 and 8, enhances the abilities (+10) of all allied troops. If an ability affects ATK and HP, that troop isn\'t enhanced. If an ability affects multiple troops, only the first enemy is enhanced.': 'Start of round: On rounds 1 and 8, enhances the abilities (+10) of all allied troops. If an ability affects ATK and HP, that troop isn\'t enhanced. If an ability affects multiple troops, only the first enemy is enhanced.',
+        'Before combat: When descending to fight, if Roderich has a troop adjacent to his right, gains +10 ATK. If he has a troop adjacent to his left, gains +20 shield. Can gain both.': 'Before combat: When descending to fight, if Roderich has a troop adjacent to his right, gains +10 ATK. If he has a troop adjacent to his left, gains +20 shield. Can gain both.',
+        'End of round: If Stinky hasn\'t fought that round, deals +10 DMG (stackable up to 20) to the enemy leader. If he fights, the damage resets to 10 DMG.': 'End of round: If Stinky hasn\'t fought that round, deals +10 DMG (stackable up to 20) to the enemy leader. If he fights, the damage resets to 10 DMG.',
+        'Before combat: Deals +20 DMG if fighting the same enemy twice in a row.': 'Before combat: Deals +20 DMG if fighting the same enemy twice in a row.',
+        'End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights.': 'End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights.',
+        // Habilidades de tropas
+        'On entry: Deals +30 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.': 'On entry: Deals +30 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.',
+        'End of round: Heals +30 HP to the allied hero.': 'End of round: Heals +30 HP to the allied hero.',
+        'After combat: If it hits the enemy hero, deals 30 extra DMG.': 'After combat: If it hits the enemy hero, deals 30 extra DMG.',
+        'In combat: If Scaldrax kills the enemy troop and survives, Scaldrax deals 50 DMG to the enemy hero.': 'In combat: If Scaldrax kills the enemy troop and survives, Scaldrax deals 50 DMG to the enemy hero.',
+        'When a troop dies (enemy or allied): Greta gains +10 ATK and +10 HP.': 'When a troop dies (enemy or allied): Greta gains +10 ATK and +10 HP.',
+        'Start of round: If there are 2 or more allied troops in the arena, gains +20 ATK.': 'Start of round: If there are 2 or more allied troops in the arena, gains +20 ATK.',
+        'Start of round: Deals 30 DMG to the enemy troop in the same lane.': 'Start of round: Deals 30 DMG to the enemy troop in the same lane.',
+        'After combat: Heals +20 HP when it hits an enemy.': 'After combat: Heals +20 HP when it hits an enemy.',
+        'In combat: Applies 2 stacks of Burn (to heroes only). Burn: At the end of the round, consumes 1 stack and deals 10 DMG.': 'In combat: Applies 2 stacks of Burn (to heroes only). Burn: At the end of the round, consumes 1 stack and deals 10 DMG.',
+        'In combat: Each time it attacks, the enemy receives 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'In combat: Each time it attacks, the enemy receives 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.',
+        'On entry: Grants +20 ATK to the allied hero until the end of the round.': 'On entry: Grants +20 ATK to the allied hero until the end of the round.',
+        'On entry: Deals 40 DMG to the enemy hero.': 'On entry: Deals 40 DMG to the enemy hero.',
+        'On entry: Applies 3 stacks of Injury to the enemy troop in the opposite lane. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'On entry: Applies 3 stacks of Injury to the enemy troop in the opposite lane. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.',
+        'On death: Grants +10 ATK and -20 HP to the allied hero.': 'On death: Grants +10 ATK and -20 HP to the allied hero.',
+        'On death: Explodes and deals +30 DMG to the enemy in front.': 'On death: Explodes and deals +30 DMG to the enemy in front.',
+        'On death: Applies 3 stacks of Injury to all enemies in the arena. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'On death: Applies 3 stacks of Injury to all enemies in the arena. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.',
+        'After combat: Gains +20 ATK each time it attacks the enemy hero.': 'After combat: Gains +20 ATK each time it attacks the enemy hero.',
+        'After combat: If it hits the enemy hero, deals 20 extra DMG.': 'After combat: If it hits the enemy hero, deals 20 extra DMG.',
+        'Before combat: If the enemy has a negative effect, Drogdor JK deals 20 DMG.': 'Before combat: If the enemy has a negative effect, Drogdor JK deals 20 DMG.',
+        'On switch: Gains +20 ATK and +20 HP until the end of the round.': 'On switch: Gains +20 ATK and +20 HP until the end of the round.',
+        'On switch: Deals 30 DMG to the enemy hero.': 'On switch: Deals 30 DMG to the enemy hero.',
+        'On switch: Enemy troops in adjacent lanes receive 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'On switch: Enemy troops in adjacent lanes receive 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.',
+        'Start of round: If there is an enemy troop in the same lane, heals 20 HP to the hero. Otherwise, deals 20 DMG to the enemy hero.': 'Start of round: If there is an enemy troop in the same lane, heals 20 HP to the hero. Otherwise, deals 20 DMG to the enemy hero.',
+        'Start of round: Applies 1 stack of Burn to the enemy hero. Burn: At the end of the round, consumes 1 stack and deals 10 DMG.': 'Start of round: Applies 1 stack of Burn to the enemy hero. Burn: At the end of the round, consumes 1 stack and deals 10 DMG.',
+        'After combat: If the enemy has a negative effect, Mahomot deals 30 DMG.': 'After combat: If the enemy has a negative effect, Mahomot deals 30 DMG.',
+        'In combat: If there are 3 or more troops (enemy or allied) in the arena with less than their max HP, Sven gains +20 ATK and +20 HP for that round.': 'In combat: If there are 3 or more troops (enemy or allied) in the arena with less than their max HP, Sven gains +20 ATK and +20 HP for that round.',
+        'Start of round: Deals 10 DMG to the strongest enemy troop.': 'Start of round: Deals 10 DMG to the strongest enemy troop.',
+        'On entry: Deals 20 DMG to the troop in the farthest lane.': 'On entry: Deals 20 DMG to the troop in the farthest lane.',
+        'On entry: Consumes an allied troop and Bogger gains +40 ATK and +40 HP until the end of the round.': 'On entry: Consumes an allied troop and Bogger gains +40 ATK and +40 HP until the end of the round.',
+        'On death: Boxter grants +10 ATK and +10 HP permanently to all allied troops in the arena.': 'On death: Boxter grants +10 ATK and +10 HP permanently to all allied troops in the arena.',
+        'On death: Chomper deals +20 DMG to all enemies in the arena.': 'On death: Chomper deals +20 DMG to all enemies in the arena.',
+        'End of round: Heals +20 HP to the allied hero.': 'End of round: Heals +20 HP to the allied hero.',
+        'In combat: Each time it attacks, the enemy troop receives 2 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.': 'In combat: Each time it attacks, the enemy troop receives 2 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.',
+        'In combat: Each time it attacks, the enemy receives 3 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.': 'In combat: Each time it attacks, the enemy receives 3 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.',
+        'After combat: Enhances the next troop in the arena with +10 ATK and +10 HP permanently.': 'After combat: Enhances the next troop in the arena with +10 ATK and +10 HP permanently.',
+        'End of round: Heals +20 HP to the most damaged allied troop in the arena.': 'End of round: Heals +20 HP to the most damaged allied troop in the arena.',
+        'Before combat: Protects adjacent allied troops before they enter combat (+30 shield).': 'Before combat: Protects adjacent allied troops before they enter combat (+30 shield).',
+        'End of round: Deals +30 DMG to the enemy troop with the least HP.': 'End of round: Deals +30 DMG to the enemy troop with the least HP.',
+        'When a troop dies (enemy or allied): Uldren gains +20 HP.': 'When a troop dies (enemy or allied): Uldren gains +20 HP.',
+        'In combat: If Sgrag kills the enemy troop and survives, Sgrag deals 40 DMG to the enemy hero.': 'In combat: If Sgrag kills the enemy troop and survives, Sgrag deals 40 DMG to the enemy hero.',
+        'Each time it takes damage, gains +20 ATK.': 'Each time it takes damage, gains +20 ATK.',
+        'Start of round: Reduces the ATK of the strongest enemy troop by 30 while Gyzorbots is in the arena.': 'Start of round: Reduces the ATK of the strongest enemy troop by 30 while Gyzorbots is in the arena.',
+        'In combat: Each time it attacks, the enemy receives 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.': 'In combat: Each time it attacks, the enemy receives 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.',
+        'Before combat: Deals +30 DMG to its enemy.': 'Before combat: Deals +30 DMG to its enemy.',
+        'Start of round: Deals +30 DMG to the enemy hero.': 'Start of round: Deals +30 DMG to the enemy hero.',
+        'Before combat: If there are no allied troops in the arena, gains +30 ATK for that round.': 'Before combat: If there are no allied troops in the arena, gains +30 ATK for that round.',
+        'On entry: Deals +40 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.': 'On entry: Deals +40 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.',
+        'Start of round: Gains +30 ATK each time an allied troop with higher ATK enters the arena.': 'Start of round: Gains +30 ATK each time an allied troop with higher ATK enters the arena.',
+        'After combat: Gains +10 ATK each time it attacks the enemy hero.': 'After combat: Gains +10 ATK each time it attacks the enemy hero.',
+        'Each time it takes damage, reflects +30 DMG.': 'Each time it takes damage, reflects +30 DMG.',
+        'Before combat: Deals +20 DMG to its enemy.': 'Before combat: Deals +20 DMG to its enemy.',
+        'Start of round: Deals +20 DMG to the enemy hero.': 'Start of round: Deals +20 DMG to the enemy hero.',
+        'Before combat: Protects itself with +30 shield.': 'Before combat: Protects itself with +30 shield.',
+        'End of round: Heals +30 HP to the most damaged allied troop in the arena.': 'End of round: Heals +30 HP to the most damaged allied troop in the arena.',
+        'On death: Explodes and deals +40 DMG to the enemy in front.': 'On death: Explodes and deals +40 DMG to the enemy in front.',
+        'After combat: Shoots +30 DMG to enemy troops in adjacent lanes.': 'After combat: Shoots +30 DMG to enemy troops in adjacent lanes.',
+        'Before combat: Protects adjacent allied troops before they enter combat (+20 shield).': 'Before combat: Protects adjacent allied troops before they enter combat (+20 shield).',
+        'While Bonnie is in the arena, all allied troops in the arena receive +10 ATK and +10 HP.': 'While Bonnie is in the arena, all allied troops in the arena receive +10 ATK and +10 HP.',
+        'When any troop dies in the arena, Spyke gains +30 ATK until the end of the turn.': 'When any troop dies in the arena, Spyke gains +30 ATK until the end of the turn.',
+        'Before combat: Protects itself with +20 shield.': 'Before combat: Protects itself with +20 shield.',
+        'After combat: Deals 10 DMG to all enemy troops in combat.': 'After combat: Deals 10 DMG to all enemy troops in combat.',
+        'Each time it takes damage, gains +10 ATK and +10 HP.': 'Each time it takes damage, gains +10 ATK and +10 HP.',
+        'On switch: Consumes an allied troop and gains +20 ATK and +20 HP permanently.': 'On switch: Consumes an allied troop and gains +20 ATK and +20 HP permanently.',
+        'Information for ${hero.name} is not available.': 'Information for ${hero.name} is not available.'
     },
     es: {
         'Public Decks': 'Mazos Públicos',
@@ -832,7 +922,97 @@ const translations = {
         'Select Hero': 'Seleccionar Héroe',
         'Deck Name': 'Nombre del Mazo',
         'Select Troop': 'Seleccionar Tropa',
-        'Make Public': 'Hacer Público'
+        'Make Public': 'Hacer Público',
+        // Nuevas traducciones para héroes y tropas
+        'Attack': 'Ataque',
+        'Health': 'Salud',
+        'Ability': 'Habilidad',
+        'Stats not available': 'Estadísticas no disponibles.',
+        'Ability: Unknown': 'Habilidad: Desconocida.',
+        // Habilidades de héroes
+        'When an allied troop enters the arena in the middle or right lane, that troop gains 10 shield.': 'Cuando una tropa aliada entra en la arena en el carril central o derecho, esa tropa gana 10 de escudo.',
+        'No special ability.': 'Sin habilidad especial.',
+        'When an allied troop enters the arena, Groth deals 10 DMG to its enemy troop.': 'Cuando una tropa aliada entra en la arena, Groth inflige 10 de daño a la tropa enemiga.',
+        'When an allied troop enters the arena and there are 2 or more allied troops, the enemy troop\'s ability is blocked by Blue for that round.': 'Cuando una tropa aliada entra en la arena y hay 2 o más tropas aliadas, la habilidad de la tropa enemiga es bloqueada por Blue durante esa ronda.',
+        'Gidrock kills all enemy and allied troops in the arena with 10 HP or less and gains +10 ATK permanently.': 'Gidrock mata a todas las tropas enemigas y aliadas en la arena con 10 HP o menos y gana +10 de ataque permanentemente.',
+        'Start of round: Heals +10 HP to the first damaged troop with the highest attack in the arena. Wakan performs this ability if he took no combat damage in the previous turn.': 'Inicio de la ronda: Cura +10 HP a la primera tropa dañada con el ataque más alto en la arena. Wakan realiza esta habilidad si no recibió daño de combate en el turno anterior.',
+        'End of round: Every 3 rounds, deals +20 DMG to the enemy hero. Starts on round 1.': 'Fin de la ronda: Cada 3 rondas, inflige +20 de daño al héroe enemigo. Comienza en la ronda 1.',
+        'End of round: Heals 10 HP to units (hero and troops) that haven\'t been in the arena that round and have less than 50 HP.': 'Fin de la ronda: Cura 10 HP a las unidades (héroe y tropas) que no han estado en la arena esa ronda y tienen menos de 50 HP.',
+        'End of round: If the enemy hero has 35% HP or less and Lusbaal hasn\'t fought them that round, Lusbaal deals 20 DMG to the enemy hero.': 'Fin de la ronda: Si el héroe enemigo tiene 35% de HP o menos y Lusbaal no ha luchado contra él esa ronda, Lusbaal inflige 20 de daño al héroe enemigo.',
+        'Start of round: Casts a charm on the first enemy troop with 20 ATK or less, preventing it from dealing damage that round (abilities still apply).': 'Inicio de la ronda: Lanza un encanto a la primera tropa enemiga con 20 de ataque o menos, evitando que inflija daño esa ronda (las habilidades aún se aplican).',
+        'Leaves 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.': 'Deja 2 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación. Mover una tropa de su carril activa las acumulaciones de Herida, infligiendo daño.',
+        'Start of round: Enhances Troops and Creatures in combat (+10 ATK) if Jarkos received at least 20 combat damage (not ability damage) in the previous round.': 'Inicio de la ronda: Mejora a las tropas y criaturas en combate (+10 de ataque) si Jarkos recibió al menos 20 de daño de combate (no daño de habilidad) en la ronda anterior.',
+        'End of round: If Kadria hasn\'t fought the enemy hero, summons a creature in the right lane. Requires 1 round to charge the summon. The longer Kadria waits, the stronger the summon: 2 rounds (10 ATK/20 HP), 3 rounds (20 ATK/30 HP), 4 rounds (30 ATK/40 HP), 5 rounds (40 ATK/50 HP).': 'Fin de la ronda: Si Kadria no ha luchado contra el héroe enemigo, invoca una criatura en el carril derecho. Requiere 1 ronda para cargar la invocación. Cuanto más espera Kadria, más fuerte es la invocación: 2 rondas (10 ataque/20 HP), 3 rondas (20 ataque/30 HP), 4 rondas (30 ataque/40 HP), 5 rondas (40 ataque/50 HP).',
+        'Start of round: On rounds 1 and 8, enhances the abilities (+10) of all allied troops. If an ability affects ATK and HP, that troop isn\'t enhanced. If an ability affects multiple troops, only the first enemy is enhanced.': 'Inicio de la ronda: En las rondas 1 y 8, mejora las habilidades (+10) de todas las tropas aliadas. Si una habilidad afecta el ataque y la salud, esa tropa no se mejora. Si una habilidad afecta a múltiples tropas, solo el primer enemigo se mejora.',
+        'Before combat: When descending to fight, if Roderich has a troop adjacent to his right, gains +10 ATK. If he has a troop adjacent to his left, gains +20 shield. Can gain both.': 'Antes del combate: Al descender para luchar, si Roderich tiene una tropa adyacente a su derecha, gana +10 de ataque. Si tiene una tropa adyacente a su izquierda, gana +20 de escudo. Puede ganar ambos.',
+        'End of round: If Stinky hasn\'t fought that round, deals +10 DMG (stackable up to 20) to the enemy leader. If he fights, the damage resets to 10 DMG.': 'Fin de la ronda: Si Stinky no ha luchado esa ronda, inflige +10 de daño (acumulable hasta 20) al líder enemigo. Si lucha, el daño se reinicia a 10 de daño.',
+        'Before combat: Deals +20 DMG if fighting the same enemy twice in a row.': 'Antes del combate: Inflige +20 de daño si lucha contra el mismo enemigo dos veces seguidas.',
+        'End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights.': 'Fin de la ronda: Si Jin no lucha en una ronda, obtiene +10 de ataque por cada tropa aliada en la arena hasta la próxima vez que luche.',
+        // Habilidades de tropas
+        'On entry: Deals +30 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.': 'Al entrar: Inflige +30 de daño a la tropa en el carril más lejano. El carril derecho ataca al izquierdo, y viceversa. El carril central ataca al carril central.',
+        'End of round: Heals +30 HP to the allied hero.': 'Fin de la ronda: Cura +30 HP al héroe aliado.',
+        'After combat: If it hits the enemy hero, deals 30 extra DMG.': 'Después del combate: Si golpea al héroe enemigo, inflige 30 de daño adicional.',
+        'In combat: If Scaldrax kills the enemy troop and survives, Scaldrax deals 50 DMG to the enemy hero.': 'En combate: Si Scaldrax mata a la tropa enemiga y sobrevive, Scaldrax inflige 50 de daño al héroe enemigo.',
+        'When a troop dies (enemy or allied): Greta gains +10 ATK and +10 HP.': 'Cuando una tropa muere (enemiga o aliada): Greta gana +10 de ataque y +10 de salud.',
+        'Start of round: If there are 2 or more allied troops in the arena, gains +20 ATK.': 'Inicio de la ronda: Si hay 2 o más tropas aliadas en la arena, gana +20 de ataque.',
+        'Start of round: Deals 30 DMG to the enemy troop in the same lane.': 'Inicio de la ronda: Inflige 30 de daño a la tropa enemiga en el mismo carril.',
+        'After combat: Heals +20 HP when it hits an enemy.': 'Después del combate: Cura +20 HP cuando golpea a un enemigo.',
+        'In combat: Applies 2 stacks of Burn (to heroes only). Burn: At the end of the round, consumes 1 stack and deals 10 DMG.': 'En combate: Aplica 2 acumulaciones de Quemadura (solo a héroes). Quemadura: Al final de la ronda, consume 1 acumulación e inflige 10 de daño.',
+        'In combat: Each time it attacks, the enemy receives 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'En combate: Cada vez que ataca, el enemigo recibe 2 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida.',
+        'On entry: Grants +20 ATK to the allied hero until the end of the round.': 'Al entrar: Otorga +20 de ataque al héroe aliado hasta el final de la ronda.',
+        'On entry: Deals 40 DMG to the enemy hero.': 'Al entrar: Inflige 40 de daño al héroe enemigo.',
+        'On entry: Applies 3 stacks of Injury to the enemy troop in the opposite lane. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'Al entrar: Aplica 3 acumulaciones de Herida a la tropa enemiga en el carril opuesto. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida.',
+        'On death: Grants +10 ATK and -20 HP to the allied hero.': 'Al morir: Otorga +10 de ataque y -20 HP al héroe aliado.',
+        'On death: Explodes and deals +30 DMG to the enemy in front.': 'Al morir: Explota e inflige +30 de daño al enemigo de enfrente.',
+        'On death: Applies 3 stacks of Injury to all enemies in the arena. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'Al morir: Aplica 3 acumulaciones de Herida a todos los enemigos en la arena. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida.',
+        'After combat: Gains +20 ATK each time it attacks the enemy hero.': 'Después del combate: Gana +20 de ataque cada vez que ataca al héroe enemigo.',
+        'After combat: If it hits the enemy hero, deals 20 extra DMG.': 'Después del combate: Si golpea al héroe enemigo, inflige 20 de daño adicional.',
+        'Before combat: If the enemy has a negative effect, Drogdor JK deals 20 DMG.': 'Antes del combate: Si el enemigo tiene un efecto negativo, Drogdor JK inflige 20 de daño.',
+        'On switch: Gains +20 ATK and +20 HP until the end of the round.': 'Al cambiar: Gana +20 de ataque y +20 HP hasta el final de la ronda.',
+        'On switch: Deals 30 DMG to the enemy hero.': 'Al cambiar: Inflige 30 de daño al héroe enemigo.',
+        'On switch: Enemy troops in adjacent lanes receive 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack consumed. Moving a troop also triggers Injury stacks.': 'Al cambiar: Las tropas enemigas en carriles adyacentes reciben 3 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación consumida. Mover una tropa también activa las acumulaciones de Herida.',
+        'Start of round: If there is an enemy troop in the same lane, heals 20 HP to the hero. Otherwise, deals 20 DMG to the enemy hero.': 'Inicio de la ronda: Si hay una tropa enemiga en el mismo carril, cura 20 HP al héroe. De lo contrario, inflige 20 de daño al héroe enemigo.',
+        'Start of round: Applies 1 stack of Burn to the enemy hero. Burn: At the end of the round, consumes 1 stack and deals 10 DMG.': 'Inicio de la ronda: Aplica 1 acumulación de Quemadura al héroe enemigo. Quemadura: Al final de la ronda, consume 1 acumulación e inflige 10 de daño.',
+        'After combat: If the enemy has a negative effect, Mahomot deals 30 DMG.': 'Después del combate: Si el enemigo tiene un efecto negativo, Mahomot inflige 30 de daño.',
+        'In combat: If there are 3 or more troops (enemy or allied) in the arena with less than their max HP, Sven gains +20 ATK and +20 HP for that round.': 'En combate: Si hay 3 o más tropas (enemigas o aliadas) en la arena con menos de su HP máximo, Sven gana +20 de ataque y +20 HP para esa ronda.',
+        'Start of round: Deals 10 DMG to the strongest enemy troop.': 'Inicio de la ronda: Inflige 10 de daño a la tropa enemiga más fuerte.',
+        'On entry: Deals 20 DMG to the troop in the farthest lane.': 'Al entrar: Inflige 20 de daño a la tropa en el carril más lejano.',
+        'On entry: Consumes an allied troop and Bogger gains +40 ATK and +40 HP until the end of the round.': 'Al entrar: Consume una tropa aliada y Bogger gana +40 de ataque y +40 HP hasta el final de la ronda.',
+        'On death: Boxter grants +10 ATK and +10 HP permanently to all allied troops in the arena.': 'Al morir: Boxter otorga +10 de ataque y +10 HP permanentemente a todas las tropas aliadas en la arena.',
+        'On death: Chomper deals +20 DMG to all enemies in the arena.': 'Al morir: Chomper inflige +20 de daño a todos los enemigos en la arena.',
+        'End of round: Heals +20 HP to the allied hero.': 'Fin de la ronda: Cura +20 HP al héroe aliado.',
+        'In combat: Each time it attacks, the enemy troop receives 2 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.': 'En combate: Cada vez que ataca, la tropa enemiga recibe 2 acumulaciones de Marca de Cazador. Marca de Cazador: El próximo ataque (no habilidad) a una tropa con Marca de Cazador inflige daño adicional igual al número de acumulaciones. 3 acumulaciones: 30 de daño adicional.',
+        'In combat: Each time it attacks, the enemy receives 3 stacks of Hunter Mark. Hunter Mark: The next attack (not ability) on a troop with Hunter Mark deals extra damage equal to the number of stacks. 3 stacks: 30 extra damage.': 'En combate: Cada vez que ataca, el enemigo recibe 3 acumulaciones de Marca de Cazador. Marca de Cazador: El próximo ataque (no habilidad) a una tropa con Marca de Cazador inflige daño adicional igual al número de acumulaciones. 3 acumulaciones: 30 de daño adicional.',
+        'After combat: Enhances the next troop in the arena with +10 ATK and +10 HP permanently.': 'Después del combate: Mejora a la siguiente tropa en la arena con +10 de ataque y +10 HP permanentemente.',
+        'End of round: Heals +20 HP to the most damaged allied troop in the arena.': 'Fin de la ronda: Cura +20 HP a la tropa aliada más dañada en la arena.',
+        'Before combat: Protects adjacent allied troops before they enter combat (+30 shield).': 'Antes del combate: Protege a las tropas aliadas adyacentes antes de que entren en combate (+30 de escudo).',
+        'End of round: Deals +30 DMG to the enemy troop with the least HP.': 'Fin de la ronda: Inflige +30 de daño a la tropa enemiga con menos HP.',
+        'When a troop dies (enemy or allied): Uldren gains +20 HP.': 'Cuando una tropa muere (enemiga o aliada): Uldren gana +20 HP.',
+        'In combat: If Sgrag kills the enemy troop and survives, Sgrag deals 40 DMG to the enemy hero.': 'En combate: Si Sgrag mata a la tropa enemiga y sobrevive, Sgrag inflige 40 de daño al héroe enemigo.',
+        'Each time it takes damage, gains +20 ATK.': 'Cada vez que recibe daño, gana +20 de ataque.',
+        'Start of round: Reduces the ATK of the strongest enemy troop by 30 while Gyzorbots is in the arena.': 'Inicio de la ronda: Reduce el ataque de la tropa enemiga más fuerte en 30 mientras Gyzorbots está en la arena.',
+        'In combat: Each time it attacks, the enemy receives 3 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.': 'En combate: Cada vez que ataca, el enemigo recibe 3 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación. Mover una tropa de su carril activa las acumulaciones de Herida, infligiendo daño.',
+        'Before combat: Deals +30 DMG to its enemy.': 'Antes del combate: Inflige +30 de daño a su enemigo.',
+        'Start of round: Deals +30 DMG to the enemy hero.': 'Inicio de la ronda: Inflige +30 de daño al héroe enemigo.',
+        'Before combat: If there are no allied troops in the arena, gains +30 ATK for that round.': 'Antes del combate: Si no hay tropas aliadas en la arena, gana +30 de ataque para esa ronda.',
+        'On entry: Deals +40 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.': 'Al entrar: Inflige +40 de daño a la tropa en el carril más lejano. El carril derecho ataca al izquierdo, y viceversa. El carril central ataca al carril central.',
+        'Start of round: Gains +30 ATK each time an allied troop with higher ATK enters the arena.': 'Inicio de la ronda: Gana +30 de ataque cada vez que una tropa aliada con mayor ataque entra en la arena.',
+        'After combat: Gains +10 ATK each time it attacks the enemy hero.': 'Después del combate: Gana +10 de ataque cada vez que ataca al héroe enemigo.',
+        'Each time it takes damage, reflects +30 DMG.': 'Cada vez que recibe daño, refleja +30 de daño.',
+        'Before combat: Deals +20 DMG to its enemy.': 'Antes del combate: Inflige +20 de daño a su enemigo.',
+        'Start of round: Deals +20 DMG to the enemy hero.': 'Inicio de la ronda: Inflige +20 de daño al héroe enemigo.',
+        'Before combat: Protects itself with +30 shield.': 'Antes del combate: Se protege con +30 de escudo.',
+        'End of round: Heals +30 HP to the most damaged allied troop in the arena.': 'Fin de la ronda: Cura +30 HP a la tropa aliada más dañada en la arena.',
+        'On death: Explodes and deals +40 DMG to the enemy in front.': 'Al morir: Explota e inflige +40 de daño al enemigo de enfrente.',
+        'After combat: Shoots +30 DMG to enemy troops in adjacent lanes.': 'Después del combate: Dispara +30 de daño a las tropas enemigas en carriles adyacentes.',
+        'Before combat: Protects adjacent allied troops before they enter combat (+20 shield).': 'Antes del combate: Protege a las tropas aliadas adyacentes antes de que entren en combate (+20 de escudo).',
+        'While Bonnie is in the arena, all allied troops in the arena receive +10 ATK and +10 HP.': 'Mientras Bonnie está en la arena, todas las tropas aliadas en la arena reciben +10 de ataque y +10 HP.',
+        'When any troop dies in the arena, Spyke gains +30 ATK until the end of the turn.': 'Cuando cualquier tropa muere en la arena, Spyke gana +30 de ataque hasta el final del turno.',
+        'Before combat: Protects itself with +20 shield.': 'Antes del combate: Se protege con +20 de escudo.',
+        'After combat: Deals 10 DMG to all enemy troops in combat.': 'Después del combate: Inflige 10 de daño a todas las tropas enemigas en combate.',
+        'Each time it takes damage, gains +10 ATK and +10 HP.': 'Cada vez que recibe daño, gana +10 de ataque y +10 HP.',
+        'On switch: Consumes an allied troop and gains +20 ATK and +20 HP permanently.': 'Al cambiar: Consume una tropa aliada y gana +20 de ataque y +20 HP permanentemente.',
+        'Information for ${hero.name} is not available.': 'Información para ${hero.name} no disponible.'
     }
 };
 
@@ -886,6 +1066,35 @@ function updateLanguage(lang) {
             });
         });
     }
+
+    // Update hero decks section if visible
+    if (heroDecksSection.style.display === 'block') {
+        const heroName = document.getElementById('hero-decks-title').textContent.split(' ')[0];
+        const hero = heroes.find(h => h.name === heroName);
+        if (hero) {
+            displayHeroDecks(hero);
+        }
+    }
+
+    // Update troop info modal if visible
+    if (troopInfoModal.style.display === 'flex') {
+        const troopName = troopInfoTitle.textContent;
+        showTroopInfo(troopName);
+    }
+
+    // Update user decks section if visible
+    if (userAccountSection.style.display === 'block') {
+        displayUserDecks();
+    }
+
+    // Update deck details modal if visible
+    if (deckDetailsModal.style.display === 'flex') {
+        const deckName = deckDetailsTitle.textContent;
+        const deck = users.flatMap(user => user.decks).find(d => d.name === deckName);
+        if (deck) {
+            showDeckDetails(deck);
+        }
+    }
 }
 
 langEnFlag.addEventListener('click', () => updateLanguage('en'));
@@ -900,13 +1109,13 @@ function showTroopInfo(troopName) {
     if (info) {
         troopInfoTitle.textContent = troopName;
         troopInfoImage.innerHTML = `<img src="${getImageUrl(troopName, 'troops')}" alt="${troopName}">`;
-        troopInfoStats.textContent = `Attack: ${info.attack} | Health: ${info.health}`;
-        troopInfoAbility.textContent = `Ability: ${info.ability}`;
+        troopInfoStats.textContent = `${translations[currentLang]['Attack']}: ${info.attack} | ${translations[currentLang]['Health']}: ${info.health}`;
+        troopInfoAbility.textContent = `${translations[currentLang]['Ability']}: ${translations[currentLang][info.ability] || info.ability}`;
     } else {
         troopInfoTitle.textContent = troopName;
         troopInfoImage.innerHTML = `<img src="${getImageUrl(troopName, 'troops')}" alt="${troopName}">`;
-        troopInfoStats.textContent = "Stats not available.";
-        troopInfoAbility.textContent = "Ability: Unknown.";
+        troopInfoStats.textContent = translations[currentLang]['Stats not available'];
+        troopInfoAbility.textContent = translations[currentLang]['Ability: Unknown'];
     }
     troopInfoModal.style.display = 'flex';
 }
@@ -1176,11 +1385,11 @@ function displayHeroDecks(hero) {
     if (info) {
         heroInfoContainer.innerHTML = `
             <h3>${hero.name}</h3>
-            <p class="stats">Attack: ${info.attack} | Health: ${info.health}</p>
-            <p class="ability">Ability: ${info.ability}</p>
+            <p class="stats">${translations[currentLang]['Attack']}: ${info.attack} | ${translations[currentLang]['Health']}: ${info.health}</p>
+            <p class="ability">${translations[currentLang]['Ability']}: ${translations[currentLang][info.ability] || info.ability}</p>
         `;
     } else {
-        heroInfoContainer.innerHTML = `<p>Information for ${hero.name} is not available.</p>`;
+        heroInfoContainer.innerHTML = `<p>${translations[currentLang]['Information for ${hero.name} is not available.'] || `Information for ${hero.name} is not available.`}</p>`;
     }
 
     const publicDecks = hero.decks.filter(d => d.isPublic);
@@ -1401,13 +1610,17 @@ function displayUserDecks() {
 // Show Deck Details
 function showDeckDetails(deck) {
     deckDetailsTitle.textContent = deck.name;
-    deckDetailsCreator.textContent = deck.creator || currentUser.username;
-    deckDetailsDescription.textContent = deck.description;
+    deckDetailsCreator.textContent = `${translations[currentLang]['Created by']}: ${deck.creator || currentUser.username}`;
+    deckDetailsDescription.textContent = `${translations[currentLang]['Description']}: ${deck.description}`;
     const hero = heroes.find(h => h.id === deck.heroId);
-    deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
+    deckDetailsHero.textContent = `${translations[currentLang]['Hero']}: ${hero ? hero.name : 'Unknown'}`;
     deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}">`;
 
     deckDetailsTroops.innerHTML = '';
+    const troopsTitle = document.createElement('h3');
+    troopsTitle.textContent = translations[currentLang]['Troops'];
+    deckDetailsTroops.appendChild(troopsTitle);
+
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
         const troopCard = document.createElement('div');
