@@ -42,7 +42,7 @@ body::before {
 
 nav {
     background: linear-gradient(90deg, rgba(10, 28, 61, 0.9) 0%, rgba(26, 42, 108, 0.9) 100%);
-    padding: 10px 15px; /* Aumentamos el padding para dar más espacio al logo */
+    padding: 15px 20px; /* Aumentamos el padding para dar más espacio al logo más grande */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -58,7 +58,7 @@ nav {
 
 /* Logo styling */
 .logo-image {
-    height: 120px; /* Aumentamos el tamaño del logo en escritorio */
+    height: 200px; /* Aumentamos significativamente el tamaño del logo en escritorio */
     width: auto;
 }
 
@@ -592,11 +592,11 @@ h2 {
     nav {
         flex-direction: column;
         align-items: center;
-        padding: 8px 12px;
+        padding: 10px 15px;
     }
 
     .logo-image {
-        height: 90px; /* Aumentamos el tamaño del logo en tablets */
+        height: 150px; /* Ajustamos el tamaño del logo en tablets */
     }
 
     .nav-right {
@@ -777,11 +777,11 @@ h2 {
     }
 
     nav {
-        padding: 6px 8px;
+        padding: 8px 10px;
     }
 
     .logo-image {
-        height: 70px; /* Aumentamos el tamaño del logo en móviles */
+        height: 120px; /* Ajustamos el tamaño del logo en móviles */
     }
 
     .nav-right {
