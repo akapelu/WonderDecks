@@ -49,7 +49,7 @@ nav {
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    max-height: 200px;
+    max-height: 250px; /* Aumentado de 200px a 250px para dar más espacio vertical */
     position: relative;
 }
 
@@ -70,7 +70,7 @@ nav {
 .lang-flags {
     position: absolute;
     top: 10px;
-    right: 25px; /* Aumentado de 15px a 25px para evitar superposición con el botón Register */
+    right: 25px;
     display: flex;
     gap: 5px;
 }
@@ -709,7 +709,7 @@ h2 {
 
     nav {
         padding: 5px 15px;
-        max-height: 150px;
+        max-height: 150px; /* Manteniendo el valor original para móvil */
         justify-content: center;
         flex-direction: column;
     }
@@ -903,7 +903,7 @@ h2 {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        max-height: 150px;
+        max-height: 150px; /* Manteniendo el valor original para móvil */
         overflow: hidden;
     }
 
