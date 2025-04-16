@@ -1021,9 +1021,13 @@ troopInfoModal.addEventListener('click', (e) => {
 });
 // Cerrar el modal de detalles del mazo al hacer clic fuera, sin interferir con el modal de la tropa
 deckDetailsModal.addEventListener('click', (e) => {
-    // Solo cerrar si el clic es directamente en el fondo del modal de detalles del mazo
     if (e.target === deckDetailsModal || e.target.classList.contains('close-modal')) {
         deckDetailsModal.style.display = 'none';
+        // Volver a cargar los datos y renderizar la sección de mazos del usuario
+        if (userAccountSection.style.display === 'block') {
+            console.log("Current user decks before rendering:", currentUser.decks); // Log de depuración
+            displayUserDecks();
+        }
     }
 });
 
@@ -1307,20 +1311,28 @@ function displayHeroDecks(hero) {
 
 // Display User's Decks
 function displayUserDecks() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.log("No current user, cannot display decks.");
+        return;
+    }
+    console.log("Rendering user decks:", currentUser.decks); // Log de depuración
     document.getElementById('user-account-title').textContent = `${currentUser.username}'s Decks`;
-    userDecksList.innerHTML = '';
+    userDecksList.innerHTML = ''; // Limpiar contenido previo
+    if (!currentUser.decks || currentUser.decks.length === 0) {
+        userDecksList.innerHTML = '<p>No decks available.</p>';
+        return;
+    }
     currentUser.decks.forEach(deck => {
         const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
 
-        // Create container for hero image
+        // Crear contenedor para la imagen del héroe
         const heroImage = document.createElement('img');
         heroImage.src = getImageUrl(hero ? hero.name : 'Unknown', 'heroes');
         heroImage.alt = hero ? hero.name : 'Unknown';
         heroImage.classList.add('deck-hero-image');
 
-        // Create container for troop images
+        // Crear contenedor para las imágenes de las tropas
         const troopsContainer = document.createElement('div');
         troopsContainer.classList.add('deck-troops');
         deck.troops.forEach(troopId => {
@@ -1336,17 +1348,16 @@ function displayUserDecks() {
             troopsContainer.appendChild(troopImage);
         });
 
-        // Create deck content with separated static/dynamic content
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p><span data-translate="Hero">Hero</span>: ${hero ? hero.name : 'Unknown'}</p>
-            <p><span data-translate="Public">Public</span>: <span class="public-status" data-translate="${deck.isPublic ? 'Yes' : 'No'}">${deck.isPublic ? 'Yes' : 'No'}</span></p>
-            <button class="edit-deck-btn" data-translate="Edit">Edit</button>
-            <button class="delete-deck-btn" data-translate="Delete">Delete</button>
-            <button class="toggle-public-btn" data-translate="${deck.isPublic ? 'Make Private' : 'Make Public'}">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
+            <p>${translations[currentLang]['Hero']}: ${hero ? hero.name : 'Unknown'}</p>
+            <p>${translations[currentLang]['Public']}: <span class="public-status">${translations[currentLang][deck.isPublic ? 'Yes' : 'No']}</span></p>
+            <button class="edit-deck-btn">${translations[currentLang]['Edit']}</button>
+            <button class="delete-deck-btn">${translations[currentLang]['Delete']}</button>
+            <button class="toggle-public-btn">${translations[currentLang][deck.isPublic ? 'Make Private' : 'Make Public']}</button>
         `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Public"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Hero"
+        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insertar tropas antes de "Public"
+        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insertar imagen del héroe antes de "Hero"
 
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
@@ -1395,22 +1406,32 @@ function displayUserDecks() {
         });
         userDecksList.appendChild(deckCard);
     });
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
 }
 
 // Show Deck Details
 function showDeckDetails(deck) {
     deckDetailsTitle.textContent = deck.name;
-    deckDetailsCreator.textContent = deck.creator || currentUser.username;
-    deckDetailsDescription.textContent = deck.description;
+    deckDetailsCreator.textContent = `${translations[currentLang]['Created by']}: ${deck.creator || currentUser.username}`;
+    deckDetailsDescription.textContent = `${translations[currentLang]['Description']}: ${deck.description}`;
     const hero = heroes.find(h => h.id === deck.heroId);
-    deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
+    deckDetailsHero.textContent = `${translations[currentLang]['Hero']}: ${hero ? hero.name : 'Unknown'}`;
     deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}">`;
 
+    // Limpiar contenido previo
     deckDetailsTroops.innerHTML = '';
+
+    // Añadir título de tropas
+    const troopsTitle = document.createElement('h3');
+    troopsTitle.textContent = translations[currentLang]['Troops'];
+    deckDetailsTroops.appendChild(troopsTitle);
+
+    // Crear contenedor para las imágenes de las tropas con estilo de cuadrícula
+    const troopsContainer = document.createElement('div');
+    troopsContainer.classList.add('deck-troops');
+
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
-        const troopCard = document.createElement('div');
+        const troopCard = document.createElement('div'); // Contenedor para cada tropa
         const troopImage = document.createElement('img');
         troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
         troopImage.alt = troop ? troop.name : 'Unknown';
@@ -1423,11 +1444,12 @@ function showDeckDetails(deck) {
         const troopName = document.createElement('p');
         troopName.textContent = troop ? troop.name : 'Unknown';
         troopCard.appendChild(troopName);
-        deckDetailsTroops.appendChild(troopCard);
+        troopsContainer.appendChild(troopCard);
     });
 
+    deckDetailsTroops.appendChild(troopsContainer);
     deckDetailsModal.style.display = 'flex';
-    updateLanguage(currentLang); // Ensure translations in the modal are updated
+    updateLanguage(currentLang);
 }
 
 // Show Deck Modal (Add or Edit)
