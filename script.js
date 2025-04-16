@@ -1620,14 +1620,20 @@ function showDeckDetails(deck) {
     deckDetailsHero.textContent = `${translations[currentLang]['Hero']}: ${hero ? hero.name : 'Unknown'}`;
     deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}">`;
 
+    // Limpiar contenido previo
     deckDetailsTroops.innerHTML = '';
+
+    // Añadir título de tropas
     const troopsTitle = document.createElement('h3');
     troopsTitle.textContent = translations[currentLang]['Troops'];
     deckDetailsTroops.appendChild(troopsTitle);
 
+    // Crear contenedor para las imágenes de las tropas con estilo de cuadrícula
+    const troopsContainer = document.createElement('div');
+    troopsContainer.classList.add('deck-troops'); // Usar la misma clase que en otras secciones
+
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
-        const troopCard = document.createElement('div');
         const troopImage = document.createElement('img');
         troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
         troopImage.alt = troop ? troop.name : 'Unknown';
@@ -1636,15 +1642,12 @@ function showDeckDetails(deck) {
             e.stopPropagation();
             showTroopInfo(troop ? troop.name : 'Unknown');
         });
-        troopCard.appendChild(troopImage);
-        const troopName = document.createElement('p');
-        troopName.textContent = troop ? troop.name : 'Unknown';
-        troopCard.appendChild(troopName);
-        deckDetailsTroops.appendChild(troopCard);
+        troopsContainer.appendChild(troopImage);
     });
 
+    deckDetailsTroops.appendChild(troopsContainer);
     deckDetailsModal.style.display = 'flex';
-    updateLanguage(currentLang); // Ensure translations in the modal are updated
+    updateLanguage(currentLang);
 }
 
 // Show Deck Modal (Add or Edit)
