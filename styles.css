@@ -49,7 +49,7 @@ nav {
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    max-height: 160px; /* Aumentado de 150px a 160px */
+    max-height: 200px; /* Aumentado de 160px a 200px para dar más espacio vertical */
     position: relative;
 }
 
@@ -69,8 +69,8 @@ nav {
 /* Contenedor de las banderas */
 .lang-flags {
     position: absolute;
-    top: 20px; /* Aumentado de 15px a 20px */
-    right: 10px;
+    top: 10px; /* Reducido de 20px a 10px para mover las banderas más arriba */
+    right: 15px; /* Aumentado de 10px a 15px para dar más espacio a la derecha */
     display: flex;
     gap: 5px;
 }
@@ -709,7 +709,7 @@ h2 {
 
     nav {
         padding: 5px 15px;
-        max-height: 150px; /* Aumentado de 110px a 150px */
+        max-height: 150px; /* Manteniendo el valor original para móvil */
         justify-content: center;
         flex-direction: column;
     }
@@ -743,7 +743,7 @@ h2 {
     }
 
     .lang-flags {
-        top: 15px; /* Ajustado de 10px a 15px */
+        top: 15px; /* Manteniendo el valor original para móvil */
         right: 5px;
     }
 
@@ -903,7 +903,7 @@ h2 {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        max-height: 150px;
+        max-height: 150px; /* Manteniendo el valor original para móvil */
         overflow: hidden;
     }
 
@@ -931,7 +931,7 @@ h2 {
     }
 
     .lang-flags {
-        top: 5px;
+        top: 5px; /* Manteniendo el valor original para móvil */
         right: 5px;
     }
 
