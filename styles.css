@@ -49,7 +49,7 @@ nav {
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
-    max-height: 130px; /* Aumentado */
+    max-height: 140px; /* Aumentado de 130px a 140px */
     position: relative;
 }
 
@@ -709,7 +709,7 @@ h2 {
 
     nav {
         padding: 5px 15px;
-        max-height: 90px;
+        max-height: 110px; /* Aumentado de 90px a 110px */
     }
 
     .logo-image {
@@ -733,7 +733,7 @@ h2 {
     }
 
     .lang-flags {
-        top: 5px;
+        top: 10px; /* Ajustado de 5px a 10px */
         right: 5px;
     }
 
@@ -926,8 +926,8 @@ h2 {
     }
 
     .lang-flag {
-        width: 20px;
-        height: 20px;
+        width: 24px; /* Aumentado de 20px a 24px */
+        height: 24px; /* Aumentado de 20px a 24px */
     }
 
     h2 {
