@@ -42,7 +42,7 @@ body::before {
 
 nav {
     background: linear-gradient(90deg, rgba(10, 28, 61, 0.9) 0%, rgba(26, 42, 108, 0.9) 100%);
-    padding: 15px 30px;
+    padding: 8px 15px; /* Reducimos el padding para hacer la barra más compacta */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -51,30 +51,24 @@ nav {
     backdrop-filter: blur(5px);
 }
 
-.nav-left h1 {
-    font-size: 36px;
-    color: #ffffff;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    letter-spacing: 2px;
-    animation: glow 2s infinite;
-}
-
-@keyframes glow {
-    0%, 100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
-    50% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); }
+/* Logo styling */
+.logo-image {
+    height: 80px; /* Aumentamos el tamaño del logo para mejor visibilidad */
+    width: auto;
 }
 
 .nav-right {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px; /* Reducimos el gap para un diseño más compacto */
+    justify-content: flex-end;
 }
 
 .nav-right button, .nav-right span {
     margin-left: 5px;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px; /* Reducimos el padding de los botones */
+    font-size: 13px; /* Reducimos el tamaño de la fuente */
     border: none;
     border-radius: 20px;
     cursor: pointer;
@@ -82,8 +76,8 @@ nav {
     background: linear-gradient(145deg, #ffffff, #e6e6e6);
     color: #1a2a6c;
     box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
-    min-width: 100px;
-    max-width: 150px;
+    min-width: 90px;
+    max-width: 120px;
     text-align: center;
     white-space: nowrap;
     display: flex;
@@ -95,6 +89,32 @@ nav {
     background: linear-gradient(145deg, #e6e6e6, #ffffff);
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
+}
+
+/* Estilo para las banderas */
+.lang-flag {
+    width: 28px; /* Aumentamos ligeramente el tamaño para mejor visibilidad */
+    height: 28px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border-radius: 50%; /* Hacemos las banderas redondeadas */
+    clip-path: circle(50%); /* Aseguramos que la imagen sea circular */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Añadimos una sombra sutil */
+}
+
+.lang-flag:hover {
+    transform: scale(1.1);
+}
+
+/* Posicionar las banderas en la esquina superior derecha */
+.nav-right .lang-flag {
+    order: 1; /* Aseguramos que las banderas se rendericen al final del contenedor flex */
+    margin-left: 5px;
+}
+
+/* Asegurar que los botones no se solapen con las banderas */
+.nav-right button, .nav-right span {
+    order: 2;
 }
 
 section {
@@ -125,7 +145,7 @@ h2 {
     transition: all 0.3s ease;
     background: linear-gradient(145deg, #ffffff, #e6e6e6);
     color: #1a2a6c;
-    box-shadow: 0 2px 5px rgba(255, 2525, 255, 0.3);
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
     margin: 0 10px;
 }
 
@@ -427,6 +447,136 @@ h2 {
     }
 }
 
+/* Styles for the hero information section */
+.hero-info {
+    background: linear-gradient(145deg, #0a1c3d, #1a2a6c);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e6e6e6;
+}
+
+.hero-info h3 {
+    font-size: 24px;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    margin-bottom: 15px;
+}
+
+.hero-info p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.hero-info .stats {
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.hero-info .ability {
+    font-style: italic;
+    color: #d1d1d1;
+}
+
+/* Estilos para el modal de información de la tropa */
+.troop-info-modal-content {
+    max-width: 400px; /* Ancho máximo en pantallas grandes */
+    width: 90%; /* Para que se ajuste al contenido, pero no supere el max-width */
+    padding: 20px;
+    text-align: center;
+}
+
+.troop-info-image img {
+    max-width: 60px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin-bottom: 15px;
+}
+
+.troop-info-modal-content .stats {
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+    margin: 10px 0;
+}
+
+.troop-info-modal-content .ability {
+    font-style: italic;
+    color: #d1d1d1;
+    margin: 10px 0;
+}
+
+/* Hacer que las imágenes de las tropas sean clicables */
+.card-list .deck-troop-image {
+    cursor: pointer; /* Indica que es clicable */
+}
+
+.card-list .deck-troop-image:hover {
+    transform: scale(1.1); /* Efecto de escala al pasar el mouse */
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Adjust hero cards on mobile to show 3 per row */
+@media (max-width: 768px) {
+    .card-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+        gap: 15px;
+    }
+
+    .card-list > div {
+        width: 100%; /* Full width of the grid cell */
+        padding: 10px;
+    }
+
+    .card-list img {
+        width: 80px; /* Smaller image size */
+        height: auto;
+    }
+
+    .card-list h3 {
+        font-size: 14px;
+        min-height: 30px;
+    }
+
+    .card-list p {
+        font-size: 10px;
+        min-height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-list {
+        grid-template-columns: repeat(3, 1fr); /* Still 3 per row */
+        gap: 10px;
+    }
+
+    .card-list > div {
+        padding: 8px;
+    }
+
+    .card-list img {
+        width: 60px; /* Even smaller for very small screens */
+        height: auto;
+    }
+
+    .card-list h3 {
+        font-size: 12px;
+        min-height: 25px;
+    }
+
+    .card-list p {
+        font-size: 9px;
+        min-height: 14px;
+    }
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     body {
@@ -437,13 +587,11 @@ h2 {
     nav {
         flex-direction: column;
         align-items: center;
-        padding: 10px;
+        padding: 6px 12px; /* Reducimos aún más el padding */
     }
 
-    .nav-left h1 {
-        font-size: 28px;
-        margin-bottom: 10px;
-        text-align: center;
+    .logo-image {
+        height: 60px; /* Ajustamos el tamaño del logo para móviles */
     }
 
     .nav-right {
@@ -451,15 +599,30 @@ h2 {
         flex-wrap: wrap;
         justify-content: center;
         width: 100%;
-        gap: 8px;
+        gap: 6px;
     }
 
     .nav-right button, .nav-right span {
         margin: 5px 0;
-        padding: 6px 10px;
+        padding: 5px 8px;
         font-size: 12px;
-        min-width: 90px;
-        max-width: 110px;
+        min-width: 80px;
+        max-width: 100px;
+    }
+
+    .lang-flag {
+        width: 24px;
+        height: 24px;
+    }
+
+    .nav-right .lang-flag {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+    }
+
+    .nav-right .lang-flag#lang-es {
+        right: 38px; /* Posicionamos la bandera española a la izquierda de la inglesa */
     }
 
     section {
@@ -567,6 +730,39 @@ h2 {
     #deck-details-troops img {
         max-width: 50px;
     }
+
+    .hero-info {
+        padding: 15px;
+        margin: 15px auto;
+        max-width: 90%;
+    }
+
+    .hero-info h3 {
+        font-size: 20px;
+    }
+
+    .hero-info p {
+        font-size: 14px;
+    }
+
+    .troop-info-modal-content {
+        max-width: 300px; /* Reducir el ancho máximo en tabletas */
+        width: 80%; /* Ajustar al contenido, pero no más del 80% */
+        padding: 15px;
+    }
+
+    .troop-info-image img {
+        max-width: 50px;
+    }
+
+    .troop-info-modal-content h2 {
+        font-size: 20px;
+    }
+
+    .troop-info-modal-content .stats,
+    .troop-info-modal-content .ability {
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -575,15 +771,37 @@ h2 {
         background-attachment: fixed;
     }
 
-    .nav-left h1 {
-        font-size: 24px;
+    nav {
+        padding: 4px 8px;
+    }
+
+    .logo-image {
+        height: 50px; /* Ajustamos aún más para pantallas pequeñas */
+    }
+
+    .nav-right {
+        gap: 4px;
     }
 
     .nav-right button, .nav-right span {
-        padding: 5px 8px;
+        padding: 4px 6px;
         font-size: 11px;
-        min-width: 80px;
-        max-width: 100px;
+        min-width: 70px;
+        max-width: 90px;
+    }
+
+    .lang-flag {
+        width: 20px;
+        height: 20px;
+    }
+
+    .nav-right .lang-flag {
+        top: 4px;
+        right: 4px;
+    }
+
+    .nav-right .lang-flag#lang-es {
+        right: 30px;
     }
 
     h2 {
@@ -676,61 +894,7 @@ h2 {
     #deck-details-troops img {
         max-width: 40px;
     }
-}
-/* Styles for the hero information section */
-.hero-info {
-    background: linear-gradient(145deg, #0a1c3d, #1a2a6c);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 20px auto;
-    max-width: 600px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e6e6e6;
-}
 
-.hero-info h3 {
-    font-size: 24px;
-    color: #ffffff;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    margin-bottom: 15px;
-}
-
-.hero-info p {
-    font-size: 16px;
-    margin: 10px 0;
-}
-
-.hero-info .stats {
-    font-weight: bold;
-    color: #ffffff;
-    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
-}
-
-.hero-info .ability {
-    font-style: italic;
-    color: #d1d1d1;
-}
-
-/* Responsive adjustments for mobile */
-@media (max-width: 768px) {
-    .hero-info {
-        padding: 15px;
-        margin: 15px auto;
-        max-width: 90%;
-    }
-
-    .hero-info h3 {
-        font-size: 20px;
-    }
-
-    .hero-info p {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
     .hero-info {
         padding: 10px;
         margin: 10px auto;
@@ -744,69 +908,7 @@ h2 {
     .hero-info p {
         font-size: 12px;
     }
-}
-/* Estilos para el modal de información de la tropa */
-.troop-info-modal-content {
-    max-width: 400px; /* Ancho máximo en pantallas grandes */
-    width: 90%; /* Para que se ajuste al contenido, pero no supere el max-width */
-    padding: 20px;
-    text-align: center;
-}
 
-.troop-info-image img {
-    max-width: 60px;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    margin-bottom: 15px;
-}
-
-.troop-info-modal-content .stats {
-    font-weight: bold;
-    color: #ffffff;
-    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
-    margin: 10px 0;
-}
-
-.troop-info-modal-content .ability {
-    font-style: italic;
-    color: #d1d1d1;
-    margin: 10px 0;
-}
-
-/* Hacer que las imágenes de las tropas sean clicables */
-.card-list .deck-troop-image {
-    cursor: pointer; /* Indica que es clicable */
-}
-
-.card-list .deck-troop-image:hover {
-    transform: scale(1.1); /* Efecto de escala al pasar el mouse */
-    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
-}
-
-/* Responsive adjustments para el modal de la tropa */
-@media (max-width: 768px) {
-    .troop-info-modal-content {
-        max-width: 300px; /* Reducir el ancho máximo en tabletas */
-        width: 80%; /* Ajustar al contenido, pero no más del 80% */
-        padding: 15px;
-    }
-
-    .troop-info-image img {
-        max-width: 50px;
-    }
-
-    .troop-info-modal-content h2 {
-        font-size: 20px;
-    }
-
-    .troop-info-modal-content .stats,
-    .troop-info-modal-content .ability {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
     .troop-info-modal-content {
         max-width: 280px; /* Ancho más pequeño para móviles */
         width: 70%; /* Reducir aún más el porcentaje */
@@ -824,149 +926,5 @@ h2 {
     .troop-info-modal-content .stats,
     .troop-info-modal-content .ability {
         font-size: 12px;
-    }
-}
-
-/* Adjust hero cards on mobile to show 3 per row */
-@media (max-width: 768px) {
-    .card-list {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
-        gap: 15px;
-    }
-
-    .card-list > div {
-        width: 100%; /* Full width of the grid cell */
-        padding: 10px;
-    }
-
-    .card-list img {
-        width: 80px; /* Smaller image size */
-        height: auto;
-    }
-
-    .card-list h3 {
-        font-size: 14px;
-        min-height: 30px;
-    }
-
-    .card-list p {
-        font-size: 10px;
-        min-height: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .card-list {
-        grid-template-columns: repeat(3, 1fr); /* Still 3 per row */
-        gap: 10px;
-    }
-
-    .card-list > div {
-        padding: 8px;
-    }
-
-    .card-list img {
-        width: 60px; /* Even smaller for very small screens */
-        height: auto;
-    }
-
-    .card-list h3 {
-        font-size: 12px;
-        min-height: 25px;
-    }
-
-    .card-list p {
-        font-size: 9px;
-        min-height: 14px;
-    }
-}
-/* Logo styling */
-.logo-image {
-    height: 60px; /* Increased size for better visibility */
-    width: auto;
-}
-
-/* Remove the .language-buttons container styling */
-.nav-right {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    position: relative;
-}
-
-/* Style the flags directly */
-.lang-flag {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    margin-left: 5px;
-}
-
-.lang-flag:hover {
-    transform: scale(1.1);
-}
-
-/* Position flags in the top-right corner */
-.nav-right .lang-flag {
-    order: 1; /* Ensure flags are rendered last in the flex container */
-}
-
-/* Adjust nav-right layout to push flags to the right */
-.nav-right {
-    justify-content: flex-end;
-}
-
-/* Ensure other buttons don't overlap with flags */
-.nav-right button, .nav-right span {
-    order: 2;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .logo-image {
-        height: 200px; /* Slightly smaller for mobile */
-    }
-
-    .lang-flag {
-        width: 20px;
-        height: 20px;
-    }
-
-    .nav-right {
-        justify-content: center;
-        position: relative;
-    }
-
-    .nav-right .lang-flag {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-    }
-
-    .nav-right .lang-flag#lang-es {
-        right: 40px; /* Position the Spanish flag to the left of the English flag */
-    }
-}
-
-@media (max-width: 480px) {
-    .logo-image {
-        height: 50px; /* Further adjust for smaller screens */
-    }
-
-    .lang-flag {
-        width: 18px;
-        height: 18px;
-    }
-
-    .nav-right .lang-flag {
-        top: 5px;
-        right: 5px;
-    }
-
-    .nav-right .lang-flag#lang-es {
-        right: 30px;
     }
 }
