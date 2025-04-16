@@ -1351,8 +1351,8 @@ authForm.addEventListener('submit', async (e) => {
 // Display Heroes in Showcase
 function displayHeroes() {
     heroes.sort((a, b) => {
-        const aPublicDecks = a.decks.filter(d => d.isPublic).length;
-        const bPublicDecks = b.decks.filter(d => d.isPublic).length;
+        const aPublicDecks = a.decks.length; // Eliminar filtro redundante
+        const bPublicDecks = b.decks.length; // Eliminar filtro redundante
         if (aPublicDecks === bPublicDecks) return b.totalLikes - a.totalLikes;
         return bPublicDecks - aPublicDecks;
     });
@@ -1363,8 +1363,8 @@ function displayHeroes() {
         heroCard.innerHTML = `
             <img src="${getImageUrl(hero.name, 'heroes')}" alt="${hero.name}">
             <h3>${hero.name}</h3>
-            <p><span data-translate="Public Decks">Public Decks</span>: <span class="public-decks-count">${hero.decks.filter(d => d.isPublic).length}</span></p>
-            <p><span data-translate="Likes">Likes</span>: <span class="total-likes-count">${hero.totalLikes}</span></p>
+            <p>${translations[currentLang]['Public Decks']}: <span class="public-decks-count">${hero.decks.length}</span></p>
+            <p>${translations[currentLang]['Likes']}: <span class="total-likes-count">${hero.totalLikes}</span></p>
         `;
         heroCard.addEventListener('click', () => {
             showSection(heroDecksSection);
@@ -1372,7 +1372,7 @@ function displayHeroes() {
         });
         heroList.appendChild(heroCard);
     });
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
+    // No necesitamos llamar a updateLanguage aquí porque las traducciones ya están aplicadas
 }
 
 // Display Decks for a Specific Hero
@@ -1389,10 +1389,14 @@ function displayHeroDecks(hero) {
             <p class="ability">${translations[currentLang]['Ability']}: ${translations[currentLang][info.ability] || info.ability}</p>
         `;
     } else {
-        heroInfoContainer.innerHTML = `<p>${translations[currentLang]['Information for ${hero.name} is not available.'] || `Information for ${hero.name} is not available.`}</p>`;
+        // Corregir el mensaje de error para que el nombre del héroe se sustituya correctamente
+        const errorMessage = translations[currentLang]['Information for ${hero.name} is not available.'].replace('${hero.name}', hero.name) || 
+                             `Information for ${hero.name} is not available.`;
+        heroInfoContainer.innerHTML = `<p>${errorMessage}</p>`;
     }
 
-    const publicDecks = hero.decks.filter(d => d.isPublic);
+    // Eliminar el filtro redundante ya que hero.decks ya contiene solo mazos públicos
+    const publicDecks = hero.decks;
     publicDecks.sort((a, b) => b.likes - a.likes);
 
     heroDecksList.innerHTML = '';
@@ -1426,11 +1430,11 @@ function displayHeroDecks(hero) {
         const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
         const hasLiked = likeKey && userLikes[likeKey];
 
-        // Create deck content with like heart icon and separated static/dynamic content
+        // Aplicar traducciones directamente en el HTML
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p><span data-translate="Created by">Created by</span>: ${deck.creator}</p>
-            <p><span data-translate="Likes">Likes</span>: <span class="like-count">${deck.likes}</span></p>
+            <p>${translations[currentLang]['Created by']}: ${deck.creator}</p>
+            <p>${translations[currentLang]['Likes']}: <span class="like-count">${deck.likes}</span></p>
             <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
         `;
         deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Likes"
@@ -1511,7 +1515,7 @@ function displayHeroDecks(hero) {
         });
         heroDecksList.appendChild(deckCard);
     });
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
+    // No necesitamos llamar a updateLanguage aquí porque las traducciones ya están aplicadas
 }
 
 // Display User's Decks
@@ -1545,14 +1549,14 @@ function displayUserDecks() {
             troopsContainer.appendChild(troopImage);
         });
 
-        // Create deck content with separated static/dynamic content
+        // Aplicar traducciones directamente en el HTML
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
-            <p><span data-translate="Hero">Hero</span>: ${hero ? hero.name : 'Unknown'}</p>
-            <p><span data-translate="Public">Public</span>: <span class="public-status" data-translate="${deck.isPublic ? 'Yes' : 'No'}">${deck.isPublic ? 'Yes' : 'No'}</span></p>
-            <button class="edit-deck-btn" data-translate="Edit">Edit</button>
-            <button class="delete-deck-btn" data-translate="Delete">Delete</button>
-            <button class="toggle-public-btn" data-translate="${deck.isPublic ? 'Make Private' : 'Make Public'}">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
+            <p>${translations[currentLang]['Hero']}: ${hero ? hero.name : 'Unknown'}</p>
+            <p>${translations[currentLang]['Public']}: <span class="public-status">${translations[currentLang][deck.isPublic ? 'Yes' : 'No']}</span></p>
+            <button class="edit-deck-btn">${translations[currentLang]['Edit']}</button>
+            <button class="delete-deck-btn">${translations[currentLang]['Delete']}</button>
+            <button class="toggle-public-btn">${translations[currentLang][deck.isPublic ? 'Make Private' : 'Make Public']}</button>
         `;
         deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Public"
         deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Hero"
@@ -1604,7 +1608,7 @@ function displayUserDecks() {
         });
         userDecksList.appendChild(deckCard);
     });
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
+    // No necesitamos llamar a updateLanguage aquí porque las traducciones ya están aplicadas
 }
 
 // Show Deck Details
