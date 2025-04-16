@@ -217,6 +217,81 @@ const heroInfo = {
         ability: "End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights."
     }
 };
+// Traducciones de las habilidades de los héroes
+const heroAbilitiesTranslations = {
+    LYON: {
+        en: "When an allied troop enters the arena in the middle or right lane, that troop gains 10 shield.",
+        es: "Cuando una tropa aliada entra a la arena en la línea del medio o derecha, esa tropa gana 10 de escudo."
+    },
+    KROGNAR: {
+        en: "No special ability.",
+        es: "Sin habilidad especial."
+    },
+    GROTH: {
+        en: "When an allied troop enters the arena, Groth deals 10 DMG to its enemy troop.",
+        es: "Cuando una tropa aliada entra a la arena, Groth inflige 10 de daño a la tropa enemiga."
+    },
+    BLUE: {
+        en: "When an allied troop enters the arena and there are 2 or more allied troops, the enemy troop's ability is blocked by Blue for that round.",
+        es: "Cuando una tropa aliada entra a la arena y hay 2 o más tropas aliadas, la habilidad de la tropa enemiga es bloqueada por Blue durante esa ronda."
+    },
+    GIDROCK: {
+        en: "Gidrock kills all enemy and allied troops in the arena with 10 HP or less and gains +10 ATK permanently.",
+        es: "Gidrock mata a todas las tropas enemigas y aliadas en la arena con 10 HP o menos y gana +10 de ataque permanentemente."
+    },
+    WAKAN: {
+        en: "Start of round: Heals +10 HP to the first damaged troop with the highest attack in the arena. Wakan performs this ability if he took no combat damage in the previous turn.",
+        es: "Inicio de ronda: Cura +10 HP a la primera tropa dañada con el mayor ataque en la arena. Wakan realiza esta habilidad si no recibió daño de combate en el turno anterior."
+    },
+    PIPER: {
+        en: "End of round: Every 3 rounds, deals +20 DMG to the enemy hero. Starts on round 1.",
+        es: "Fin de ronda: Cada 3 rondas, inflige +20 de daño al héroe enemigo. Comienza en la ronda 1."
+    },
+    HARUAKI: {
+        en: "End of round: Heals 10 HP to units (hero and troops) that haven't been in the arena that round and have less than 50 HP.",
+        es: "Fin de ronda: Cura 10 HP a las unidades (héroe y tropas) que no han estado en la arena esa ronda y tienen menos de 50 HP."
+    },
+    LUSBAAL: {
+        en: "End of round: If the enemy hero has 35% HP or less and Lusbaal hasn't fought them that round, Lusbaal deals 20 DMG to the enemy hero.",
+        es: "Fin de ronda: Si el héroe enemigo tiene 35% de HP o menos y Lusbaal no ha luchado contra él esa ronda, Lusbaal inflige 20 de daño al héroe enemigo."
+    },
+    HINDAYA: {
+        en: "Start of round: Casts a charm on the first enemy troop with 20 ATK or less, preventing it from dealing damage that round (abilities still apply).",
+        es: "Inicio de ronda: Lanza un encanto a la primera tropa enemiga con 20 de ataque o menos, impidiéndole infligir daño esa ronda (las habilidades aún se aplican)."
+    },
+    HARALK: {
+        en: "Leaves 2 stacks of Injury. Injury: At 5 or more stacks, explodes dealing 10 DMG per stack. Moving a troop from its lane triggers the Injury stacks, dealing damage.",
+        es: "Deja 2 acumulaciones de Herida. Herida: Con 5 o más acumulaciones, explota infligiendo 10 de daño por acumulación. Mover una tropa de su carril activa las acumulaciones de Herida, causando daño."
+    },
+    JARKOS: {
+        en: "Start of round: Enhances Troops and Creatures in combat (+10 ATK) if Jarkos received at least 20 combat damage (not ability damage) in the previous round.",
+        es: "Inicio de ronda: Mejora a las tropas y criaturas en combate (+10 de ataque) si Jarkos recibió al menos 20 de daño de combate (no daño por habilidad) en la ronda anterior."
+    },
+    KADRIA: {
+        en: "End of round: If Kadria hasn't fought the enemy hero, summons a creature in the right lane. Requires 1 round to charge the summon. The longer Kadria waits, the stronger the summon: 2 rounds (10 ATK/20 HP), 3 rounds (20 ATK/30 HP), 4 rounds (30 ATK/40 HP), 5 rounds (40 ATK/50 HP).",
+        es: "Fin de ronda: Si Kadria no ha luchado contra el héroe enemigo, invoca una criatura en el carril derecho. Requiere 1 ronda para cargar la invocación. Cuanto más espera Kadria, más fuerte es la invocación: 2 rondas (10 ataque/20 HP), 3 rondas (20 ataque/30 HP), 4 rondas (30 ataque/40 HP), 5 rondas (40 ataque/50 HP)."
+    },
+    BLURP: {
+        en: "Start of round: On rounds 1 and 8, enhances the abilities (+10) of all allied troops. If an ability affects ATK and HP, that troop isn't enhanced. If an ability affects multiple troops, only the first enemy is enhanced.",
+        es: "Inicio de ronda: En las rondas 1 y 8, mejora las habilidades (+10) de todas las tropas aliadas. Si una habilidad afecta ataque y HP, esa tropa no se mejora. Si una habilidad afecta a múltiples tropas, solo el primer enemigo se mejora."
+    },
+    RODERICH: {
+        en: "Before combat: When descending to fight, if Roderich has a troop adjacent to his right, gains +10 ATK. If he has a troop adjacent to his left, gains +20 shield. Can gain both.",
+        es: "Antes del combate: Al descender para luchar, si Roderich tiene una tropa adyacente a su derecha, gana +10 de ataque. Si tiene una tropa adyacente a su izquierda, gana +20 de escudo. Puede ganar ambos."
+    },
+    STINKY: {
+        en: "End of round: If Stinky hasn't fought that round, deals +10 DMG (stackable up to 20) to the enemy leader. If he fights, the damage resets to 10 DMG.",
+        es: "Fin de ronda: Si Stinky no ha luchado esa ronda, inflige +10 de daño (acumulable hasta 20) al líder enemigo. Si lucha, el daño se reinicia a 10."
+    },
+    SICKSY: {
+        en: "Before combat: Deals +20 DMG if fighting the same enemy twice in a row.",
+        es: "Antes del combate: Inflige +20 de daño si lucha contra el mismo enemigo dos veces seguidas."
+    },
+    JIN: {
+        en: "End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights.",
+        es: "Fin de la ronda: Si Jin no lucha en una ronda, gana +10 de ataque por cada tropa aliada en la arena hasta la próxima vez que luche."
+    }
+};
 // Troop information map with attack, health, and abilities in English
 const troopInfo = {
     FRIDA: {
@@ -803,7 +878,11 @@ const translations = {
         'Select Hero': 'Select Hero',
         'Deck Name': 'Deck Name',
         'Select Troop': 'Select Troop',
-        'Make Public': 'Make Public'
+        'Make Public': 'Make Public',
+        // Nuevas traducciones para información de héroes
+        'Attack': 'Attack',
+        'Health': 'Health',
+        'Ability': 'Ability'
     },
     es: {
         'Public Decks': 'Mazos Públicos',
@@ -832,7 +911,11 @@ const translations = {
         'Select Hero': 'Seleccionar Héroe',
         'Deck Name': 'Nombre del Mazo',
         'Select Troop': 'Seleccionar Tropa',
-        'Make Public': 'Hacer Público'
+        'Make Public': 'Hacer Público',
+        // Nuevas traducciones para información de héroes
+        'Attack': 'Ataque',
+        'Health': 'Salud',
+        'Ability': 'Habilidad'
     }
 };
 
@@ -885,6 +968,15 @@ function updateLanguage(lang) {
                 select.appendChild(option);
             });
         });
+    }
+
+    // Update hero decks section if visible, only updating hero info
+    if (heroDecksSection.style.display === 'block') {
+        const heroName = document.getElementById('hero-decks-title').textContent.split(' ')[0]; // Obtiene el nombre del héroe del título
+        const hero = heroes.find(h => h.name === heroName);
+        if (hero) {
+            displayHeroDecks(hero, true); // Actualiza solo la información del héroe
+        }
     }
 }
 
@@ -1167,141 +1259,149 @@ function displayHeroes() {
 }
 
 // Display Decks for a Specific Hero
-function displayHeroDecks(hero) {
+function displayHeroDecks(hero, updateInfoOnly = false) {
     document.getElementById('hero-decks-title').textContent = `${hero.name} Decks`;
 
     // Display hero information
     const heroInfoContainer = document.getElementById('hero-info');
     const info = heroInfo[hero.name];
     if (info) {
+        const attackLabel = translations[currentLang]['Attack'];
+        const healthLabel = translations[currentLang]['Health'];
+        const abilityLabel = translations[currentLang]['Ability'];
+        const abilityText = heroAbilitiesTranslations[hero.name]?.[currentLang] || info.ability;
+
         heroInfoContainer.innerHTML = `
             <h3>${hero.name}</h3>
-            <p class="stats">Attack: ${info.attack} | Health: ${info.health}</p>
-            <p class="ability">Ability: ${info.ability}</p>
+            <p class="stats">${attackLabel}: ${info.attack} | ${healthLabel}: ${info.health}</p>
+            <p class="ability">${abilityLabel}: ${abilityText}</p>
         `;
     } else {
         heroInfoContainer.innerHTML = `<p>Information for ${hero.name} is not available.</p>`;
     }
 
-    const publicDecks = hero.decks.filter(d => d.isPublic);
-    publicDecks.sort((a, b) => b.likes - a.likes);
+    // Solo renderiza los mazos si no estamos actualizando solo la información
+    if (!updateInfoOnly) {
+        const publicDecks = hero.decks.filter(d => d.isPublic);
+        publicDecks.sort((a, b) => b.likes - a.likes);
 
-    heroDecksList.innerHTML = '';
-    publicDecks.forEach(deck => {
-        const deckCard = document.createElement('div');
-        const deckHero = heroes.find(h => h.id === deck.heroId);
+        heroDecksList.innerHTML = ''; // Limpiar solo si vamos a renderizar mazos
+        publicDecks.forEach(deck => {
+            const deckCard = document.createElement('div');
+            const deckHero = heroes.find(h => h.id === deck.heroId);
 
-        // Create container for hero image
-        const heroImage = document.createElement('img');
-        heroImage.src = getImageUrl(deckHero ? deckHero.name : 'Unknown', 'heroes');
-        heroImage.alt = deckHero ? deckHero.name : 'Unknown';
-        heroImage.classList.add('deck-hero-image');
+            // Create container for hero image
+            const heroImage = document.createElement('img');
+            heroImage.src = getImageUrl(deckHero ? deckHero.name : 'Unknown', 'heroes');
+            heroImage.alt = deckHero ? deckHero.name : 'Unknown';
+            heroImage.classList.add('deck-hero-image');
 
-        // Create container for troop images
-        const troopsContainer = document.createElement('div');
-        troopsContainer.classList.add('deck-troops');
-        deck.troops.forEach(troopId => {
-            const troop = troops.find(t => t.id === troopId);
-            const troopImage = document.createElement('img');
-            troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
-            troopImage.alt = troop ? troop.name : 'Unknown';
-            troopImage.classList.add('deck-troop-image');
-            troopImage.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showTroopInfo(troop ? troop.name : 'Unknown');
+            // Create container for troop images
+            const troopsContainer = document.createElement('div');
+            troopsContainer.classList.add('deck-troops');
+            deck.troops.forEach(troopId => {
+                const troop = troops.find(t => t.id === troopId);
+                const troopImage = document.createElement('img');
+                troopImage.src = getImageUrl(troop ? troop.name : 'Unknown', 'troops');
+                troopImage.alt = troop ? troop.name : 'Unknown';
+                troopImage.classList.add('deck-troop-image');
+                troopImage.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showTroopInfo(troop ? troop.name : 'Unknown');
+                });
+                troopsContainer.appendChild(troopImage);
             });
-            troopsContainer.appendChild(troopImage);
-        });
 
-        // Determine if the user has already liked the deck
-        const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
-        const hasLiked = likeKey && userLikes[likeKey];
+            // Determine if the user has already liked the deck
+            const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
+            const hasLiked = likeKey && userLikes[likeKey];
 
-        // Create deck content with like heart icon and separated static/dynamic content
-        deckCard.innerHTML = `
-            <h3>${deck.name}</h3>
-            <p><span data-translate="Created by">Created by</span>: ${deck.creator}</p>
-            <p><span data-translate="Likes">Likes</span>: <span class="like-count">${deck.likes}</span></p>
-            <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
-        `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Likes"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Created by"
+            // Create deck content with like heart icon and separated static/dynamic content
+            deckCard.innerHTML = `
+                <h3>${deck.name}</h3>
+                <p><span data-translate="Created by">Created by</span>: ${deck.creator}</p>
+                <p><span data-translate="Likes">Likes</span>: <span class="like-count">${deck.likes}</span></p>
+                <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
+            `;
+            deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Likes"
+            deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Created by"
 
-        deckCard.addEventListener('click', (e) => {
-            if (e.target.classList.contains('like-heart')) return;
-            showDeckDetails(deck);
-        });
+            deckCard.addEventListener('click', (e) => {
+                if (e.target.classList.contains('like-heart')) return;
+                showDeckDetails(deck);
+            });
 
-        const likeHeart = deckCard.querySelector('.like-heart');
-        likeHeart.addEventListener('click', async () => {
-            if (!currentUser) {
-                alert(translations[currentLang]['Please log in to like or unlike a deck!'] || 'Please log in to like or unlike a deck!');
-                return;
-            }
-            const likeKey = `${currentUser.username}:${deck.name}`;
-        
-            if (userLikes[likeKey]) {
-                try {
-                    deck.likes = (deck.likes || 0) - 1;
-                    hero.totalLikes = (hero.totalLikes || 0) - 1;
-                    delete userLikes[likeKey];
-        
-                    likeHeart.classList.remove('fas', 'liked');
-                    likeHeart.classList.add('far');
-        
-                    await firestoreOperationWithRetry(() => 
-                        db.collection('userLikes').doc(likeKey).delete()
-                    );
-        
-                    await loadUsersAndLikes();
-        
-                    deckCard.querySelector('.like-count').textContent = deck.likes;
-                } catch (error) {
-                    console.error("Error removing like from deck:", error);
-                    alert(translations[currentLang]['Error removing like from deck. Reverting changes.'] || "Error removing like from deck. Reverting changes.");
-        
-                    deck.likes = (deck.likes || 0) + 1;
-                    hero.totalLikes = (hero.totalLikes || 0) + 1;
-                    userLikes[likeKey] = true;
-        
-                    likeHeart.classList.remove('far');
-                    likeHeart.classList.add('fas', 'liked');
-        
-                    deckCard.querySelector('.like-count').textContent = deck.likes;
+            const likeHeart = deckCard.querySelector('.like-heart');
+            likeHeart.addEventListener('click', async () => {
+                if (!currentUser) {
+                    alert(translations[currentLang]['Please log in to like or unlike a deck!'] || 'Please log in to like or unlike a deck!');
+                    return;
                 }
-            } else {
-                try {
-                    deck.likes = (deck.likes || 0) + 1;
-                    hero.totalLikes = (hero.totalLikes || 0) + 1;
-                    userLikes[likeKey] = true;
-        
-                    likeHeart.classList.remove('far');
-                    likeHeart.classList.add('fas', 'liked');
-        
-                    await firestoreOperationWithRetry(() => 
-                        db.collection('userLikes').doc(likeKey).set({ value: true })
-                    );
-        
-                    await loadUsersAndLikes();
-        
-                    deckCard.querySelector('.like-count').textContent = deck.likes;
-                } catch (error) {
-                    console.error("Error liking deck:", error);
-                    alert(translations[currentLang]['Error liking deck. Reverting changes.'] || "Error liking deck. Reverting changes.");
-        
-                    deck.likes = (deck.likes || 0) - 1;
-                    hero.totalLikes = (hero.totalLikes || 0) - 1;
-                    delete userLikes[likeKey];
-        
-                    likeHeart.classList.remove('fas', 'liked');
-                    likeHeart.classList.add('far');
-        
-                    deckCard.querySelector('.like-count').textContent = deck.likes;
+                const likeKey = `${currentUser.username}:${deck.name}`;
+            
+                if (userLikes[likeKey]) {
+                    try {
+                        deck.likes = (deck.likes || 0) - 1;
+                        hero.totalLikes = (hero.totalLikes || 0) - 1;
+                        delete userLikes[likeKey];
+            
+                        likeHeart.classList.remove('fas', 'liked');
+                        likeHeart.classList.add('far');
+            
+                        await firestoreOperationWithRetry(() => 
+                            db.collection('userLikes').doc(likeKey).delete()
+                        );
+            
+                        await loadUsersAndLikes();
+            
+                        deckCard.querySelector('.like-count').textContent = deck.likes;
+                    } catch (error) {
+                        console.error("Error removing like from deck:", error);
+                        alert(translations[currentLang]['Error removing like from deck. Reverting changes.'] || "Error removing like from deck. Reverting changes.");
+            
+                        deck.likes = (deck.likes || 0) + 1;
+                        hero.totalLikes = (hero.totalLikes || 0) + 1;
+                        userLikes[likeKey] = true;
+            
+                        likeHeart.classList.remove('far');
+                        likeHeart.classList.add('fas', 'liked');
+            
+                        deckCard.querySelector('.like-count').textContent = deck.likes;
+                    }
+                } else {
+                    try {
+                        deck.likes = (deck.likes || 0) + 1;
+                        hero.totalLikes = (hero.totalLikes || 0) + 1;
+                        userLikes[likeKey] = true;
+            
+                        likeHeart.classList.remove('far');
+                        likeHeart.classList.add('fas', 'liked');
+            
+                        await firestoreOperationWithRetry(() => 
+                            db.collection('userLikes').doc(likeKey).set({ value: true })
+                        );
+            
+                        await loadUsersAndLikes();
+            
+                        deckCard.querySelector('.like-count').textContent = deck.likes;
+                    } catch (error) {
+                        console.error("Error liking deck:", error);
+                        alert(translations[currentLang]['Error liking deck. Reverting changes.'] || "Error liking deck. Reverting changes.");
+            
+                        deck.likes = (deck.likes || 0) - 1;
+                        hero.totalLikes = (hero.totalLikes || 0) - 1;
+                        delete userLikes[likeKey];
+            
+                        likeHeart.classList.remove('fas', 'liked');
+                        likeHeart.classList.add('far');
+            
+                        deckCard.querySelector('.like-count').textContent = deck.likes;
+                    }
                 }
-            }
+            });
+            heroDecksList.appendChild(deckCard);
         });
-        heroDecksList.appendChild(deckCard);
-    });
+    }
     updateLanguage(currentLang); // Ensure translations are applied after rendering
 }
 
