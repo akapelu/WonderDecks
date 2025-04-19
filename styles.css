@@ -1,0 +1,1066 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+html {
+    height: 100%;
+    background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed; /* Nueva imagen de fondo */
+    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+}
+
+body {
+    background: transparent; /* Hacemos el fondo de body transparente para que se vea el fondo de html */
+    color: #e6e6e6;
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Eliminar las partículas, ya que usaremos el nuevo fondo */
+body::before {
+    display: none; /* Desactiva las partículas */
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.2; }
+}
+
+nav {
+    background: linear-gradient(90deg, rgba(26, 13, 58, 0.9) 0%, rgba(36, 19, 77, 0.9) 100%);
+    padding: 5px 20px;
+    display: flex;
+    justify-content: space-between; /* Aseguramos que el logo esté a la izquierda y los botones a la derecha */
+    align-items: center;
+    flex-wrap: wrap;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    height: 150px;
+    position: relative;
+}
+
+/* Aseguramos que el contenedor del logo no restrinja su tamaño */
+#logo-link {
+    display: inline-block;
+}
+
+/* Logo styling */
+.logo-image {
+    height: 200px;
+    width: auto;
+    max-height: 80px;
+    object-fit: contain;
+}
+
+/* Contenedor de las banderas */
+.lang-flags {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    display: flex;
+    gap: 5px;
+}
+
+/* Estilo para las banderas */
+.lang-flag {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border-radius: 50%;
+    clip-path: circle(50%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end; /* Aseguramos que los botones estén alineados a la derecha */
+}
+
+.nav-right button, .nav-right span {
+    margin-left: 5px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+    min-width: 90px;
+    max-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-right button:hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+section {
+    padding: 30px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 48px;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+#welcome-section p {
+    font-size: 20px;
+    color: #e6e6e6;
+    margin-bottom: 40px;
+}
+
+#welcome-section button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+    margin: 0 10px;
+}
+
+#welcome-section button:hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+
+.card-list > div {
+    background: linear-gradient(145deg, #1a0d3a, #24134d); /* Nuevo gradiente púrpura más oscuro */
+    border-radius: 15px;
+    padding: 20px;
+    width: 280px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-list > div:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.card-list img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    width: 200px;
+    height: auto;
+}
+
+.card-list h3 {
+    margin: 15px 0;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Estilos para las imágenes en las listas de decks */
+.card-list .deck-hero-image {
+    max-width: 65px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    margin: 10px auto;
+    display: block;
+}
+
+.card-list .deck-troops {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+    min-height: 90px;
+}
+
+.card-list .deck-troop-image {
+    max-width: 40px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajustar el texto "Created by" y "Likes" para que tengan un tamaño fijo */
+.card-list p {
+    min-height: 20px;
+    margin: 5px 0;
+}
+
+/* Estilo para los botones dentro de las cartas (excepto el ícono de corazón) */
+.card-list button:not(.like-heart) {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+    margin: 5px;
+    width: 80px;
+}
+
+.card-list button:not(.like-heart):hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Contenedor para los botones de edición */
+.card-list .deck-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.card-list .deck-actions .edit-delete {
+    display: flex;
+    gap: 5px;
+}
+
+.card-list .deck-actions .public-toggle {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Estilo para el ícono de corazón */
+.like-heart {
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #000;
+    margin: 5px;
+    display: inline-block;
+}
+
+.like-heart.liked {
+    color: #ff69b4;
+}
+
+.like-heart:hover {
+    transform: scale(1.2);
+}
+
+.troop-selectors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.account-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.account-buttons button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+.account-buttons button:hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1a0d3a, #24134d); /* Nuevo gradiente púrpura más oscuro */
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffffff;
+    animation: modalFadeIn 0.3s ease;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+@keyframes modalFadeIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.close-modal:hover {
+    color: #e6e6e6;
+}
+
+.modal-content h2 {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    margin-bottom: 25px;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid rgba(255, 2525, 255, 0.3);
+    border-radius: 8px;
+    background: #1a2a6c;
+    color: #e6e6e6;
+    transition: border-color 0.3s;
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+    border-color: #ffffff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.modal-content textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.modal-content button {
+    padding: 12px;
+    font-size: 16px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #1a2a6c;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+.modal-content button:hover {
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.modal-content label {
+    color: #e6e6e6;
+    font-size: 14px;
+}
+
+.deck-details-hero-image img {
+    max-width: 65px !important;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+#deck-details-troops {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+#deck-details-troops > div {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#deck-details-troops img {
+    max-width: 60px;
+    height: auto; /* Cambiado de height: 0 a height: auto para que las imágenes se muestren */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Forzar el fondo en modo claro */
+@media (prefers-color-scheme: light) {
+    html, body {
+        background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c 100%);
+        background-attachment: fixed;
+    }
+}
+
+/* Styles for the hero information section */
+.hero-info {
+    background: linear-gradient(145deg, #1a0d3a, #24134d); /* Nuevo gradiente púrpura más oscuro */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e6e6e6;
+}
+
+.hero-info h3 {
+    font-size: 24px;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    margin-bottom: 15px;
+}
+
+.hero-info p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.hero-info .stats {
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+.hero-info .ability {
+    font-style: italic;
+    color: #d1d1d1;
+}
+
+/* Estilos para el modal de información de la tropa */
+.troop-info-modal-content {
+    max-width: 400px;
+    width: 90%;
+    padding: 20px;
+    text-align: center;
+}
+
+.troop-info-image img {
+    max-width: 60px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin-bottom: 15px;
+}
+
+.troop-info-modal-content .stats {
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+    margin: 10px 0;
+}
+
+.troop-info-modal-content .ability {
+    font-style: italic;
+    color: #d1d1d1;
+    margin: 10px 0;
+}
+
+/* Hacer que las imágenes de las tropas sean clicables */
+.card-list .deck-troop-image {
+    cursor: pointer;
+}
+
+.card-list .deck-troop-image:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Adjust hero cards on mobile */
+@media (max-width: 768px) {
+    .card-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .card-list > div {
+        width: 180px;
+        padding: 10px;
+    }
+
+    .card-list img {
+        width: 80px;
+        height: auto;
+    }
+
+    .card-list h3 {
+        font-size: 14px;
+        min-height: 30px;
+    }
+
+    .card-list p {
+        font-size: 10px;
+        min-height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .card-list > div {
+        width: 160px;
+        padding: 8px;
+    }
+
+    .card-list img {
+        width: 60px;
+        height: auto;
+    }
+
+    .card-list h3 {
+        font-size: 12px;
+        min-height: 25px;
+    }
+
+    .card-list p {
+        font-size: 9px;
+        min-height: 14px;
+    }
+
+    /* Ajustar héroes en Public Decks para que se muestren en filas de 3 */
+    #hero-showcase-section .card-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        justify-items: center;
+    }
+
+    #hero-showcase-section .card-list > div {
+        width: 100px;
+        padding: 5px;
+    }
+
+    #hero-showcase-section .card-list img {
+        width: 40px;
+        height: auto;
+    }
+
+    #hero-showcase-section .card-list h3 {
+        font-size: 10px;
+        min-height: 20px;
+    }
+
+    #hero-showcase-section .card-list p {
+        font-size: 8px;
+        min-height: 12px;
+    }
+
+    /* Ajustar botones en la página de cuenta */
+    .card-list .deck-actions .edit-delete button {
+        font-size: 10px;
+        padding: 4px 6px;
+        width: 60px;
+    }
+
+    .card-list .deck-actions .public-toggle button {
+        font-size: 10px;
+        padding: 4px 6px;
+        width: 90px;
+    }
+
+    /* Ajustar tropas en el modal */
+    #deck-details-troops {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    #deck-details-troops > div {
+        width: 30%;
+        max-width: 100px;
+    }
+
+    #deck-details-troops img {
+        max-width: 30px;
+    }
+
+    /* Ajustar mazos en la página de héroe */
+    #hero-decks-list.card-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    #hero-decks-list.card-list > div {
+        width: 45%;
+        max-width: 160px;
+    }
+
+    #hero-decks-list.card-list img {
+        width: 60px;
+        height: auto;
+    }
+
+    #hero-decks-list.card-list h3 {
+        font-size: 12px;
+        min-height: 25px;
+    }
+
+    #hero-decks-list.card-list p {
+        font-size: 9px;
+        min-height: 14px;
+    }
+
+    /* Ajustar hero-info para evitar estiramiento */
+    #hero-info {
+        max-width: 90%;
+        padding: 10px;
+        margin: 10px auto;
+    }
+}
+/* Reforzar el diseño para pantallas grandes */
+@media (min-width: 769px) {
+    nav {
+        padding: 5px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        height: 150px;
+        flex-direction: row; /* Aseguramos que el menú no se apile */
+    }
+
+    .nav-left {
+        display: flex;
+        justify-content: flex-start;
+        width: auto;
+    }
+
+    .logo-image {
+        height: 200px;
+        width: auto;
+        max-height: 80px;
+        object-fit: contain;
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+        width: auto;
+        margin-top: 0;
+    }
+
+    .nav-right button, .nav-right span {
+        margin-left: 5px;
+        padding: 6px 10px;
+        font-size: 13px;
+        min-width: 90px;
+        max-width: 120px;
+    }
+}
+/* Responsive adjustments for mobile */
+/* Ajustes para pantallas medianas */
+@media (max-width: 768px) {
+    html {
+        background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
+        background-size: cover;
+    }
+    body {
+        background: transparent;
+    }
+
+    nav {
+        padding: 5px 15px;
+        max-height: 150px;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .nav-left {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .logo-image {
+        height: 150px;
+        max-height: 75px;
+    }
+
+    .nav-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nav-right button, .nav-right span {
+        margin: 5px 0;
+        padding: 5px 8px;
+        font-size: 12px;
+        min-width: 80px;
+        max-width: 100px;
+    }
+
+    .lang-flags {
+        top: 15px;
+        right: 5px;
+    }
+
+    .lang-flag {
+        width: 24px;
+        height: 24px;
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 36px;
+    }
+
+    #welcome-section p {
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    #welcome-section button {
+        padding: 10px 20px;
+        font-size: 14px;
+        margin: 5px;
+    }
+
+    .card-list > div {
+        width: 180px;
+        padding: 15px;
+    }
+
+    .card-list h3 {
+        font-size: 16px;
+        min-height: 35px;
+    }
+
+    .card-list .deck-hero-image {
+        max-width: 55px;
+    }
+
+    .card-list .deck-troops {
+        min-height: 80px;
+    }
+
+    .card-list .deck-troop-image {
+        max-width: 35px;
+    }
+
+    .card-list p {
+        font-size: 12px;
+        min-height: 18px;
+    }
+
+    .card-list button:not(.like-heart) {
+        font-size: 12px;
+        padding: 6px 10px;
+        width: 70px;
+    }
+
+    .like-heart {
+        font-size: 18px;
+    }
+
+    .account-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .account-buttons button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .modal-content {
+        max-width: 95%;
+        padding: 20px;
+        max-height: 70vh;
+    }
+
+    .modal-content h2 {
+        font-size: 28px;
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .modal-content button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .troop-selectors select {
+        width: 100%;
+        max-width: 150px;
+    }
+
+    .deck-details-hero-image img {
+        max-width: 55px !important;
+    }
+
+    #deck-details-troops > div {
+        width: 45%;
+    }
+
+    #deck-details-troops img {
+        max-width: 50px;
+    }
+
+    .hero-info {
+        padding: 15px;
+        margin: 15px auto;
+        max-width: 90%;
+    }
+
+    .hero-info h3 {
+        font-size: 20px;
+    }
+
+    .hero-info p {
+        font-size: 14px;
+    }
+
+    .troop-info-modal-content {
+        max-width: 300px;
+        width: 80%;
+        padding: 15px;
+    }
+
+    .troop-info-image img {
+        max-width: 50px;
+    }
+
+    .troop-info-modal-content h2 {
+        font-size: 20px;
+    }
+
+    .troop-info-modal-content .stats,
+    .troop-info-modal-content .ability {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
+        background-size: cover;
+    }
+    body {
+        background: transparent;
+    }
+
+    nav {
+        padding: 5px 10px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        max-height: 150px;
+        overflow: hidden;
+    }
+
+    .logo-image {
+        height: 120px;
+        max-height: 60px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .nav-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nav-right button, .nav-right span {
+        padding: 4px 6px;
+        font-size: 11px;
+        min-width: 70px;
+        max-width: 90px;
+    }
+
+    .lang-flags {
+        top: 5px;
+        right: 5px;
+    }
+
+    .lang-flag {
+        width: 24px;
+        height: 24px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+
+    #welcome-section p {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    #welcome-section button {
+        padding: 8px 16px;
+        font-size: 12px;
+        margin: 5px;
+    }
+
+    .card-list button:not(.like-heart) {
+        font-size: 11px;
+        padding: 5px 8px;
+        width: 60px;
+    }
+
+    .like-heart {
+        font-size: 16px;
+    }
+
+    .account-buttons button {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+
+    .modal-content {
+        max-width: 98%;
+        padding: 15px;
+        max-height: 60vh;
+    }
+
+    .modal-content h2 {
+        font-size: 24px;
+    }
+
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .modal-content button {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .deck-details-hero-image img {
+        max-width: 45px !important;
+    }
+
+    .hero-info {
+        padding: 10px;
+        margin: 10px auto;
+        max-width: 90%;
+    }
+
+    .hero-info h3 {
+        font-size: 18px;
+    }
+
+    .hero-info p {
+        font-size: 12px;
+    }
+
+    .troop-info-modal-content {
+        max-width: 280px;
+        width: 70%;
+        padding: 10px;
+    }
+
+    .troop-info-image img {
+        max-width: 40px;
+    }
+
+    .troop-info-modal-content h2 {
+        font-size: 18px;
+    }
+
+    .troop-info-modal-content .stats,
+    .troop-info-modal-content .ability {
+        font-size: 12px;
+    }
+}
