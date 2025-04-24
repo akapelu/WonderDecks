@@ -1064,6 +1064,23 @@ h2 {
         font-size: 12px;
     }
 }
+html {
+    height: 100%;
+    background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed; /* Asegura que el fondo esté fijo */
+    min-height: 100vh; /* Garantiza que cubra toda la pantalla */
+}
+
+body {
+    background: transparent;
+    color: #e6e6e6;
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+}
+
 @media (min-width: 769px) {
     html {
         background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
