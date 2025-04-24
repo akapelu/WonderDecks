@@ -1441,14 +1441,14 @@ logoutBtn.addEventListener('click', async () => {
     console.log("Logout button clicked");
     try {
         await auth.signOut();
-        // Do not set currentUser to null here; let onAuthStateChanged handle it
-        showSection(welcomeSection);
-        // Update UI and reload data
-        await loadUsersAndLikes();
+        currentUser = null;
+        users = []; 
+        userLikes = {}; 
         updateUIForCurrentUser();
+        showSection(mainMenuSection);
+        
     } catch (error) {
         console.error("Error signing out:", error);
-        alert("Error signing out. Please try again.");
     }
 });
 
@@ -2060,7 +2060,7 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         updateUIForCurrentUser();
     }
 });
-// Registrar el Service Worker
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     console.log("Attempting to register Service Worker...");
