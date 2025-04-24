@@ -9,15 +9,15 @@
      <title>Wonder Decks</title>
      <link rel="stylesheet" href="styles.css">
      <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-     <!-- Añadir Font Awesome -->
+     
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-     <!-- PWA Manifest -->
+     
      <link rel="manifest" href="/WonderDecks/manifest.json">
-     <!-- Favicon -->
+     
      <link rel="icon" href="https://raw.githubusercontent.com/akapelu/WonderDecks/main/favicon.ico" type="image/x-icon">
-     <!-- iOS Support -->
+     
      <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/akapelu/WonderDecks/main/images/icono-192x192.png">
-     <!-- Firebase SDK -->
+     
      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
      <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -42,7 +42,7 @@
      </div>
  </nav>
  
-     <!-- Sección de bienvenida (visible por defecto) -->
+     
  <section id="welcome-section">
      <h2>Welcome to Wonder Decks!</h2>
      <p>Create, save and share your decks with the community.</p>
@@ -50,20 +50,20 @@
      <button id="explore-heroes-btn">Public Decks</button>
  </section>
  
- <!-- Sección de mazos públicos (oculta por defecto) -->
+ 
  <section id="hero-showcase-section" style="display: none;">
      <h2>Public Decks</h2>
      <div id="hero-list" class="card-list"></div>
  </section>
  
- <!-- Sección de mazos de héroe (oculta por defecto) -->
+ 
  <section id="hero-decks-section" style="display: none;">
      <h2 id="hero-decks-title"></h2>
      <div id="hero-info" class="hero-info"></div>
      <div id="hero-decks-list" class="card-list"></div>
  </section>
  
- <!-- Sección de cuenta de usuario (oculta por defecto) -->
+ 
  <section id="user-account-section" style="display: none;">
      <h2 id="user-account-title"></h2>
      <div id="user-decks-list" class="card-list"></div>
@@ -112,7 +112,7 @@
              <div id="deck-details-troops" class="card-list"></div>
          </div>
      </div>
-         <!-- Modal para mostrar la información de la tropa -->
+         
      <div id="troop-info-modal" class="modal" style="display: none;">
          <div class="modal-content troop-info-modal-content">
              <span class="close-modal">×</span>
@@ -122,7 +122,7 @@
              <p class="ability" id="troop-info-ability"></p>
          </div>
      </div>
-     <!-- Firebase SDK (compat version) -->
+     
      <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
      <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
      <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
