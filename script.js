@@ -16,22 +16,26 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-    // Eliminar o comentar este bloque
-    /*
+    // Configurar persistencia de autenticación
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            console.log("Auth persistence set to LOCAL");
+        })
         .catch(error => {
-            console.warn("Error setting auth persistence to LOCAL:", error);
+            console.error("Error setting auth persistence to LOCAL:", error);
+            // Si LOCAL falla, intentar con SESSION
             return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+                .then(() => {
+                    console.log("Auth persistence set to SESSION");
+                })
                 .catch(sessionError => {
                     console.error("Error setting auth persistence to SESSION:", sessionError);
                     console.warn("Proceeding without auth persistence.");
-                    return Promise.resolve();
                 });
         });
-    */
 } catch (error) {
     console.error("Error initializing Firebase:", error);
-    alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
+    alert("Error inicializando Firebase. Por favor, verifica tu configuración de Firebase e intenta de nuevo.");
 }
 
 // Simulated backend data
@@ -1099,13 +1103,13 @@ auth.signInAnonymously().catch(error => {
 
 auth.onAuthStateChanged(async user => {
     if (user) {
-        console.log("User signed in:", user.uid);
+        console.log("Usuario autenticado:", user.uid);
         try {
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
-                console.log("Current user data:", currentUser);
+                console.log("Datos del usuario actual:", currentUser);
                 currentUser.decks = currentUser.decks.map(deck => ({
                     name: deck.name,
                     heroId: deck.heroId,
@@ -1114,25 +1118,29 @@ auth.onAuthStateChanged(async user => {
                     isPublic: deck.isPublic,
                     creator: deck.creator,
                 }));
+            } else {
+                // Si no existe un documento para este usuario, crea uno nuevo
+                console.log("No se encontró un documento para el usuario, creando uno nuevo...");
+                currentUser = { uid: user.uid, decks: [] };
             }
             await loadUsersAndLikes();
             updateUIForCurrentUser();
         } catch (error) {
-            console.error("Error in auth state handling:", error);
-            alert("Error fetching user data. Some features may not work correctly.");
+            console.error("Error al manejar el estado de autenticación:", error);
+            alert("Error al obtener los datos del usuario. Algunas funciones podrían no funcionar correctamente.");
             updateUIForCurrentUser();
         }
     } else {
-        console.log("No user signed in, attempting anonymous login");
+        console.log("No hay usuario autenticado, intentando login anónimo");
         currentUser = null;
-        users = []; // Limpia los datos
+        users = [];
         userLikes = {};
         updateUIForCurrentUser();
         try {
             await auth.signInAnonymously();
         } catch (error) {
-            console.error("Failed to sign in anonymously:", error);
-            alert("Error signing in anonymously. Please refresh the page.");
+            console.error("Fallo al iniciar sesión anónima:", error);
+            alert("Error al iniciar sesión anónima. Por favor, recarga la página.");
         }
     }
 });
