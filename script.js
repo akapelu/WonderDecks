@@ -1043,13 +1043,11 @@ async function loadUsersAndLikes() {
     }
     isLoadingUsersAndLikes = true;
     try {
-        
         const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
         users = [];
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
-            
             userData.decks = userData.decks.map(deck => ({
                 name: deck.name,
                 heroId: deck.heroId,
@@ -1058,32 +1056,26 @@ async function loadUsersAndLikes() {
                 isPublic: deck.isPublic,
                 creator: deck.creator,
             }));
-            
             if (!users.some(u => u.uid === userData.uid)) {
                 users.push(userData);
             }
         });
-        console.log("Users loaded:", users);
 
-        
         const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
         userLikes = {};
         likesSnapshot.forEach(doc => {
             userLikes[doc.id] = doc.data().value;
         });
-        console.log("UserLikes loaded:", userLikes);
 
-        
         users.forEach(user => {
             user.decks.forEach(deck => {
                 const deckLikes = Object.keys(userLikes).filter(key => 
                     key.endsWith(`:${deck.name}`) && userLikes[key] === true
                 ).length;
-                deck.likes = deckLikes; // Assign likes dynamically
+                deck.likes = deckLikes;
             });
         });
 
-        
         loadHeroesDecks();
     } catch (error) {
         console.error("Error loading users and likes:", error);
@@ -1104,13 +1096,11 @@ auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
         try {
-            
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
-                console.log("Current user data loaded:", currentUser);
-                
+                console.log("Current user data loaded.");
                 currentUser.decks = currentUser.decks.map(deck => ({
                     name: deck.name,
                     heroId: deck.heroId,
@@ -1121,9 +1111,7 @@ auth.onAuthStateChanged(async user => {
                 }));
             } else {
                 console.log("No user document found for UID:", user.uid);
-                
             }
-            
             await loadUsersAndLikes();
             updateUIForCurrentUser();
         } catch (error) {
@@ -1135,10 +1123,8 @@ auth.onAuthStateChanged(async user => {
     } else {
         console.log("User signed out");
         currentUser = null;
-        
         await loadUsersAndLikes();
         updateUIForCurrentUser();
-        
         auth.signInAnonymously().catch(error => {
             console.error("Error signing in anonymously after logout:", error);
             alert("Error signing in anonymously after logout. Please try again.");
@@ -2165,3 +2151,4 @@ if ('serviceWorker' in navigator) {
 } else {
   console.log('Service Workers are not supported in this browser');
 }
+
