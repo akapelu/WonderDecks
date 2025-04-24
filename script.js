@@ -1,3 +1,22 @@
+console.log("dcodeIO.bcrypt disponible:", typeof window.dcodeIO?.bcrypt);
+
+function waitForBcrypt() {
+    return new Promise((resolve, reject) => {
+        const maxAttempts = 50;
+        let attempts = 0;
+
+        const checkBcrypt = setInterval(() => {
+            attempts++;
+            if (typeof window.dcodeIO?.bcrypt !== 'undefined') {
+                clearInterval(checkBcrypt);
+                resolve(window.dcodeIO.bcrypt);
+            } else if (attempts >= maxAttempts) {
+                clearInterval(checkBcrypt);
+                reject(new Error("bcrypt not available after 5s"));
+            }
+        }, 100);
+    });
+}
 
 const firebaseConfig = {
   apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
@@ -1470,17 +1489,24 @@ authForm.addEventListener('submit', async (e) => {
     const username = document.getElementById('username-input').value;
     const password = document.getElementById('password-input').value;
 
+    let bcryptLib;
+    try {
+        bcryptLib = await waitForBcrypt();
+    } catch (error) {
+        console.error(error.message);
+        alert("Error: Unable to load bcrypt library. Please check your connection and try again later.");
+        return;
+    }
+
     if (authSubmitBtn.textContent === translations[currentLang]['Register']) {
-     
         if (!auth.currentUser) {
             alert("Authentication failed. Please try again.");
             return;
         }
 
-     
         let userSnapshot;
         try {
-            userSnapshot = await firestoreOperationWithRetry(() => 
+            userSnapshot = await firestoreOperationWithRetry(() =>
                 db.collection('users').where('username', '==', username).get()
             );
         } catch (error) {
@@ -1493,13 +1519,14 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
 
-        
+        const hashedPassword = await bcryptLib.hash(password, 10);
         const userId = auth.currentUser.uid;
-        const newUser = { username, password, decks: [] };
+        const newUser = { username, password: hashedPassword, decks: [] };
         try {
-            await firestoreOperationWithRetry(() => 
+            await firestoreOperationWithRetry(() =>
                 db.collection('users').doc(userId).set(newUser)
             );
+            await auth.currentUser.getIdToken(true);
             currentUser = { ...newUser, uid: userId };
             users.push(currentUser);
 
@@ -1514,11 +1541,10 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
     } else {
-       
         let userSnapshot;
         try {
-            userSnapshot = await firestoreOperationWithRetry(() => 
-                db.collection('users').where('username', '==', username).where('password', '==', password).get()
+            userSnapshot = await firestoreOperationWithRetry(() =>
+                db.collection('users').where('username', '==', username).get()
             );
         } catch (error) {
             console.error("Error checking user credentials:", error);
@@ -1535,40 +1561,68 @@ authForm.addEventListener('submit', async (e) => {
         const storedUid = userDoc.id;
         const currentUid = auth.currentUser.uid;
 
+        let passwordMatch = false;
+        const storedPassword = userData.password;
+
+        // Verificar si la contraseña almacenada está hasheada (comienza con $2a$ o $2b$)
+        if (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$')) {
+            // Contraseña hasheada: usar bcrypt.compare
+            passwordMatch = await bcryptLib.compare(password, storedPassword);
+        } else {
+            // Contraseña en texto plano: comparar directamente
+            passwordMatch = password === storedPassword;
+
+            // Si la contraseña coincide, migrar a formato hasheado
+            if (passwordMatch) {
+                try {
+                    const hashedPassword = await bcryptLib.hash(password, 10);
+                    userData.password = hashedPassword;
+                    await firestoreOperationWithRetry(() =>
+                        db.collection('users').doc(storedUid).update({ password: hashedPassword })
+                    );
+                    console.log(`Password for user ${username} has been migrated to hashed format.`);
+                } catch (error) {
+                    console.error("Error migrating password to hashed format:", error);
+                    alert("Login successful, but failed to update password format. Please try logging in again.");
+                }
+            }
+        }
+
+        if (!passwordMatch) {
+            alert('Invalid credentials!');
+            return;
+        }
+
         if (storedUid !== currentUid) {
             console.log("UID mismatch during login, migrating user data...");
             try {
-          
-                await firestoreOperationWithRetry(() => 
+                await firestoreOperationWithRetry(() =>
                     db.collection('users').doc(currentUid).set(userData)
                 );
-                
-                await firestoreOperationWithRetry(() => 
+                await firestoreOperationWithRetry(() =>
                     db.collection('users').doc(storedUid).delete()
                 );
                 console.log("User document migrated successfully to UID:", currentUid);
-
-                
                 users = users.filter(user => user.uid !== storedUid);
                 userData.uid = currentUid;
                 users.push(userData);
             } catch (error) {
                 console.error("Error during UID migration:", error);
                 alert("Error syncing user data with Firestore. Please try again.");
-
                 try {
-                    await firestoreOperationWithRetry(() => 
+                    await firestoreOperationWithRetry(() =>
                         db.collection('users').doc(currentUid).delete()
                     );
                 } catch (cleanupError) {
                     console.warn("Failed to clean up new document after migration error:", cleanupError);
                 }
-                return; 
+                return;
             }
         }
 
         currentUser = userData;
         currentUser.uid = currentUid;
+        await auth.currentUser.getIdToken(true);
         authModal.style.display = 'none';
         updateUIForCurrentUser();
         showSection(userAccountSection);
@@ -1576,7 +1630,6 @@ authForm.addEventListener('submit', async (e) => {
         await loadUsersAndLikes();
     }
 });
-
 
 function displayHeroes() {
     heroes.sort((a, b) => {
@@ -2111,4 +2164,51 @@ if ('serviceWorker' in navigator) {
   });
 } else {
   console.log('Service Workers are not supported in this browser');
+}
+
+async function migrateAllPasswords() {
+    console.log("Starting password migration...");
+
+    let bcryptLib;
+    try {
+        bcryptLib = await waitForBcrypt();
+    } catch (error) {
+        console.error("Error loading bcrypt library:", error);
+        alert("Failed to load bcrypt library. Please try again.");
+        return;
+    }
+
+    try {
+        const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
+        const batch = db.batch();
+        let updatedCount = 0;
+
+        for (const userDoc of userSnapshot.docs) {
+            const userData = userDoc.data();
+            const userId = userDoc.id;
+            const storedPassword = userData.password;
+
+            
+            if (!storedPassword.startsWith('$2a$') && !storedPassword.startsWith('$2b$')) {
+                console.log(`Migrating password for user: ${userData.username} (UID: ${userId})`);
+                const hashedPassword = await bcryptLib.hash(storedPassword, 10);
+                const userRef = db.collection('users').doc(userId);
+                batch.update(userRef, { password: hashedPassword });
+                updatedCount++;
+            }
+        }
+
+        if (updatedCount === 0) {
+            console.log("No passwords needed migration.");
+            alert("No passwords needed migration.");
+            return;
+        }
+
+        await batch.commit();
+        console.log(`Successfully migrated ${updatedCount} passwords to hashed format.`);
+        alert(`Successfully migrated ${updatedCount} passwords to hashed format.`);
+    } catch (error) {
+        console.error("Error during password migration:", error);
+        alert("Error during password migration. Check the console for details.");
+    }
 }
