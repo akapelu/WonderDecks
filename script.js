@@ -16,26 +16,10 @@ try {
     console.log("Firebase initialized successfully");
     db = firebase.firestore();
     auth = firebase.auth();
-    // Configurar persistencia de autenticación
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => {
-            console.log("Auth persistence set to LOCAL");
-        })
-        .catch(error => {
-            console.error("Error setting auth persistence to LOCAL:", error);
-            // Si LOCAL falla, intentar con SESSION
-            return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
-                .then(() => {
-                    console.log("Auth persistence set to SESSION");
-                })
-                .catch(sessionError => {
-                    console.error("Error setting auth persistence to SESSION:", sessionError);
-                    console.warn("Proceeding without auth persistence.");
-                });
-        });
+    
 } catch (error) {
     console.error("Error initializing Firebase:", error);
-    alert("Error inicializando Firebase. Por favor, verifica tu configuración de Firebase e intenta de nuevo.");
+    alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
 }
 
 // Simulated backend data
@@ -1038,14 +1022,6 @@ async function loadUsersAndLikes() {
         console.log("loadUsersAndLikes already in progress, skipping...");
         return;
     }
-
-    // Verificar si hay un usuario autenticado
-    const user = auth.currentUser;
-    if (!user) {
-        console.log("No authenticated user, skipping loadUsersAndLikes");
-        return;
-    }
-
     isLoadingUsersAndLikes = true;
     try {
         // Load users
@@ -1054,6 +1030,7 @@ async function loadUsersAndLikes() {
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
+            // Normalize decks to ensure they have all expected fields
             userData.decks = userData.decks.map(deck => ({
                 name: deck.name,
                 heroId: deck.heroId,
@@ -1062,11 +1039,12 @@ async function loadUsersAndLikes() {
                 isPublic: deck.isPublic,
                 creator: deck.creator,
             }));
+            // Avoid duplicate users based on UID
             if (!users.some(u => u.uid === userData.uid)) {
                 users.push(userData);
             }
         });
-        console.log("Users loaded:", users.length);
+        console.log("Users loaded:", users);
 
         // Load userLikes
         const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
@@ -1074,21 +1052,22 @@ async function loadUsersAndLikes() {
         likesSnapshot.forEach(doc => {
             userLikes[doc.id] = doc.data().value;
         });
-        console.log("UserLikes loaded:", Object.keys(userLikes).length);
+        console.log("UserLikes loaded:", userLikes);
 
-        // Calculate likes for each deck
+        // Calculate likes for each deck dynamically
         users.forEach(user => {
             user.decks.forEach(deck => {
                 const deckLikes = Object.keys(userLikes).filter(key => 
                     key.endsWith(`:${deck.name}`) && userLikes[key] === true
                 ).length;
-                deck.likes = deckLikes;
+                deck.likes = deckLikes; // Assign likes dynamically
             });
         });
 
+        // Update heroes' decks
         loadHeroesDecks();
     } catch (error) {
-        console.error("Error loading Firestore data:", error);
+        console.error("Error loading users and likes:", error);
         alert("Error loading data from Firestore. Some features may not work correctly.");
     } finally {
         isLoadingUsersAndLikes = false;
@@ -1101,15 +1080,18 @@ auth.signInAnonymously().catch(error => {
     alert("Error signing in anonymously. Please try again.");
 });
 
+// Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
-        console.log("Usuario autenticado:", user.uid);
+        console.log("User signed in anonymously:", user.uid);
         try {
+            // Check if a user document exists for this UID
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
-                console.log("Datos del usuario actual:", currentUser);
+                console.log("Current user data loaded:", currentUser);
+                // Normalize currentUser decks
                 currentUser.decks = currentUser.decks.map(deck => ({
                     name: deck.name,
                     heroId: deck.heroId,
@@ -1119,29 +1101,29 @@ auth.onAuthStateChanged(async user => {
                     creator: deck.creator,
                 }));
             } else {
-                // Si no existe un documento para este usuario, crea uno nuevo
-                console.log("No se encontró un documento para el usuario, creando uno nuevo...");
-                currentUser = { uid: user.uid, decks: [] };
+                console.log("No user document found for UID:", user.uid);
+                // Do not set currentUser to null immediately; allow UI to persist until data is reloaded
             }
+            // Load users and likes only once here
             await loadUsersAndLikes();
             updateUIForCurrentUser();
         } catch (error) {
-            console.error("Error al manejar el estado de autenticación:", error);
-            alert("Error al obtener los datos del usuario. Algunas funciones podrían no funcionar correctamente.");
+            console.error("Error fetching user data:", error);
+            alert("Error fetching user data. Proceeding with local data.");
+            await loadUsersAndLikes();
             updateUIForCurrentUser();
         }
     } else {
-        console.log("No hay usuario autenticado, intentando login anónimo");
+        console.log("User signed out");
         currentUser = null;
-        users = [];
-        userLikes = {};
+        // Load users and likes to refresh the UI
+        await loadUsersAndLikes();
         updateUIForCurrentUser();
-        try {
-            await auth.signInAnonymously();
-        } catch (error) {
-            console.error("Fallo al iniciar sesión anónima:", error);
-            alert("Error al iniciar sesión anónima. Por favor, recarga la página.");
-        }
+        // Sign in anonymously again
+        auth.signInAnonymously().catch(error => {
+            console.error("Error signing in anonymously after logout:", error);
+            alert("Error signing in anonymously after logout. Please try again.");
+        });
     }
 });
 
@@ -1447,14 +1429,14 @@ logoutBtn.addEventListener('click', async () => {
     console.log("Logout button clicked");
     try {
         await auth.signOut();
-        currentUser = null;
-        users = []; 
-        userLikes = {}; 
+        // Do not set currentUser to null here; let onAuthStateChanged handle it
+        showSection(welcomeSection);
+        // Update UI and reload data
+        await loadUsersAndLikes();
         updateUIForCurrentUser();
-        showSection(mainMenuSection);
-        
     } catch (error) {
         console.error("Error signing out:", error);
+        alert("Error signing out. Please try again.");
     }
 });
 
@@ -1489,11 +1471,13 @@ authForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password-input').value;
 
     if (authSubmitBtn.textContent === translations[currentLang]['Register']) {
+        // Register new user
         if (!auth.currentUser) {
             alert("Authentication failed. Please try again.");
             return;
         }
 
+        // Check if username already exists
         let userSnapshot;
         try {
             userSnapshot = await firestoreOperationWithRetry(() => 
@@ -1509,6 +1493,7 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
 
+        // Create new user with the current anonymous UID
         const userId = auth.currentUser.uid;
         const newUser = { username, password, decks: [] };
         try {
@@ -1548,10 +1533,42 @@ authForm.addEventListener('submit', async (e) => {
         const userDoc = userSnapshot.docs[0];
         const userData = userDoc.data();
         const storedUid = userDoc.id;
+        const currentUid = auth.currentUser.uid;
 
-        // Usar el UID almacenado en Firestore
+        if (storedUid !== currentUid) {
+            console.log("UID mismatch during login, migrating user data...");
+            try {
+                // Copy user data to the new UID
+                await firestoreOperationWithRetry(() => 
+                    db.collection('users').doc(currentUid).set(userData)
+                );
+                // Delete the old document
+                await firestoreOperationWithRetry(() => 
+                    db.collection('users').doc(storedUid).delete()
+                );
+                console.log("User document migrated successfully to UID:", currentUid);
+
+                // Update local users array to remove the old UID
+                users = users.filter(user => user.uid !== storedUid);
+                userData.uid = currentUid;
+                users.push(userData);
+            } catch (error) {
+                console.error("Error during UID migration:", error);
+                alert("Error syncing user data with Firestore. Please try again.");
+                // Attempt to clean up by deleting the new document if it was created
+                try {
+                    await firestoreOperationWithRetry(() => 
+                        db.collection('users').doc(currentUid).delete()
+                    );
+                } catch (cleanupError) {
+                    console.warn("Failed to clean up new document after migration error:", cleanupError);
+                }
+                return; // Exit to prevent proceeding with inconsistent data
+            }
+        }
+
         currentUser = userData;
-        currentUser.uid = storedUid;
+        currentUser.uid = currentUid;
         authModal.style.display = 'none';
         updateUIForCurrentUser();
         showSection(userAccountSection);
@@ -2066,7 +2083,7 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         updateUIForCurrentUser();
     }
 });
-
+// Registrar el Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     console.log("Attempting to register Service Worker...");
