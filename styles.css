@@ -1064,3 +1064,11 @@ h2 {
         font-size: 12px;
     }
 }
+@media (min-width: 769px) {
+    html {
+        background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: fixed;
+        min-height: 100vh;
+    }
+}
