@@ -1,4 +1,4 @@
-// Firebase Configuration
+
 const firebaseConfig = {
   apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
   authDomain: "wonderdecks-6cadf.firebaseapp.com",
@@ -9,7 +9,7 @@ const firebaseConfig = {
   measurementId: "G-2Z9MFLHWX8"
 };
 
-// Initialize Firebase
+
 let db, auth;
 try {
     firebase.initializeApp(firebaseConfig);
@@ -22,7 +22,7 @@ try {
     alert("Error initializing Firebase. Please check your Firebase configuration and try again.");
 }
 
-// Simulated backend data
+
 let heroes = [
     { id: 1, name: "BLUE", decks: [], totalLikes: 0 },
     { id: 2, name: "BLURP", decks: [], totalLikes: 0 },
@@ -115,7 +115,7 @@ let troops = [
     { id: 69, name: "YOYU" },
     { id: 70, name: "YURKI" }
 ];
-// Hero information map with attack, health, and abilities
+
 const heroInfo = {
     LYON: {
         attack: 20,
@@ -208,7 +208,7 @@ const heroInfo = {
         ability: "End of the round: If Jin doesn’t fight in a round, he gets +10 ATK per allied troop in the arena until the next time he fights."
     }
 };
-// Traducciones de las habilidades de los héroes
+
 const heroAbilitiesTranslations = {
     LYON: {
         en: "When an allied troop enters the arena in the middle or right lane, that troop gains 10 shield.",
@@ -283,7 +283,7 @@ const heroAbilitiesTranslations = {
         es: "Fin de la ronda: Si Jin no lucha en una ronda, gana +10 de ataque por cada tropa aliada en la arena hasta la próxima vez que luche."
     }
 };
-// Troop information map with attack, health, and abilities in English
+
 const troopInfo = {
     FRIDA: {
         attack: 10,
@@ -631,7 +631,7 @@ const troopInfo = {
         ability: "No special ability."
     }
 };
-// Traducciones de las habilidades de las tropas
+
 const troopAbilitiesTranslations = {
     FRIDA: {
         en: "On entry: Deals +30 DMG to the troop in the farthest lane. Right lane attacks left, and vice versa. Middle lane attacks middle lane.",
@@ -911,12 +911,12 @@ const troopAbilitiesTranslations = {
     }
 };
 
-// Check if the device is mobile
+
 function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
-// Check if the app is running in standalone mode
+
 function isRunningStandalone() {
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                        ('standalone' in navigator && navigator.standalone === true) || 
@@ -925,10 +925,10 @@ function isRunningStandalone() {
   return isStandalone;
 }
 
-// Show installation recommendation for mobile users
+
 function showInstallPrompt() {
   console.log("Showing install prompt...");
-  // Create the modal dynamically
+  
   const modal = document.createElement('div');
   modal.id = 'install-modal';
   modal.className = 'modal';
@@ -952,27 +952,27 @@ function showInstallPrompt() {
   document.body.appendChild(modal);
   modal.style.display = 'flex';
 
-  // Add event listener to close the modal
+  
   document.getElementById('close-install-modal').addEventListener('click', () => {
     modal.remove();
     console.log("Install prompt closed");
   });
 }
 
-// Run check on page load
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log("DOMContentLoaded event fired");
-  // Always show welcome section on load
+  
   showSection(welcomeSection);
 
-  // Log device and standalone status
+  
   console.log("Is mobile device:", isMobileDevice());
   console.log("Is running standalone:", isRunningStandalone());
 
   if (isMobileDevice() && !isRunningStandalone()) {
     showInstallPrompt();
   } else {
-    // Ensure navigation is visible for standalone or desktop
+    
     document.querySelector('nav').style.display = 'flex';
     document.body.style.overflow = 'auto';
     console.log("Modal not shown due to: ", {
@@ -986,17 +986,17 @@ let currentUser = null;
 let users = [];
 let userLikes = {};
 
-// GitHub repository base URL for images
+
 const githubBaseUrl = "https://raw.githubusercontent.com/akapelu/WonderDecks/main/";
 
-// Function to get the image URL for a hero or troop
+
 function getImageUrl(name, type) {
     if (!name) return '';
     const formattedName = name.toUpperCase().replace(/\s/g, '_');
     return `${githubBaseUrl}${type}/${formattedName}.png`;
 }
 
-// Retry mechanism for Firestore operations
+
 async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 2000) {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
@@ -1014,7 +1014,7 @@ async function firestoreOperationWithRetry(operation, maxRetries = 3, delay = 20
     }
 }
 
-// Load users and userLikes from Firestore
+
 let isLoadingUsersAndLikes = false;
 
 async function loadUsersAndLikes() {
@@ -1024,13 +1024,13 @@ async function loadUsersAndLikes() {
     }
     isLoadingUsersAndLikes = true;
     try {
-        // Load users
+        
         const userSnapshot = await firestoreOperationWithRetry(() => db.collection('users').get());
         users = [];
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
-            // Normalize decks to ensure they have all expected fields
+            
             userData.decks = userData.decks.map(deck => ({
                 name: deck.name,
                 heroId: deck.heroId,
@@ -1039,14 +1039,14 @@ async function loadUsersAndLikes() {
                 isPublic: deck.isPublic,
                 creator: deck.creator,
             }));
-            // Avoid duplicate users based on UID
+            
             if (!users.some(u => u.uid === userData.uid)) {
                 users.push(userData);
             }
         });
         console.log("Users loaded:", users);
 
-        // Load userLikes
+        
         const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
         userLikes = {};
         likesSnapshot.forEach(doc => {
@@ -1054,7 +1054,7 @@ async function loadUsersAndLikes() {
         });
         console.log("UserLikes loaded:", userLikes);
 
-        // Calculate likes for each deck dynamically
+        
         users.forEach(user => {
             user.decks.forEach(deck => {
                 const deckLikes = Object.keys(userLikes).filter(key => 
@@ -1064,7 +1064,7 @@ async function loadUsersAndLikes() {
             });
         });
 
-        // Update heroes' decks
+        
         loadHeroesDecks();
     } catch (error) {
         console.error("Error loading users and likes:", error);
@@ -1074,24 +1074,24 @@ async function loadUsersAndLikes() {
     }
 }
 
-// Authenticate user anonymously on page load
+
 auth.signInAnonymously().catch(error => {
     console.error("Error signing in anonymously:", error);
     alert("Error signing in anonymously. Please try again.");
 });
 
-// Listen for auth state changes
+
 auth.onAuthStateChanged(async user => {
     if (user) {
         console.log("User signed in anonymously:", user.uid);
         try {
-            // Check if a user document exists for this UID
+            
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
                 console.log("Current user data loaded:", currentUser);
-                // Normalize currentUser decks
+                
                 currentUser.decks = currentUser.decks.map(deck => ({
                     name: deck.name,
                     heroId: deck.heroId,
@@ -1102,9 +1102,9 @@ auth.onAuthStateChanged(async user => {
                 }));
             } else {
                 console.log("No user document found for UID:", user.uid);
-                // Do not set currentUser to null immediately; allow UI to persist until data is reloaded
+                
             }
-            // Load users and likes only once here
+            
             await loadUsersAndLikes();
             updateUIForCurrentUser();
         } catch (error) {
@@ -1116,10 +1116,10 @@ auth.onAuthStateChanged(async user => {
     } else {
         console.log("User signed out");
         currentUser = null;
-        // Load users and likes to refresh the UI
+        
         await loadUsersAndLikes();
         updateUIForCurrentUser();
-        // Sign in anonymously again
+        
         auth.signInAnonymously().catch(error => {
             console.error("Error signing in anonymously after logout:", error);
             alert("Error signing in anonymously after logout. Please try again.");
@@ -1127,7 +1127,7 @@ auth.onAuthStateChanged(async user => {
     }
 });
 
-// Load heroes' decks from users' public decks
+
 function loadHeroesDecks() {
     heroes.forEach(hero => {
         hero.decks = [];
@@ -1147,7 +1147,7 @@ function loadHeroesDecks() {
     });
 }
 
-// DOM Elements
+
 const welcomeSection = document.getElementById('welcome-section');
 const heroShowcaseSection = document.getElementById('hero-showcase-section');
 const heroDecksSection = document.getElementById('hero-decks-section');
@@ -1182,13 +1182,13 @@ const troopInfoImage = document.getElementById('troop-info-image');
 const troopInfoStats = document.getElementById('troop-info-stats');
 const troopInfoAbility = document.getElementById('troop-info-ability');
 
-// Logo click to return to welcome section
+
 document.getElementById('logo-link').addEventListener('click', (e) => {
     e.preventDefault();
     showSection(welcomeSection);
 });
 
-// Language switching functionality
+
 const langEnFlag = document.getElementById('lang-en');
 const langEsFlag = document.getElementById('lang-es');
 
@@ -1270,7 +1270,7 @@ function updateLanguage(lang) {
         element.textContent = translations[lang][key] || key;
     });
 
-    // Update button texts
+    
     document.getElementById('hero-showcase-btn').textContent = translations[lang]['Public Decks'];
     document.getElementById('login-btn').textContent = translations[lang]['Login'];
     document.getElementById('register-btn').textContent = translations[lang]['Register'];
@@ -1280,12 +1280,12 @@ function updateLanguage(lang) {
     document.getElementById('add-deck-btn').textContent = translations[lang]['Add Deck'];
     document.getElementById('delete-account-btn').textContent = translations[lang]['Delete Account'];
 
-    // Update section headings and other static content
+    
     document.querySelector('#welcome-section h2').textContent = translations[lang]['Welcome to Wonder Decks!'];
     document.querySelector('#welcome-section p').textContent = translations[lang]['Create, save and share your decks with the community.'];
     document.querySelector('#hero-showcase-section h2').textContent = translations[lang]['Public Decks'];
 
-    // Update modal titles and labels
+    
     if (authModal.style.display === 'flex') {
         authModalTitle.textContent = translations[lang][authSubmitBtn.textContent];
         authSubmitBtn.textContent = translations[lang][authSubmitBtn.textContent];
@@ -1312,12 +1312,12 @@ function updateLanguage(lang) {
         });
     }
 
-    // Update hero decks section if visible, only updating hero info
+    
     if (heroDecksSection.style.display === 'block') {
-        const heroName = document.getElementById('hero-decks-title').textContent.split(' ')[0]; // Obtiene el nombre del héroe del título
+        const heroName = document.getElementById('hero-decks-title').textContent.split(' ')[0]; 
         const hero = heroes.find(h => h.name === heroName);
         if (hero) {
-            displayHeroDecks(hero, true); // Actualiza solo la información del héroe
+            displayHeroDecks(hero, true); 
         }
     }
 }
@@ -1325,10 +1325,10 @@ function updateLanguage(lang) {
 langEnFlag.addEventListener('click', () => updateLanguage('en'));
 langEsFlag.addEventListener('click', () => updateLanguage('es'));
 
-// Initial language setup
+
 updateLanguage('en');
 
-// Mostrar la información de la tropa en un modal
+
 function showTroopInfo(troopName) {
     const info = troopInfo[troopName];
     if (info) {
@@ -1337,7 +1337,7 @@ function showTroopInfo(troopName) {
         const attackLabel = translations[currentLang]['Attack'];
         const healthLabel = translations[currentLang]['Health'];
         const abilityLabel = translations[currentLang]['Ability'];
-        const abilityText = troopAbilitiesTranslations[troopName]?.[currentLang] || info.ability; // Usa la traducción si existe, sino usa el valor por defecto
+        const abilityText = troopAbilitiesTranslations[troopName]?.[currentLang] || info.ability; 
         troopInfoStats.textContent = `${attackLabel}: ${info.attack} | ${healthLabel}: ${info.health}`;
         troopInfoAbility.textContent = `${abilityLabel}: ${abilityText}`;
     } else {
@@ -1349,7 +1349,7 @@ function showTroopInfo(troopName) {
     troopInfoModal.style.display = 'flex';
 }
 
-// Update UI based on current user
+
 function updateUIForCurrentUser() {
     if (currentUser) {
         loginBtn.style.display = 'none';
@@ -1369,13 +1369,13 @@ function updateUIForCurrentUser() {
     }
 }
 
-// Show/Hide Sections
+
 function showSection(section) {
     [welcomeSection, heroShowcaseSection, heroDecksSection, userAccountSection].forEach(s => s.style.display = 'none');
     section.style.display = 'block';
 }
 
-// Navbar Buttons
+
 document.getElementById('hero-showcase-btn').addEventListener('click', () => {
     console.log("Public Decks button clicked");
     if (!currentUser) {
@@ -1408,7 +1408,7 @@ document.getElementById('explore-heroes-btn').addEventListener('click', () => {
     displayHeroes();
 });
 
-// Auth Modal
+
 function showAuthModal(type) {
     authModalTitle.textContent = translations[currentLang][type === 'register' ? 'Register' : 'Login'];
     authSubmitBtn.textContent = translations[currentLang][type === 'register' ? 'Register' : 'Login'];
@@ -1440,26 +1440,26 @@ logoutBtn.addEventListener('click', async () => {
     }
 });
 
-// Cerrar modales al hacer clic en la "X", asegurándose de no interferir con modales anidados
+
 document.querySelectorAll('.close-modal').forEach(btn => {
     btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evitar propagación del evento
+        e.stopPropagation(); 
         const modal = btn.closest('.modal');
         if (modal) {
             modal.style.display = 'none';
         }
     });
 });
-// Cerrar el modal de información de la tropa al hacer clic fuera, sin afectar otros modales
+
 troopInfoModal.addEventListener('click', (e) => {
     if (e.target === troopInfoModal || e.target.classList.contains('close-modal')) {
-        e.stopPropagation(); // Evitar que el evento se propague a modales subyacentes
+        e.stopPropagation(); 
         troopInfoModal.style.display = 'none';
     }
 });
-// Cerrar el modal de detalles del mazo al hacer clic fuera, sin interferir con el modal de la tropa
+
 deckDetailsModal.addEventListener('click', (e) => {
-    // Solo cerrar si el clic es directamente en el fondo del modal de detalles del mazo
+   
     if (e.target === deckDetailsModal || e.target.classList.contains('close-modal')) {
         deckDetailsModal.style.display = 'none';
     }
@@ -1471,13 +1471,13 @@ authForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password-input').value;
 
     if (authSubmitBtn.textContent === translations[currentLang]['Register']) {
-        // Register new user
+     
         if (!auth.currentUser) {
             alert("Authentication failed. Please try again.");
             return;
         }
 
-        // Check if username already exists
+     
         let userSnapshot;
         try {
             userSnapshot = await firestoreOperationWithRetry(() => 
@@ -1493,7 +1493,7 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
 
-        // Create new user with the current anonymous UID
+        
         const userId = auth.currentUser.uid;
         const newUser = { username, password, decks: [] };
         try {
@@ -1514,7 +1514,7 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
     } else {
-        // Login
+       
         let userSnapshot;
         try {
             userSnapshot = await firestoreOperationWithRetry(() => 
@@ -1538,24 +1538,24 @@ authForm.addEventListener('submit', async (e) => {
         if (storedUid !== currentUid) {
             console.log("UID mismatch during login, migrating user data...");
             try {
-                // Copy user data to the new UID
+          
                 await firestoreOperationWithRetry(() => 
                     db.collection('users').doc(currentUid).set(userData)
                 );
-                // Delete the old document
+                
                 await firestoreOperationWithRetry(() => 
                     db.collection('users').doc(storedUid).delete()
                 );
                 console.log("User document migrated successfully to UID:", currentUid);
 
-                // Update local users array to remove the old UID
+                
                 users = users.filter(user => user.uid !== storedUid);
                 userData.uid = currentUid;
                 users.push(userData);
             } catch (error) {
                 console.error("Error during UID migration:", error);
                 alert("Error syncing user data with Firestore. Please try again.");
-                // Attempt to clean up by deleting the new document if it was created
+
                 try {
                     await firestoreOperationWithRetry(() => 
                         db.collection('users').doc(currentUid).delete()
@@ -1563,7 +1563,7 @@ authForm.addEventListener('submit', async (e) => {
                 } catch (cleanupError) {
                     console.warn("Failed to clean up new document after migration error:", cleanupError);
                 }
-                return; // Exit to prevent proceeding with inconsistent data
+                return; 
             }
         }
 
@@ -1577,7 +1577,7 @@ authForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Display Heroes in Showcase
+
 function displayHeroes() {
     heroes.sort((a, b) => {
         const aPublicDecks = a.decks.filter(d => d.isPublic).length;
@@ -1601,14 +1601,14 @@ function displayHeroes() {
         });
         heroList.appendChild(heroCard);
     });
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
+    updateLanguage(currentLang); 
 }
 
-// Display Decks for a Specific Hero
+
 function displayHeroDecks(hero, updateInfoOnly = false) {
     document.getElementById('hero-decks-title').textContent = `${hero.name} Decks`;
 
-    // Display hero information
+   
     const heroInfoContainer = document.getElementById('hero-info');
     const info = heroInfo[hero.name];
     if (info) {
@@ -1626,23 +1626,23 @@ function displayHeroDecks(hero, updateInfoOnly = false) {
         heroInfoContainer.innerHTML = `<p>Information for ${hero.name} is not available.</p>`;
     }
 
-    // Solo renderiza los mazos si no estamos actualizando solo la información
+
     if (!updateInfoOnly) {
         const publicDecks = hero.decks.filter(d => d.isPublic);
         publicDecks.sort((a, b) => b.likes - a.likes);
 
-        heroDecksList.innerHTML = ''; // Limpiar solo si vamos a renderizar mazos
+        heroDecksList.innerHTML = ''; 
         publicDecks.forEach(deck => {
             const deckCard = document.createElement('div');
             const deckHero = heroes.find(h => h.id === deck.heroId);
 
-            // Create container for hero image
+         
             const heroImage = document.createElement('img');
             heroImage.src = getImageUrl(deckHero ? deckHero.name : 'Unknown', 'heroes');
             heroImage.alt = deckHero ? deckHero.name : 'Unknown';
             heroImage.classList.add('deck-hero-image');
 
-            // Create container for troop images
+          
             const troopsContainer = document.createElement('div');
             troopsContainer.classList.add('deck-troops');
             deck.troops.forEach(troopId => {
@@ -1658,19 +1658,19 @@ function displayHeroDecks(hero, updateInfoOnly = false) {
                 troopsContainer.appendChild(troopImage);
             });
 
-            // Determine if the user has already liked the deck
+         
             const likeKey = currentUser ? `${currentUser.username}:${deck.name}` : '';
             const hasLiked = likeKey && userLikes[likeKey];
 
-            // Create deck content with like heart icon and separated static/dynamic content
+  
             deckCard.innerHTML = `
                 <h3>${deck.name}</h3>
                 <p><span data-translate="Created by">Created by</span>: ${deck.creator}</p>
                 <p><span data-translate="Likes">Likes</span>: <span class="like-count">${deck.likes}</span></p>
                 <i class="${hasLiked ? 'fas' : 'far'} fa-heart like-heart ${hasLiked ? 'liked' : ''}"></i>
             `;
-            deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Likes"
-            deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Created by"
+            deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); 
+            deckCard.insertBefore(heroImage, deckCard.querySelector('p')); 
 
             deckCard.addEventListener('click', (e) => {
                 if (e.target.classList.contains('like-heart')) return;
@@ -1748,10 +1748,10 @@ function displayHeroDecks(hero, updateInfoOnly = false) {
             heroDecksList.appendChild(deckCard);
         });
     }
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
+    updateLanguage(currentLang); 
 }
 
-// Display User's Decks
+
 function displayUserDecks() {
     if (!currentUser) return;
     document.getElementById('user-account-title').textContent = `${currentUser.username}'s Decks`;
@@ -1760,13 +1760,13 @@ function displayUserDecks() {
         const hero = heroes.find(h => h.id === deck.heroId);
         const deckCard = document.createElement('div');
 
-        // Create container for hero image
+        
         const heroImage = document.createElement('img');
         heroImage.src = getImageUrl(hero ? hero.name : 'Unknown', 'heroes');
         heroImage.alt = hero ? hero.name : 'Unknown';
         heroImage.classList.add('deck-hero-image');
 
-        // Create container for troop images
+      
         const troopsContainer = document.createElement('div');
         troopsContainer.classList.add('deck-troops');
         deck.troops.forEach(troopId => {
@@ -1782,7 +1782,7 @@ function displayUserDecks() {
             troopsContainer.appendChild(troopImage);
         });
 
-        // Create deck content with separated static/dynamic content
+      
         deckCard.innerHTML = `
             <h3>${deck.name}</h3>
             <p><span data-translate="Hero">Hero</span>: ${hero ? hero.name : 'Unknown'}</p>
@@ -1791,8 +1791,8 @@ function displayUserDecks() {
             <button class="delete-deck-btn" data-translate="Delete">Delete</button>
             <button class="toggle-public-btn" data-translate="${deck.isPublic ? 'Make Private' : 'Make Public'}">${deck.isPublic ? 'Make Private' : 'Make Public'}</button>
         `;
-        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); // Insert troops before "Public"
-        deckCard.insertBefore(heroImage, deckCard.querySelector('p')); // Insert hero image before "Hero"
+        deckCard.insertBefore(troopsContainer, deckCard.querySelector('p:nth-child(3)')); 
+        deckCard.insertBefore(heroImage, deckCard.querySelector('p'));
 
         deckCard.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-deck-btn') || e.target.classList.contains('toggle-public-btn') || e.target.classList.contains('edit-deck-btn')) return;
@@ -1841,10 +1841,10 @@ function displayUserDecks() {
         });
         userDecksList.appendChild(deckCard);
     });
-    updateLanguage(currentLang); // Ensure translations are applied after rendering
+    updateLanguage(currentLang); 
 }
 
-// Show Deck Details
+
 function showDeckDetails(deck) {
     deckDetailsTitle.textContent = deck.name;
     deckDetailsCreator.textContent = deck.creator || currentUser.username;
@@ -1853,7 +1853,7 @@ function showDeckDetails(deck) {
     deckDetailsHero.textContent = hero ? hero.name : 'Unknown';
     deckDetailsHeroImage.innerHTML = `<img src="${getImageUrl(hero ? hero.name : 'Unknown', 'heroes')}" alt="${hero ? hero.name : 'Unknown'}" onerror="this.src='https://via.placeholder.com/100?text=Hero+Image+Not+Found';">`;
 
-    deckDetailsTroops.innerHTML = ''; // Clear previous troops
+    deckDetailsTroops.innerHTML = ''; 
     deck.troops.forEach(troopId => {
         const troop = troops.find(t => t.id === troopId);
         const troopName = troop ? troop.name : 'Unknown';
@@ -1861,7 +1861,7 @@ function showDeckDetails(deck) {
         const troopImage = document.createElement('img');
         const imageUrl = getImageUrl(troopName, 'troops');
         
-        // Set the image source and add an onerror fallback
+        
         troopImage.src = imageUrl;
         troopImage.alt = troopName;
         troopImage.classList.add('deck-troop-image');
@@ -1869,13 +1869,13 @@ function showDeckDetails(deck) {
             troopImage.src = 'https://via.placeholder.com/50?text=Troop+Image+Not+Found';
         };
         
-        // Add click event to show troop info
+        
         troopImage.addEventListener('click', (e) => {
             e.stopPropagation();
             showTroopInfo(troopName);
         });
         
-        // Append image and name to the troop card
+        
         troopCard.appendChild(troopImage);
         const troopNameElement = document.createElement('p');
         troopNameElement.textContent = troopName;
@@ -1885,19 +1885,19 @@ function showDeckDetails(deck) {
     });
 
     deckDetailsModal.style.display = 'flex';
-    updateLanguage(currentLang); // Ensure translations in the modal are updated
+    updateLanguage(currentLang); 
 }
 
-// Show Deck Modal (Add or Edit)
+
 function showDeckModal(mode, deck = null) {
     deckModalTitle.textContent = translations[currentLang][mode === 'add' ? 'Add New Deck' : 'Edit Deck'];
     deckSubmitBtn.textContent = translations[currentLang][mode === 'add' ? 'Add Deck' : 'Save Changes'];
     deckModal.style.display = 'flex';
 
-    // Clear previous form submissions
+    
     deckForm.onsubmit = null;
 
-    // Reset form fields
+    
     const deckNameInput = document.getElementById('deck-name-input');
     const deckDescriptionInput = document.getElementById('deck-description-input');
     const deckPublicInput = document.getElementById('deck-public-input');
@@ -1907,7 +1907,7 @@ function showDeckModal(mode, deck = null) {
     deckDescriptionInput.value = '';
     deckPublicInput.checked = false;
 
-    // Populate hero select
+    
     heroes.forEach(hero => {
         const option = document.createElement('option');
         option.value = hero.id;
@@ -1918,7 +1918,7 @@ function showDeckModal(mode, deck = null) {
         heroSelect.appendChild(option);
     });
 
-    // Populate troop selectors
+    
     const troopSelects = [];
     for (let i = 1; i <= 6; i++) {
         const select = document.createElement('select');
@@ -1950,7 +1950,7 @@ function showDeckModal(mode, deck = null) {
         troopSelects.push(select);
     }
 
-    // Populate fields if editing
+    
     if (mode === 'edit' && deck) {
         deckNameInput.value = deck.name;
         heroSelect.value = deck.heroId;
@@ -1977,7 +1977,7 @@ function showDeckModal(mode, deck = null) {
             return;
         }
 
-        // Verify user is authenticated
+       
         if (!auth.currentUser) {
             alert(translations[currentLang]['User not authenticated. Please log in again.'] || "User not authenticated. Please log in again.");
             authModal.style.display = 'none';
@@ -1985,10 +1985,10 @@ function showDeckModal(mode, deck = null) {
             return;
         }
 
-        // Verify currentUser.uid matches auth.currentUser.uid
+        
         if (currentUser.uid !== auth.currentUser.uid) {
             console.error("UID mismatch:", { currentUserUid: currentUser.uid, authUid: auth.currentUser.uid });
-            // Update the user document with the current anonymous UID
+            
             try {
                 console.log("Migrating user document to new UID...");
                 await firestoreOperationWithRetry(() => db.collection('users').doc(auth.currentUser.uid).set({
@@ -1996,9 +1996,9 @@ function showDeckModal(mode, deck = null) {
                     password: currentUser.password,
                     decks: currentUser.decks
                 }));
-                // Delete the old document
+                
                 await firestoreOperationWithRetry(() => db.collection('users').doc(currentUser.uid).delete());
-                // Update currentUser.uid
+                
                 currentUser.uid = auth.currentUser.uid;
                 console.log("User document migrated successfully to UID:", currentUser.uid);
             } catch (error) {
@@ -2042,10 +2042,10 @@ function showDeckModal(mode, deck = null) {
             displayUserDecks();
         }
     };
-    updateLanguage(currentLang); // Ensure translations in the modal are applied
+    updateLanguage(currentLang); 
 }
 
-// Add Deck Button
+
 document.getElementById('add-deck-btn').addEventListener('click', () => {
     console.log("Add Deck button clicked");
     if (!currentUser) {
@@ -2055,7 +2055,7 @@ document.getElementById('add-deck-btn').addEventListener('click', () => {
     showDeckModal('add');
 });
 
-// Delete Account Button
+
 document.getElementById('delete-account-btn').addEventListener('click', async () => {
     console.log("Delete Account button clicked");
     if (!confirm(translations[currentLang]['Are you sure you want to delete your account? This action cannot be undone.'] || 'Are you sure you want to delete your account? This action cannot be undone.')) return;
@@ -2083,11 +2083,11 @@ document.getElementById('delete-account-btn').addEventListener('click', async ()
         updateUIForCurrentUser();
     }
 });
-// Registrar el Service Worker
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     console.log("Attempting to register Service Worker...");
-    navigator.serviceWorker.register('/WonderDecks/sw.js', { scope: '/WonderDecks/' }) // Ajustar la ruta y el ámbito
+    navigator.serviceWorker.register('/WonderDecks/sw.js', { scope: '/WonderDecks/' }) 
       .then(registration => {
         console.log('Service Worker registered successfully:', registration);
         console.log('Service Worker scope:', registration.scope);
