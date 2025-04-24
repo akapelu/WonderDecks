@@ -8,11 +8,11 @@
 html {
     height: 100%;
     background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed; /* Nueva imagen de fondo */
-    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+    background-size: cover; 
 }
 
 body {
-    background: transparent; /* Hacemos el fondo de body transparente para que se vea el fondo de html */
+    background: transparent; 
     color: #e6e6e6;
     height: 100%;
     margin: 0;
@@ -20,9 +20,9 @@ body {
     position: relative;
 }
 
-/* Eliminar las partículas, ya que usaremos el nuevo fondo */
+
 body::before {
-    display: none; /* Desactiva las partículas */
+    display: none; 
 }
 
 @keyframes sparkle {
@@ -34,7 +34,7 @@ nav {
     background: linear-gradient(90deg, rgba(26, 13, 58, 0.9) 0%, rgba(36, 19, 77, 0.9) 100%);
     padding: 5px 20px;
     display: flex;
-    justify-content: space-between; /* Aseguramos que el logo esté a la izquierda y los botones a la derecha */
+    justify-content: space-between; 
     align-items: center;
     flex-wrap: wrap;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -43,12 +43,12 @@ nav {
     position: relative;
 }
 
-/* Aseguramos que el contenedor del logo no restrinja su tamaño */
+
 #logo-link {
     display: inline-block;
 }
 
-/* Logo styling */
+
 .logo-image {
     height: 200px;
     width: auto;
@@ -56,7 +56,7 @@ nav {
     object-fit: contain;
 }
 
-/* Contenedor de las banderas */
+
 .lang-flags {
     position: absolute;
     top: 10px;
@@ -65,7 +65,7 @@ nav {
     gap: 5px;
 }
 
-/* Estilo para las banderas */
+
 .lang-flag {
     width: 28px;
     height: 28px;
@@ -81,7 +81,7 @@ nav {
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: flex-end; /* Aseguramos que los botones estén alineados a la derecha */
+    justify-content: flex-end; 
 }
 
 .nav-right button, .nav-right span {
@@ -156,7 +156,7 @@ h2 {
 }
 
 .card-list > div {
-    background: linear-gradient(145deg, #1a0d3a, #24134d); /* Nuevo gradiente púrpura más oscuro */
+    background: linear-gradient(145deg, #1a0d3a, #24134d); 
     border-radius: 15px;
     padding: 20px;
     width: 280px;
@@ -195,7 +195,7 @@ h2 {
     white-space: nowrap;
 }
 
-/* Estilos para las imágenes en las listas de decks */
+
 .card-list .deck-hero-image {
     max-width: 65px;
     height: auto;
@@ -221,13 +221,13 @@ h2 {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Ajustar el texto "Created by" y "Likes" para que tengan un tamaño fijo */
+
 .card-list p {
     min-height: 20px;
     margin: 5px 0;
 }
 
-/* Estilo para los botones dentro de las cartas (excepto el ícono de corazón) */
+
 .card-list button:not(.like-heart) {
     padding: 8px 12px;
     font-size: 14px;
@@ -248,7 +248,7 @@ h2 {
     transform: translateY(-2px);
 }
 
-/* Contenedor para los botones de edición */
+
 .card-list .deck-actions {
     display: flex;
     flex-wrap: wrap;
@@ -267,7 +267,7 @@ h2 {
     width: 100%;
 }
 
-/* Estilo para el ícono de corazón */
+
 .like-heart {
     font-size: 20px;
     cursor: pointer;
@@ -331,7 +331,7 @@ h2 {
 }
 
 .modal-content {
-    background: linear-gradient(145deg, #1a0d3a, #24134d); /* Nuevo gradiente púrpura más oscuro */
+    background: linear-gradient(145deg, #1a0d3a, #24134d); 
     padding: 30px;
     border-radius: 15px;
     width: 90%;
@@ -446,12 +446,12 @@ h2 {
 
 #deck-details-troops img {
     max-width: 60px;
-    height: auto; /* Cambiado de height: 0 a height: auto para que las imágenes se muestren */
+    height: auto; 
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Forzar el fondo en modo claro */
+
 @media (prefers-color-scheme: light) {
     html, body {
         background: linear-gradient(135deg, #0a1c3d 0%, #1a2a6c 100%);
@@ -459,9 +459,9 @@ h2 {
     }
 }
 
-/* Styles for the hero information section */
+
 .hero-info {
-    background: linear-gradient(145deg, #1a0d3a, #24134d); /* Nuevo gradiente púrpura más oscuro */
+    background: linear-gradient(145deg, #1a0d3a, #24134d); 
     border-radius: 15px;
     padding: 20px;
     margin: 20px auto;
@@ -495,7 +495,7 @@ h2 {
     color: #d1d1d1;
 }
 
-/* Estilos para el modal de información de la tropa */
+
 .troop-info-modal-content {
     max-width: 400px;
     width: 90%;
@@ -524,7 +524,7 @@ h2 {
     margin: 10px 0;
 }
 
-/* Hacer que las imágenes de las tropas sean clicables */
+
 .card-list .deck-troop-image {
     cursor: pointer;
 }
@@ -534,7 +534,7 @@ h2 {
     box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
 }
 
-/* Adjust hero cards on mobile */
+
 @media (max-width: 768px) {
     .card-list {
         display: flex;
@@ -592,7 +592,7 @@ h2 {
         min-height: 14px;
     }
 
-    /* Ajustar héroes en Public Decks para que se muestren en filas de 3 */
+    
     #hero-showcase-section .card-list {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -620,7 +620,7 @@ h2 {
         min-height: 12px;
     }
 
-    /* Ajustar botones en la página de cuenta */
+    
     .card-list .deck-actions .edit-delete button {
         font-size: 10px;
         padding: 4px 6px;
@@ -633,7 +633,7 @@ h2 {
         width: 90px;
     }
 
-    /* Ajustar tropas en el modal */
+
     #deck-details-troops {
         flex-direction: row;
         flex-wrap: wrap;
@@ -650,7 +650,7 @@ h2 {
         max-width: 30px;
     }
 
-    /* Ajustar mazos en la página de héroe */
+
     #hero-decks-list.card-list {
         flex-direction: row;
         flex-wrap: wrap;
@@ -678,14 +678,14 @@ h2 {
         min-height: 14px;
     }
 
-    /* Ajustar hero-info para evitar estiramiento */
+    
     #hero-info {
         max-width: 90%;
         padding: 10px;
         margin: 10px auto;
     }
 }
-/* Reforzar el diseño para pantallas grandes */
+
 @media (min-width: 769px) {
     nav {
         padding: 5px 20px;
@@ -694,7 +694,7 @@ h2 {
         align-items: center;
         flex-wrap: wrap;
         height: 150px;
-        flex-direction: row; /* Aseguramos que el menú no se apile */
+        flex-direction: row; 
     }
 
     .nav-left {
@@ -728,8 +728,7 @@ h2 {
         max-width: 120px;
     }
 }
-/* Responsive adjustments for mobile */
-/* Ajustes para pantallas medianas */
+
 @media (max-width: 768px) {
     html {
         background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
@@ -1068,8 +1067,8 @@ html {
     height: 100%;
     background: url('https://raw.githubusercontent.com/akapelu/WonderDecks/main/background.png') no-repeat center center fixed;
     background-size: cover;
-    background-attachment: fixed; /* Asegura que el fondo esté fijo */
-    min-height: 100vh; /* Garantiza que cubra toda la pantalla */
+    background-attachment: fixed; 
+    min-height: 100vh; 
 }
 
 body {
