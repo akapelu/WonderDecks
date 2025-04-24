@@ -1,6 +1,6 @@
 const CACHE_NAME = 'wonder-decks-cache-v1';
  const urlsToCache = [
-   '/WonderDecks/', // Ajustar al subdirectorio
+   '/WonderDecks/', 
    '/WonderDecks/index.html',
    '/WonderDecks/styles.css',
    '/WonderDecks/script.js',
@@ -9,7 +9,7 @@ const CACHE_NAME = 'wonder-decks-cache-v1';
    '/WonderDecks/images/icono-512x512.png'
  ];
  
- // Install event: cache the essential files
+ 
  self.addEventListener('install', event => {
    console.log('Service Worker: Installing...');
    event.waitUntil(
@@ -20,7 +20,7 @@ const CACHE_NAME = 'wonder-decks-cache-v1';
    );
  });
  
- // Activate event: clean up old caches
+ 
  self.addEventListener('activate', event => {
    console.log('Service Worker: Activating...');
    event.waitUntil(
@@ -38,7 +38,7 @@ const CACHE_NAME = 'wonder-decks-cache-v1';
    return self.clients.claim();
  });
  
- // Fetch event: serve cached files if available
+ 
  self.addEventListener('fetch', event => {
    event.respondWith(
      caches.match(event.request).then(response => {
