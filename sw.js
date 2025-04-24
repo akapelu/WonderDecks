@@ -4,6 +4,7 @@ const urlsToCache = [
   '/WonderDecks/index.html',
   '/WonderDecks/styles.css',
   '/WonderDecks/script.js',
+  '/WonderDecks/firebase-config.js',
   '/WonderDecks/manifest.json',
   '/WonderDecks/images/icono-192x192.png',
   '/WonderDecks/images/icono-512x512.png'
