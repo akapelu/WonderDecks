@@ -1034,6 +1034,14 @@ async function loadUsersAndLikes() {
         console.log("loadUsersAndLikes already in progress, skipping...");
         return;
     }
+
+    // Verificar si hay un usuario autenticado
+    const user = auth.currentUser;
+    if (!user) {
+        console.log("No authenticated user, skipping loadUsersAndLikes");
+        return;
+    }
+
     isLoadingUsersAndLikes = true;
     try {
         // Load users
@@ -1042,7 +1050,6 @@ async function loadUsersAndLikes() {
         userSnapshot.forEach(doc => {
             const userData = doc.data();
             userData.uid = doc.id;
-            // Normalize decks to ensure they have all expected fields
             userData.decks = userData.decks.map(deck => ({
                 name: deck.name,
                 heroId: deck.heroId,
@@ -1051,12 +1058,11 @@ async function loadUsersAndLikes() {
                 isPublic: deck.isPublic,
                 creator: deck.creator,
             }));
-            // Avoid duplicate users based on UID
             if (!users.some(u => u.uid === userData.uid)) {
                 users.push(userData);
             }
         });
-        console.log("Users loaded:", users);
+        console.log("Users loaded:", users.length);
 
         // Load userLikes
         const likesSnapshot = await firestoreOperationWithRetry(() => db.collection('userLikes').get());
@@ -1064,22 +1070,21 @@ async function loadUsersAndLikes() {
         likesSnapshot.forEach(doc => {
             userLikes[doc.id] = doc.data().value;
         });
-        console.log("UserLikes loaded:", userLikes);
+        console.log("UserLikes loaded:", Object.keys(userLikes).length);
 
-        // Calculate likes for each deck dynamically
+        // Calculate likes for each deck
         users.forEach(user => {
             user.decks.forEach(deck => {
                 const deckLikes = Object.keys(userLikes).filter(key => 
                     key.endsWith(`:${deck.name}`) && userLikes[key] === true
                 ).length;
-                deck.likes = deckLikes; // Assign likes dynamically
+                deck.likes = deckLikes;
             });
         });
 
-        // Update heroes' decks
         loadHeroesDecks();
     } catch (error) {
-        console.error("Error loading users and likes:", error);
+        console.error("Error loading Firestore data:", error);
         alert("Error loading data from Firestore. Some features may not work correctly.");
     } finally {
         isLoadingUsersAndLikes = false;
@@ -1092,18 +1097,15 @@ auth.signInAnonymously().catch(error => {
     alert("Error signing in anonymously. Please try again.");
 });
 
-// Listen for auth state changes
 auth.onAuthStateChanged(async user => {
     if (user) {
-        console.log("User signed in anonymously:", user.uid);
+        console.log("User signed in:", user.uid);
         try {
-            // Check if a user document exists for this UID
             const userDoc = await firestoreOperationWithRetry(() => db.collection('users').doc(user.uid).get());
             if (userDoc.exists) {
                 currentUser = userDoc.data();
                 currentUser.uid = user.uid;
-                console.log("Current user data loaded:", currentUser);
-                // Normalize currentUser decks
+                console.log("Current user data:", currentUser);
                 currentUser.decks = currentUser.decks.map(deck => ({
                     name: deck.name,
                     heroId: deck.heroId,
@@ -1112,30 +1114,26 @@ auth.onAuthStateChanged(async user => {
                     isPublic: deck.isPublic,
                     creator: deck.creator,
                 }));
-            } else {
-                console.log("No user document found for UID:", user.uid);
-                // Do not set currentUser to null immediately; allow UI to persist until data is reloaded
             }
-            // Load users and likes only once here
             await loadUsersAndLikes();
             updateUIForCurrentUser();
         } catch (error) {
-            console.error("Error fetching user data:", error);
-            alert("Error fetching user data. Proceeding with local data.");
-            await loadUsersAndLikes();
+            console.error("Error in auth state handling:", error);
+            alert("Error fetching user data. Some features may not work correctly.");
             updateUIForCurrentUser();
         }
     } else {
-        console.log("User signed out");
+        console.log("No user signed in, attempting anonymous login");
         currentUser = null;
-        // Load users and likes to refresh the UI
-        await loadUsersAndLikes();
+        users = []; // Limpia los datos
+        userLikes = {};
         updateUIForCurrentUser();
-        // Sign in anonymously again
-        auth.signInAnonymously().catch(error => {
-            console.error("Error signing in anonymously after logout:", error);
-            alert("Error signing in anonymously after logout. Please try again.");
-        });
+        try {
+            await auth.signInAnonymously();
+        } catch (error) {
+            console.error("Failed to sign in anonymously:", error);
+            alert("Error signing in anonymously. Please refresh the page.");
+        }
     }
 });
 
