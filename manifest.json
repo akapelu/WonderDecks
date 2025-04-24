@@ -1,36 +1,36 @@
 {
-  "name": "Wonder Decks",
-  "short_name": "Wonder Decks",
-  "start_url": "/WonderDecks/index.html", 
-  "display": "standalone",
-  "background_color": "#0a1c3d",
-  "theme_color": "#1a2a6c",
-  "description": "Create, save, and share your decks with the Wonder Decks community!",
-  "icons": [
-    {
-      "src": "/WonderDecks/images/icono-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/WonderDecks/images/icono-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/WonderDecks/images/icono-192x192.png", 
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/WonderDecks/images/icono-512x512.png", 
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "prefer_related_applications": false
-}
+   "name": "Wonder Decks",
+   "short_name": "Wonder Decks",
+   "start_url": "/WonderDecks/index.html", 
+   "display": "standalone",
+   "background_color": "#0a1c3d",
+   "theme_color": "#1a2a6c",
+   "description": "Create, save, and share your decks with the Wonder Decks community!",
+   "icons": [
+     {
+       "src": "/WonderDecks/images/icono-192x192.png",
+       "sizes": "192x192",
+       "type": "image/png",
+       "purpose": "any"
+     },
+     {
+       "src": "/WonderDecks/images/icono-512x512.png",
+       "sizes": "512x512",
+       "type": "image/png",
+       "purpose": "any"
+     },
+     {
+       "src": "/WonderDecks/images/icono-192x192.png", 
+       "sizes": "192x192",
+       "type": "image/png",
+       "purpose": "maskable"
+     },
+     {
+       "src": "/WonderDecks/images/icono-512x512.png", 
+       "sizes": "512x512",
+       "type": "image/png",
+       "purpose": "maskable"
+     }
+   ],
+   "prefer_related_applications": false
+ }
