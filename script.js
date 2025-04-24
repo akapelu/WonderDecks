@@ -1,12 +1,12 @@
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
-    authDomain: "wonderdecks-6cadf.firebaseapp.com",
-    projectId: "wonderdecks-6cadf",
-    storageBucket: "wonderdecks-6cadf.firebasestorage.app",
-    messagingSenderId: "715734231945",
-    appId: "1:715734231945:web:d74cd383ec031e980ecf58",
-    measurementId: "G-Q9DJVZCY6"
+  apiKey: "AIzaSyDq8_wQvQzITCNdoGZmxcoC8jOfP2lEN3I",
+  authDomain: "wonderdecks-6cadf.firebaseapp.com",
+  projectId: "wonderdecks-6cadf",
+  storageBucket: "wonderdecks-6cadf.firebasestorage.app",
+  messagingSenderId: "715734231945",
+  appId: "1:715734231945:web:035df4243f443add0ecf58",
+  measurementId: "G-2Z9MFLHWX8"
 };
 
 // Initialize Firebase
