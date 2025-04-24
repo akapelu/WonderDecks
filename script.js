@@ -1483,13 +1483,11 @@ authForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password-input').value;
 
     if (authSubmitBtn.textContent === translations[currentLang]['Register']) {
-        // Register new user
         if (!auth.currentUser) {
             alert("Authentication failed. Please try again.");
             return;
         }
 
-        // Check if username already exists
         let userSnapshot;
         try {
             userSnapshot = await firestoreOperationWithRetry(() => 
@@ -1505,7 +1503,6 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
 
-        // Create new user with the current anonymous UID
         const userId = auth.currentUser.uid;
         const newUser = { username, password, decks: [] };
         try {
@@ -1545,42 +1542,10 @@ authForm.addEventListener('submit', async (e) => {
         const userDoc = userSnapshot.docs[0];
         const userData = userDoc.data();
         const storedUid = userDoc.id;
-        const currentUid = auth.currentUser.uid;
 
-        if (storedUid !== currentUid) {
-            console.log("UID mismatch during login, migrating user data...");
-            try {
-                // Copy user data to the new UID
-                await firestoreOperationWithRetry(() => 
-                    db.collection('users').doc(currentUid).set(userData)
-                );
-                // Delete the old document
-                await firestoreOperationWithRetry(() => 
-                    db.collection('users').doc(storedUid).delete()
-                );
-                console.log("User document migrated successfully to UID:", currentUid);
-
-                // Update local users array to remove the old UID
-                users = users.filter(user => user.uid !== storedUid);
-                userData.uid = currentUid;
-                users.push(userData);
-            } catch (error) {
-                console.error("Error during UID migration:", error);
-                alert("Error syncing user data with Firestore. Please try again.");
-                // Attempt to clean up by deleting the new document if it was created
-                try {
-                    await firestoreOperationWithRetry(() => 
-                        db.collection('users').doc(currentUid).delete()
-                    );
-                } catch (cleanupError) {
-                    console.warn("Failed to clean up new document after migration error:", cleanupError);
-                }
-                return; // Exit to prevent proceeding with inconsistent data
-            }
-        }
-
+        // Usar el UID almacenado en Firestore
         currentUser = userData;
-        currentUser.uid = currentUid;
+        currentUser.uid = storedUid;
         authModal.style.display = 'none';
         updateUIForCurrentUser();
         showSection(userAccountSection);
